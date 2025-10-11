@@ -53,7 +53,7 @@ services:
     container_name: invs-modern-pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@invs.local
+      PGADMIN_DEFAULT_EMAIL: admin@invs.com
       PGADMIN_DEFAULT_PASSWORD: invs123
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:

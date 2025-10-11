@@ -420,7 +420,7 @@ docker exec -i invs-modern-db psql -U invs_user -d invs_modern < prisma/function
 
 ### Web Interfaces
 - **pgAdmin**: http://localhost:8081
-  - Email: admin@invs.local
+  - Email: admin@invs.com
   - Password: invs123
 
 - **Prisma Studio**: http://localhost:5555

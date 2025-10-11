@@ -489,7 +489,7 @@ node scripts/integration/validate-migration.js
 
 ### Web Interfaces
 - **Prisma Studio**: http://localhost:5555 (run `npm run db:studio`)
-- **pgAdmin**: http://localhost:8081 (admin@invs.local / invs123)
+- **pgAdmin**: http://localhost:8081 (admin@invs.com / invs123)
 - **phpMyAdmin**: http://localhost:8082 (invs_user / invs123)
 
 ### Database Connections
