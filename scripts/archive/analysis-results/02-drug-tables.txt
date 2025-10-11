@@ -1,0 +1,744 @@
+    table_name     |    column_name    |          data_type          
+-------------------+-------------------+-----------------------------
+ INV_RTN_C         | WORKING_CODE      | character varying
+ SM_PO_E           | WORKING_CODE      | character
+ accr_disp         | WORKING_CODE      | character
+ buyplan_c         | WORKING_CODE      | character
+ buyplan_log       | WORKING_CODE      | character
+ card              | WORKING_CODE      | character
+ card_backup       | WORKING_CODE      | character
+ card_copy         | WORKING_CODE      | character
+ cnt_c             | WORKING_CODE      | character
+ drug_compos       | COMPOS_CODE       | integer
+ drug_compos       | COMPOS_NAME       | character varying
+ drug_compos       | TMTID             | bigint
+ drug_compos       | WORKING_CODE      | character varying
+ drug_gn           | CHANGE_DATE       | timestamp without time zone
+ drug_gn           | COLOR             | integer
+ drug_gn           | COMPOSITION       | character
+ drug_gn           | CONT_UNIT_ID      | integer
+ drug_gn           | CONT_VALUE        | real
+ drug_gn           | DATE_ENTER        | timestamp without time zone
+ drug_gn           | DFORM_ID          | integer
+ drug_gn           | DOSAGE_FORM       | character
+ drug_gn           | DRUG_NAME         | character
+ drug_gn           | DRUG_NAME_KEY     | character
+ drug_gn           | DRUG_NAME_TH      | character varying
+ drug_gn           | ED_LIST           | smallint
+ drug_gn           | ED_LIST_CODE      | character
+ drug_gn           | EXPRESS_CODE      | character
+ drug_gn           | GPUID             | integer
+ drug_gn           | GROUP_CODE        | character
+ drug_gn           | GROUP_KEY         | character
+ drug_gn           | HIDE              | character
+ drug_gn           | HOSP_LIST         | smallint
+ drug_gn           | ISSUE_DATE        | timestamp without time zone
+ drug_gn           | IS_ED             | smallint
+ drug_gn           | IS_HAD            | character
+ drug_gn           | LAST_BUY          | timestamp without time zone
+ drug_gn           | LAST_BUY_COST     | double precision
+ drug_gn           | LAST_NOTIFY_HAD   | timestamp without time zone
+ drug_gn           | LAST_PACK_CODE    | integer
+ drug_gn           | LAST_VENDOR_CODE  | character
+ drug_gn           | LOCATION          | character
+ drug_gn           | MAX_LEVEL         | double precision
+ drug_gn           | MIN_LEVEL         | double precision
+ drug_gn           | MIT               | character varying
+ drug_gn           | MOD_SYS           | character varying
+ drug_gn           | NOTE              | character
+ drug_gn           | OK                | character
+ drug_gn           | PACK_UNIT         | character
+ drug_gn           | PRODUCTION        | character
+ drug_gn           | QTY_ON_HAND       | double precision
+ drug_gn           | QTY_UNIT          | double precision
+ drug_gn           | RATE_PER_MONTH    | double precision
+ drug_gn           | REF_PRICE_DATE    | character
+ drug_gn           | REORDER_QTY       | double precision
+ drug_gn           | SALE_UNIT         | character
+ drug_gn           | SALE_UNIT_ID      | integer
+ drug_gn           | SALE_UNIT_PRICE   | double precision
+ drug_gn           | SPECIAL_CODE      | character
+ drug_gn           | STD_PRICE1        | double precision
+ drug_gn           | STD_PRICE2        | double precision
+ drug_gn           | STD_PRICE3        | double precision
+ drug_gn           | STD_RATIO1        | double precision
+ drug_gn           | STD_RATIO2        | double precision
+ drug_gn           | STD_RATIO3        | double precision
+ drug_gn           | STRENGTH          | double precision
+ drug_gn           | STRENGTH_DENO     | double precision
+ drug_gn           | STRENGTH_UNIT     | character varying
+ drug_gn           | STR_DENO_UID      | integer
+ drug_gn           | STR_UID           | integer
+ drug_gn           | SUBCOM            | character varying
+ drug_gn           | SUPPLY_TYPE       | character
+ drug_gn           | TOTAL_COST        | double precision
+ drug_gn           | TOTAL_VALUE       | double precision
+ drug_gn           | USER_ID           | character varying
+ drug_gn           | USE_TRADE_DIS     | character
+ drug_gn           | VEN_FLAG          | character
+ drug_gn           | WORKING_CODE      | character
+ drug_gn           | WORK_CODE_KEY     | character
+ drug_gn_20231101  | CHANGE_DATE       | timestamp without time zone
+ drug_gn_20231101  | COLOR             | integer
+ drug_gn_20231101  | COMPOSITION       | character
+ drug_gn_20231101  | CONT_UNIT_ID      | integer
+ drug_gn_20231101  | CONT_VALUE        | real
+ drug_gn_20231101  | DATE_ENTER        | timestamp without time zone
+ drug_gn_20231101  | DFORM_ID          | integer
+ drug_gn_20231101  | DOSAGE_FORM       | character
+ drug_gn_20231101  | DRUG_NAME         | character
+ drug_gn_20231101  | DRUG_NAME_KEY     | character
+ drug_gn_20231101  | DRUG_NAME_TH      | character varying
+ drug_gn_20231101  | ED_LIST           | smallint
+ drug_gn_20231101  | ED_LIST_CODE      | character
+ drug_gn_20231101  | EXPRESS_CODE      | character
+ drug_gn_20231101  | GPUID             | integer
+ drug_gn_20231101  | GROUP_CODE        | character
+ drug_gn_20231101  | GROUP_KEY         | character
+ drug_gn_20231101  | HIDE              | character
+ drug_gn_20231101  | HOSP_LIST         | smallint
+ drug_gn_20231101  | ISSUE_DATE        | timestamp without time zone
+ drug_gn_20231101  | IS_ED             | smallint
+ drug_gn_20231101  | IS_HAD            | character
+ drug_gn_20231101  | LAST_BUY          | timestamp without time zone
+ drug_gn_20231101  | LAST_BUY_COST     | double precision
+ drug_gn_20231101  | LAST_NOTIFY_HAD   | timestamp without time zone
+ drug_gn_20231101  | LAST_PACK_CODE    | integer
+ drug_gn_20231101  | LAST_VENDOR_CODE  | character
+ drug_gn_20231101  | LOCATION          | character
+ drug_gn_20231101  | MAX_LEVEL         | double precision
+ drug_gn_20231101  | MIN_LEVEL         | double precision
+ drug_gn_20231101  | MIT               | character varying
+ drug_gn_20231101  | MOD_SYS           | character varying
+ drug_gn_20231101  | NOTE              | character
+ drug_gn_20231101  | OK                | character
+ drug_gn_20231101  | PACK_UNIT         | character
+ drug_gn_20231101  | PRODUCTION        | character
+ drug_gn_20231101  | QTY_ON_HAND       | double precision
+ drug_gn_20231101  | QTY_UNIT          | double precision
+ drug_gn_20231101  | RATE_PER_MONTH    | double precision
+ drug_gn_20231101  | REF_PRICE_DATE    | character
+ drug_gn_20231101  | REORDER_QTY       | double precision
+ drug_gn_20231101  | SALE_UNIT         | character
+ drug_gn_20231101  | SALE_UNIT_ID      | integer
+ drug_gn_20231101  | SALE_UNIT_PRICE   | double precision
+ drug_gn_20231101  | SPECIAL_CODE      | character
+ drug_gn_20231101  | STD_PRICE1        | double precision
+ drug_gn_20231101  | STD_PRICE2        | double precision
+ drug_gn_20231101  | STD_PRICE3        | double precision
+ drug_gn_20231101  | STD_RATIO1        | double precision
+ drug_gn_20231101  | STD_RATIO2        | double precision
+ drug_gn_20231101  | STD_RATIO3        | double precision
+ drug_gn_20231101  | STRENGTH          | double precision
+ drug_gn_20231101  | STRENGTH_DENO     | double precision
+ drug_gn_20231101  | STRENGTH_UNIT     | character varying
+ drug_gn_20231101  | STR_DENO_UID      | integer
+ drug_gn_20231101  | STR_UID           | integer
+ drug_gn_20231101  | SUBCOM            | character varying
+ drug_gn_20231101  | SUPPLY_TYPE       | character
+ drug_gn_20231101  | TOTAL_COST        | double precision
+ drug_gn_20231101  | TOTAL_VALUE       | double precision
+ drug_gn_20231101  | USER_ID           | character varying
+ drug_gn_20231101  | USE_TRADE_DIS     | character
+ drug_gn_20231101  | VEN_FLAG          | character
+ drug_gn_20231101  | WORKING_CODE      | character
+ drug_gn_20231101  | WORK_CODE_KEY     | character
+ drug_gn_copy      | COLOR             | integer
+ drug_gn_copy      | COMPOSITION       | character
+ drug_gn_copy      | DATE_ENTER        | timestamp without time zone
+ drug_gn_copy      | DFORM_ID          | integer
+ drug_gn_copy      | DOSAGE_FORM       | character
+ drug_gn_copy      | DRUG_NAME         | character
+ drug_gn_copy      | DRUG_NAME_KEY     | character
+ drug_gn_copy      | DRUG_NAME_TH      | character varying
+ drug_gn_copy      | ED_LIST           | smallint
+ drug_gn_copy      | ED_LIST_CODE      | character
+ drug_gn_copy      | EXPRESS_CODE      | character
+ drug_gn_copy      | GPUID             | integer
+ drug_gn_copy      | GROUP_CODE        | character
+ drug_gn_copy      | GROUP_KEY         | character
+ drug_gn_copy      | HIDE              | character
+ drug_gn_copy      | HOSP_LIST         | smallint
+ drug_gn_copy      | ISSUE_DATE        | timestamp without time zone
+ drug_gn_copy      | IS_ED             | smallint
+ drug_gn_copy      | IS_HAD            | character
+ drug_gn_copy      | LAST_BUY          | timestamp without time zone
+ drug_gn_copy      | LAST_BUY_COST     | double precision
+ drug_gn_copy      | LAST_NOTIFY_HAD   | timestamp without time zone
+ drug_gn_copy      | LAST_PACK_CODE    | integer
+ drug_gn_copy      | LAST_VENDOR_CODE  | character
+ drug_gn_copy      | LOCATION          | character
+ drug_gn_copy      | MAX_LEVEL         | double precision
+ drug_gn_copy      | MIN_LEVEL         | double precision
+ drug_gn_copy      | MIT               | character varying
+ drug_gn_copy      | MOD_SYS           | character varying
+ drug_gn_copy      | NOTE              | character
+ drug_gn_copy      | OK                | character
+ drug_gn_copy      | PACK_UNIT         | character
+ drug_gn_copy      | PRODUCTION        | character
+ drug_gn_copy      | QTY_ON_HAND       | double precision
+ drug_gn_copy      | QTY_UNIT          | double precision
+ drug_gn_copy      | RATE_PER_MONTH    | double precision
+ drug_gn_copy      | REF_PRICE_DATE    | character
+ drug_gn_copy      | REORDER_QTY       | double precision
+ drug_gn_copy      | SALE_UNIT         | character
+ drug_gn_copy      | SALE_UNIT_ID      | integer
+ drug_gn_copy      | SALE_UNIT_PRICE   | double precision
+ drug_gn_copy      | SPECIAL_CODE      | character
+ drug_gn_copy      | STD_PRICE1        | double precision
+ drug_gn_copy      | STD_PRICE2        | double precision
+ drug_gn_copy      | STD_PRICE3        | double precision
+ drug_gn_copy      | STD_RATIO1        | double precision
+ drug_gn_copy      | STD_RATIO2        | double precision
+ drug_gn_copy      | STD_RATIO3        | double precision
+ drug_gn_copy      | STRENGTH          | double precision
+ drug_gn_copy      | STRENGTH_DENO     | double precision
+ drug_gn_copy      | STRENGTH_UNIT     | character varying
+ drug_gn_copy      | STR_DENO_UID      | integer
+ drug_gn_copy      | STR_UID           | integer
+ drug_gn_copy      | SUBCOM            | character varying
+ drug_gn_copy      | SUPPLY_TYPE       | character
+ drug_gn_copy      | TOTAL_COST        | double precision
+ drug_gn_copy      | TOTAL_VALUE       | double precision
+ drug_gn_copy      | USER_ID           | character varying
+ drug_gn_copy      | USE_TRADE_DIS     | character
+ drug_gn_copy      | VEN_FLAG          | character
+ drug_gn_copy      | WORKING_CODE      | character
+ drug_gn_copy      | WORK_CODE_KEY     | character
+ drug_gn_new       | CHANGE_DATE       | timestamp without time zone
+ drug_gn_new       | COLOR             | integer
+ drug_gn_new       | COMPOSITION       | character
+ drug_gn_new       | CONT_UNIT_ID      | integer
+ drug_gn_new       | CONT_VALUE        | real
+ drug_gn_new       | DATE_ENTER        | timestamp without time zone
+ drug_gn_new       | DFORM_ID          | integer
+ drug_gn_new       | DOSAGE_FORM       | character
+ drug_gn_new       | DRUG_NAME         | character
+ drug_gn_new       | DRUG_NAME_KEY     | character
+ drug_gn_new       | DRUG_NAME_TH      | character varying
+ drug_gn_new       | ED_LIST           | smallint
+ drug_gn_new       | ED_LIST_CODE      | character
+ drug_gn_new       | EXPRESS_CODE      | character
+ drug_gn_new       | GPUID             | integer
+ drug_gn_new       | GROUP_CODE        | character
+ drug_gn_new       | GROUP_KEY         | character
+ drug_gn_new       | HIDE              | character
+ drug_gn_new       | HOSP_LIST         | smallint
+ drug_gn_new       | ISSUE_DATE        | timestamp without time zone
+ drug_gn_new       | IS_ED             | smallint
+ drug_gn_new       | IS_HAD            | character
+ drug_gn_new       | LAST_BUY          | timestamp without time zone
+ drug_gn_new       | LAST_BUY_COST     | double precision
+ drug_gn_new       | LAST_NOTIFY_HAD   | timestamp without time zone
+ drug_gn_new       | LAST_PACK_CODE    | integer
+ drug_gn_new       | LAST_VENDOR_CODE  | character
+ drug_gn_new       | LOCATION          | character
+ drug_gn_new       | MAX_LEVEL         | double precision
+ drug_gn_new       | MIN_LEVEL         | double precision
+ drug_gn_new       | MIT               | character varying
+ drug_gn_new       | MOD_SYS           | character varying
+ drug_gn_new       | NOTE              | character
+ drug_gn_new       | OK                | character
+ drug_gn_new       | PACK_UNIT         | character
+ drug_gn_new       | PRODUCTION        | character
+ drug_gn_new       | QTY_ON_HAND       | double precision
+ drug_gn_new       | QTY_UNIT          | double precision
+ drug_gn_new       | RATE_PER_MONTH    | double precision
+ drug_gn_new       | REF_PRICE_DATE    | character
+ drug_gn_new       | REORDER_QTY       | double precision
+ drug_gn_new       | SALE_UNIT         | character
+ drug_gn_new       | SALE_UNIT_ID      | integer
+ drug_gn_new       | SALE_UNIT_PRICE   | double precision
+ drug_gn_new       | SPECIAL_CODE      | character
+ drug_gn_new       | STD_PRICE1        | double precision
+ drug_gn_new       | STD_PRICE2        | double precision
+ drug_gn_new       | STD_PRICE3        | double precision
+ drug_gn_new       | STD_RATIO1        | double precision
+ drug_gn_new       | STD_RATIO2        | double precision
+ drug_gn_new       | STD_RATIO3        | double precision
+ drug_gn_new       | STRENGTH          | double precision
+ drug_gn_new       | STRENGTH_DENO     | double precision
+ drug_gn_new       | STRENGTH_UNIT     | character varying
+ drug_gn_new       | STR_DENO_UID      | integer
+ drug_gn_new       | STR_UID           | integer
+ drug_gn_new       | SUBCOM            | character varying
+ drug_gn_new       | SUPPLY_TYPE       | character
+ drug_gn_new       | TOTAL_COST        | double precision
+ drug_gn_new       | TOTAL_VALUE       | double precision
+ drug_gn_new       | USER_ID           | character varying
+ drug_gn_new       | USE_TRADE_DIS     | character
+ drug_gn_new       | VEN_FLAG          | character
+ drug_gn_new       | WORKING_CODE      | character
+ drug_gn_new       | WORK_CODE_KEY     | character
+ drug_gn_old       | COLOR             | integer
+ drug_gn_old       | COMPOSITION       | character
+ drug_gn_old       | DATE_ENTER        | timestamp without time zone
+ drug_gn_old       | DFORM_ID          | integer
+ drug_gn_old       | DOSAGE_FORM       | character
+ drug_gn_old       | DRUG_NAME         | character
+ drug_gn_old       | DRUG_NAME_KEY     | character
+ drug_gn_old       | DRUG_NAME_TH      | character varying
+ drug_gn_old       | ED_LIST           | smallint
+ drug_gn_old       | ED_LIST_CODE      | character
+ drug_gn_old       | EXPRESS_CODE      | character
+ drug_gn_old       | GPUID             | integer
+ drug_gn_old       | GROUP_CODE        | character
+ drug_gn_old       | GROUP_KEY         | character
+ drug_gn_old       | HIDE              | character
+ drug_gn_old       | HOSP_LIST         | smallint
+ drug_gn_old       | ISSUE_DATE        | timestamp without time zone
+ drug_gn_old       | IS_ED             | smallint
+ drug_gn_old       | IS_HAD            | character
+ drug_gn_old       | LAST_BUY          | timestamp without time zone
+ drug_gn_old       | LAST_BUY_COST     | double precision
+ drug_gn_old       | LAST_NOTIFY_HAD   | timestamp without time zone
+ drug_gn_old       | LAST_PACK_CODE    | integer
+ drug_gn_old       | LAST_VENDOR_CODE  | character
+ drug_gn_old       | LOCATION          | character
+ drug_gn_old       | MAX_LEVEL         | double precision
+ drug_gn_old       | MIN_LEVEL         | double precision
+ drug_gn_old       | MIT               | character varying
+ drug_gn_old       | MOD_SYS           | character varying
+ drug_gn_old       | NOTE              | character
+ drug_gn_old       | OK                | character
+ drug_gn_old       | PACK_UNIT         | character
+ drug_gn_old       | PRODUCTION        | character
+ drug_gn_old       | QTY_ON_HAND       | double precision
+ drug_gn_old       | QTY_UNIT          | double precision
+ drug_gn_old       | RATE_PER_MONTH    | double precision
+ drug_gn_old       | REF_PRICE_DATE    | character
+ drug_gn_old       | REORDER_QTY       | double precision
+ drug_gn_old       | SALE_UNIT         | character
+ drug_gn_old       | SALE_UNIT_ID      | integer
+ drug_gn_old       | SALE_UNIT_PRICE   | double precision
+ drug_gn_old       | SPECIAL_CODE      | character
+ drug_gn_old       | STD_PRICE1        | double precision
+ drug_gn_old       | STD_PRICE2        | double precision
+ drug_gn_old       | STD_PRICE3        | double precision
+ drug_gn_old       | STD_RATIO1        | double precision
+ drug_gn_old       | STD_RATIO2        | double precision
+ drug_gn_old       | STD_RATIO3        | double precision
+ drug_gn_old       | STRENGTH          | double precision
+ drug_gn_old       | STRENGTH_DENO     | double precision
+ drug_gn_old       | STRENGTH_UNIT     | character varying
+ drug_gn_old       | STR_DENO_UID      | integer
+ drug_gn_old       | STR_UID           | integer
+ drug_gn_old       | SUBCOM            | character varying
+ drug_gn_old       | SUPPLY_TYPE       | character
+ drug_gn_old       | TOTAL_COST        | double precision
+ drug_gn_old       | TOTAL_VALUE       | double precision
+ drug_gn_old       | USER_ID           | character varying
+ drug_gn_old       | USE_TRADE_DIS     | character
+ drug_gn_old       | VEN_FLAG          | character
+ drug_gn_old       | WORKING_CODE      | character
+ drug_gn_old       | WORK_CODE_KEY     | character
+ drug_spec         | ATTACH_FILE       | bytea
+ drug_spec         | FILE_NAME         | character varying
+ drug_spec         | SPEC_TEXT         | text
+ drug_spec         | WORKING_CODE      | character varying
+ drug_vn           | 24DIGIT           | character
+ drug_vn           | ATC               | character varying
+ drug_vn           | BAR_CODE          | character
+ drug_vn           | BUY_UNIT_COST     | double precision
+ drug_vn           | CHANGE_DATE       | timestamp without time zone
+ drug_vn           | CUSTOMER_PRICE    | double precision
+ drug_vn           | DEF_BUYCOM        | integer
+ drug_vn           | ED_LIST           | smallint
+ drug_vn           | GENERIC_CODE      | character
+ drug_vn           | GPSC              | character varying
+ drug_vn           | GTIN              | character varying
+ drug_vn           | HIDE              | character
+ drug_vn           | HOSP_LIST         | integer
+ drug_vn           | IMPORT_FLAG       | character
+ drug_vn           | ISSUE_DATE        | timestamp without time zone
+ drug_vn           | IS_ED             | smallint
+ drug_vn           | LAST_BUY          | timestamp without time zone
+ drug_vn           | LAST_BUY_COST     | double precision
+ drug_vn           | LAST_PACK_RATIO   | double precision
+ drug_vn           | LAST_VENDOR       | character
+ drug_vn           | MANUFAC_CODE      | character
+ drug_vn           | MOD_SYS           | character varying
+ drug_vn           | NOTE              | character
+ drug_vn           | PACK_RATIO        | double precision
+ drug_vn           | PICTURE           | bytea
+ drug_vn           | PREMA_FLAG        | character varying
+ drug_vn           | RECORD_NUMBER     | integer
+ drug_vn           | RECORD_STATUS     | character
+ drug_vn           | REGIST_NO         | character
+ drug_vn           | REMARK            | character varying
+ drug_vn           | SALE_UNIT_PRICE   | double precision
+ drug_vn           | STD_CODE          | character
+ drug_vn           | SUB_COM_CODE      | integer
+ drug_vn           | TMTID             | bigint
+ drug_vn           | TRADE_CODE        | character varying
+ drug_vn           | TRADE_FLAG        | smallint
+ drug_vn           | TRADE_NAME        | character
+ drug_vn           | TRADE_NAME_KEY    | character
+ drug_vn           | UNIT_PRICE        | double precision
+ drug_vn           | USER_ID           | character varying
+ drug_vn           | USE_IMPORT_PROD   | character varying
+ drug_vn           | VENDOR_CODE       | character
+ drug_vn           | WORKING_CODE      | character
+ drug_vn_backup    | 24DIGIT           | character
+ drug_vn_backup    | ATC               | character varying
+ drug_vn_backup    | BAR_CODE          | character
+ drug_vn_backup    | BUY_UNIT_COST     | double precision
+ drug_vn_backup    | CHANGE_DATE       | timestamp without time zone
+ drug_vn_backup    | CUSTOMER_PRICE    | double precision
+ drug_vn_backup    | DEF_BUYCOM        | integer
+ drug_vn_backup    | ED_LIST           | smallint
+ drug_vn_backup    | GENERIC_CODE      | character
+ drug_vn_backup    | GPSC              | character varying
+ drug_vn_backup    | GTIN              | character varying
+ drug_vn_backup    | HIDE              | character
+ drug_vn_backup    | HOSP_LIST         | integer
+ drug_vn_backup    | IMPORT_FLAG       | character
+ drug_vn_backup    | ISSUE_DATE        | timestamp without time zone
+ drug_vn_backup    | IS_ED             | smallint
+ drug_vn_backup    | LAST_BUY          | timestamp without time zone
+ drug_vn_backup    | LAST_BUY_COST     | double precision
+ drug_vn_backup    | LAST_PACK_RATIO   | double precision
+ drug_vn_backup    | LAST_VENDOR       | character
+ drug_vn_backup    | MANUFAC_CODE      | character
+ drug_vn_backup    | MOD_SYS           | character varying
+ drug_vn_backup    | NOTE              | character
+ drug_vn_backup    | PACK_RATIO        | double precision
+ drug_vn_backup    | PICTURE           | bytea
+ drug_vn_backup    | PREMA_FLAG        | character varying
+ drug_vn_backup    | RECORD_NUMBER     | integer
+ drug_vn_backup    | RECORD_STATUS     | character
+ drug_vn_backup    | REGIST_NO         | character
+ drug_vn_backup    | REMARK            | character varying
+ drug_vn_backup    | SALE_UNIT_PRICE   | double precision
+ drug_vn_backup    | STD_CODE          | character
+ drug_vn_backup    | SUB_COM_CODE      | integer
+ drug_vn_backup    | TMTID             | bigint
+ drug_vn_backup    | TRADE_CODE        | character varying
+ drug_vn_backup    | TRADE_FLAG        | smallint
+ drug_vn_backup    | TRADE_NAME        | character
+ drug_vn_backup    | TRADE_NAME_KEY    | character
+ drug_vn_backup    | UNIT_PRICE        | double precision
+ drug_vn_backup    | USER_ID           | character varying
+ drug_vn_backup    | USE_IMPORT_PROD   | character varying
+ drug_vn_backup    | VENDOR_CODE       | character
+ drug_vn_backup    | WORKING_CODE      | character
+ drug_vn_new       | 24DIGIT           | character
+ drug_vn_new       | ATC               | character varying
+ drug_vn_new       | BAR_CODE          | character
+ drug_vn_new       | BUY_UNIT_COST     | double precision
+ drug_vn_new       | CHANGE_DATE       | timestamp without time zone
+ drug_vn_new       | CUSTOMER_PRICE    | double precision
+ drug_vn_new       | DEF_BUYCOM        | integer
+ drug_vn_new       | ED_LIST           | smallint
+ drug_vn_new       | GENERIC_CODE      | character
+ drug_vn_new       | GPSC              | character varying
+ drug_vn_new       | GTIN              | character varying
+ drug_vn_new       | HIDE              | character
+ drug_vn_new       | HOSP_LIST         | integer
+ drug_vn_new       | IMPORT_FLAG       | character
+ drug_vn_new       | ISSUE_DATE        | timestamp without time zone
+ drug_vn_new       | IS_ED             | smallint
+ drug_vn_new       | LAST_BUY          | timestamp without time zone
+ drug_vn_new       | LAST_BUY_COST     | double precision
+ drug_vn_new       | LAST_PACK_RATIO   | double precision
+ drug_vn_new       | LAST_VENDOR       | character
+ drug_vn_new       | MANUFAC_CODE      | character
+ drug_vn_new       | MOD_SYS           | character varying
+ drug_vn_new       | NOTE              | character
+ drug_vn_new       | PACK_RATIO        | double precision
+ drug_vn_new       | PICTURE           | bytea
+ drug_vn_new       | PREMA_FLAG        | character varying
+ drug_vn_new       | RECORD_NUMBER     | integer
+ drug_vn_new       | RECORD_STATUS     | character
+ drug_vn_new       | REGIST_NO         | character
+ drug_vn_new       | REMARK            | character varying
+ drug_vn_new       | SALE_UNIT_PRICE   | double precision
+ drug_vn_new       | STD_CODE          | character
+ drug_vn_new       | SUB_COM_CODE      | integer
+ drug_vn_new       | TMTID             | bigint
+ drug_vn_new       | TRADE_CODE        | character varying
+ drug_vn_new       | TRADE_FLAG        | smallint
+ drug_vn_new       | TRADE_NAME        | character
+ drug_vn_new       | TRADE_NAME_KEY    | character
+ drug_vn_new       | UNIT_PRICE        | double precision
+ drug_vn_new       | USER_ID           | character varying
+ drug_vn_new       | USE_IMPORT_PROD   | character varying
+ drug_vn_new       | VENDOR_CODE       | character
+ drug_vn_new       | WORKING_CODE      | character
+ drug_vnx          | 24DIGIT           | character
+ drug_vnx          | ATC               | character varying
+ drug_vnx          | BAR_CODE          | character
+ drug_vnx          | BUY_UNIT_COST     | double precision
+ drug_vnx          | CUSTOMER_PRICE    | double precision
+ drug_vnx          | ED_LIST           | smallint
+ drug_vnx          | GENERIC_CODE      | character
+ drug_vnx          | GPUID             | integer
+ drug_vnx          | GTIN              | character varying
+ drug_vnx          | HIDE              | character
+ drug_vnx          | HOSP_LIST         | integer
+ drug_vnx          | IMPORT_FLAG       | character
+ drug_vnx          | ISSUE_DATE        | timestamp without time zone
+ drug_vnx          | IS_ED             | smallint
+ drug_vnx          | LAST_BUY          | timestamp without time zone
+ drug_vnx          | LAST_BUY_COST     | double precision
+ drug_vnx          | LAST_PACK_RATIO   | double precision
+ drug_vnx          | LAST_VENDOR       | character
+ drug_vnx          | MANUFAC_CODE      | character
+ drug_vnx          | MOD_SYS           | character varying
+ drug_vnx          | NOTE              | character
+ drug_vnx          | PACK_RATIO        | double precision
+ drug_vnx          | PICTURE           | bytea
+ drug_vnx          | RECORD_NUMBER     | integer
+ drug_vnx          | RECORD_STATUS     | character
+ drug_vnx          | REGIST_NO         | character
+ drug_vnx          | SALE_UNIT_PRICE   | double precision
+ drug_vnx          | STD_CODE          | character
+ drug_vnx          | SUB_COM_CODE      | integer
+ drug_vnx          | TMTID             | bigint
+ drug_vnx          | TRADE_CODE        | character varying
+ drug_vnx          | TRADE_FLAG        | smallint
+ drug_vnx          | TRADE_NAME        | character
+ drug_vnx          | TRADE_NAME_KEY    | character
+ drug_vnx          | UNIT_PRICE        | double precision
+ drug_vnx          | VENDOR_CODE       | character
+ drug_vnx          | WORKING_CODE      | character
+ edi_drug_vn       | INVS_TRADE_CODE   | character varying
+ edi_drug_vn       | TMTID             | character varying
+ edi_drug_vn       | VENDOR_CODE       | character varying
+ edi_drug_vn       | VENDOR_TRADE_CODE | character varying
+ focus_list_c      | WORKING_CODE      | character varying
+ inv_md            | WORKING_CODE      | character
+ inv_md_backup     | WORKING_CODE      | character
+ inv_md_c          | WORKING_CODE      | character
+ inv_md_c_20230716 | WORKING_CODE      | character
+ inv_md_c_backup   | WORKING_CODE      | character
+ inv_md_c_copy     | WORKING_CODE      | character
+ inv_md_copy       | WORKING_CODE      | character
+ inv_rtn_c         | WORKING_CODE      | character varying
+ inv_site          | WORKING_CODE      | character
+ item_type         | WORKING_CODE      | character varying
+ lamed             | alias             | character varying
+ lamed             | calcQty           | character
+ lamed             | dose              | numeric
+ lamed             | hourperiod        | numeric
+ lamed             | hr_perday         | character varying
+ lamed             | lamed_code        | character
+ lamed             | lamed_codeo       | character
+ lamed             | lamed_eng         | character
+ lamed             | lamed_name        | character
+ lamed             | myLamed           | character
+ lamed             | show_flag         | character
+ lamed             | time_perday       | smallint
+ lamed             | translate         | character
+ lamed_c           | code_how          | character
+ lamed_c           | code_howo         | character
+ lamed_c           | code_lamed        | character
+ lamed_c           | code_lamedo       | character
+ lamed_c           | code_spec         | character
+ lamed_c           | code_speco        | character
+ lamed_c           | code_time         | character
+ lamed_c           | code_timeo        | character
+ lamed_c           | code_unit         | character
+ lamed_c           | code_unito        | character
+ lamed_c           | period            | character
+ lamed_c           | time_perday       | smallint
+ lamed_c           | unit_choice       | character varying
+ lamed_c           | unit_lamed_c      | character
+ location          | WORKING_CODE      | character varying
+ mbs_re_y          | WORKING_CODE      | character
+ med_intx          | consult           | character
+ med_intx          | documentation     | character
+ med_intx          | firstAbbr         | character
+ med_intx          | firstCode         | character
+ med_intx          | intxNote          | character varying
+ med_intx          | intxOnSepTime     | character
+ med_intx          | intxOnSepType     | character
+ med_intx          | intxRemark        | character varying
+ med_intx          | intxSeverity      | character
+ med_intx          | makeDate          | timestamp without time zone
+ med_intx          | maker             | character varying
+ med_intx          | monitor           | character
+ med_intx          | monitor_detail    | character varying
+ med_intx          | secondAbbr        | character
+ med_intx          | secondCode        | character
+ med_intx          | significance      | smallint
+ med_inv           | ATM               | character
+ med_inv           | Chemo             | character
+ med_inv           | Code_CA           | character
+ med_inv           | TMT               | character varying
+ med_inv           | abbr              | character
+ med_inv           | acc_disp          | character
+ med_inv           | acc_recv          | character
+ med_inv           | allowZeroCost     | character
+ med_inv           | average_qty       | character
+ med_inv           | bold              | character
+ med_inv           | buy_prc           | character
+ med_inv           | canFree           | character
+ med_inv           | canReimburse      | character
+ med_inv           | charge_c          | character
+ med_inv           | chro_flag         | character
+ med_inv           | code              | character
+ med_inv           | color             | integer
+ med_inv           | color_old         | character
+ med_inv           | cost              | character
+ med_inv           | cur_bal           | character
+ med_inv           | cur_lot_no        | character
+ med_inv           | def_dose          | character
+ med_inv           | dform             | character
+ med_inv           | disc_f            | character
+ med_inv           | dispCause         | character
+ med_inv           | equi_unit         | character
+ med_inv           | foreign_ipd_prc   | character
+ med_inv           | foreign_opd_prc   | character
+ med_inv           | gen_name          | character
+ med_inv           | gen_shname        | character
+ med_inv           | gpscCode          | character varying
+ med_inv           | hiPrice           | character
+ med_inv           | hideSelect        | character
+ med_inv           | home_charge_c     | character
+ med_inv           | hour_expire       | smallint
+ med_inv           | indication        | character
+ med_inv           | inv_grp           | character varying
+ med_inv           | ipd_charge_c      | character
+ med_inv           | ipd_prc           | character
+ med_inv           | ipd_sale_u        | double precision
+ med_inv           | italic            | character
+ med_inv           | lastUPrice        | character varying
+ med_inv           | last_lot_no       | character
+ med_inv           | last_reorder_cal  | character
+ med_inv           | last_vendor       | character
+ med_inv           | manufac           | character
+ med_inv           | max_adj           | character
+ med_inv           | max_stock         | character
+ med_inv           | maxuses           | character
+ med_inv           | medPointQNo       | character
+ med_inv           | med_class_code    | character
+ med_inv           | mid_prc           | double precision
+ med_inv           | min_stock         | character
+ med_inv           | mtd_adj           | character
+ med_inv           | name              | character
+ med_inv           | notNPC            | character
+ med_inv           | opd_prc           | character
+ med_inv           | opd_sale_u        | double precision
+ med_inv           | package           | character
+ med_inv           | packsize          | character
+ med_inv           | pair_code         | character
+ med_inv           | pair_ratio        | double precision
+ med_inv           | pregcate          | character
+ med_inv           | prod_type         | character
+ med_inv           | recal_day         | character
+ med_inv           | refund            | character
+ med_inv           | reorder_day       | character
+ med_inv           | reorder_qty       | character
+ med_inv           | sendDate          | character
+ med_inv           | single_use        | character
+ med_inv           | site              | character
+ med_inv           | smooth_factor     | character
+ med_inv           | special_med       | character
+ med_inv           | staff_ipd_prc     | character
+ med_inv           | staff_opd_prc     | character
+ med_inv           | start_bal         | character
+ med_inv           | strgth            | character
+ med_inv           | strgth_u          | character
+ med_inv           | subCnt            | smallint
+ med_inv           | sysID             | character
+ med_inv           | term_reason       | character
+ med_inv           | terminate         | character
+ med_inv           | underline         | character
+ med_inv           | unit              | character
+ med_inv           | upd_med_code      | character
+ med_inv           | vat_flag          | character
+ med_inv           | verify_flag       | character
+ med_inv           | volume            | character varying
+ med_inv           | weight_rate       | character
+ med_inv           | weight_vary       | character
+ med_inv           | ytd_adj           | character
+ med_kw            | kwOwner           | character
+ med_kw            | medCode           | character
+ med_kw            | medKw             | character varying
+ medallergy        | adr_date          | character varying
+ medallergy        | allergyNote       | character varying
+ medallergy        | allergyType       | character varying
+ medallergy        | causality         | character varying
+ medallergy        | classCode         | character
+ medallergy        | delDate           | timestamp without time zone
+ medallergy        | delFlag           | character
+ medallergy        | delUser           | character varying
+ medallergy        | del_Reason        | character varying
+ medallergy        | hn                | character
+ medallergy        | maker             | character
+ medallergy        | medCode           | character
+ medallergy        | phar_Assess       | character varying
+ medallergy        | regNo             | character
+ medallergy        | report_date       | character varying
+ medallergy        | updDate           | timestamp without time zone
+ medallergy        | updTime           | timestamp without time zone
+ medallergytype    | AllergyTypeCode   | character varying
+ medallergytype    | AllergyTypeDesc   | character varying
+ medcausality      | causality         | character
+ medcausality      | id                | bigint
+ medcausality      | warnFlag          | character
+ medcausality      | warnType          | character
+ ms_ivo_c          | WORKING_CODE      | character
+ ms_po_c           | WORKING_CODE      | character
+ new_item          | DRUG_NAME         | character varying
+ new_item          | WORKING_CODE      | character varying
+ pack_ratio        | WORKING_CODE      | character
+ patmed            | InvUnit           | double precision
+ patmed            | accAmt            | double precision
+ patmed            | accQty            | double precision
+ patmed            | amount            | double precision
+ patmed            | dispCause         | character
+ patmed            | endDate           | character
+ patmed            | firstAmt          | double precision
+ patmed            | firstIssDate      | timestamp without time zone
+ patmed            | firstIssTime      | timestamp without time zone
+ patmed            | firstQty          | double precision
+ patmed            | hn                | character
+ patmed            | homeMed           | character
+ patmed            | invCode           | character varying
+ patmed            | invType           | character varying
+ patmed            | lamedCpy          | smallint
+ patmed            | lamedDays         | smallint
+ patmed            | lamedEng          | character
+ patmed            | lamedHow          | character
+ patmed            | lamedPeriod       | smallint
+ patmed            | lamedQty          | character
+ patmed            | lamedSpecial      | character
+ patmed            | lamedText         | character varying
+ patmed            | lamedTime         | character
+ patmed            | lamedTimeText     | character varying
+ patmed            | lamedUnit         | character
+ patmed            | lastEditLamedDate | timestamp without time zone
+ patmed            | lastIssDate       | timestamp without time zone
+ patmed            | lastIssInvSite    | character varying
+ patmed            | lastIssTime       | timestamp without time zone
+ patmed            | lastReqNo         | character
+ patmed            | lastReqRunNo      | smallint
+ patmed            | med_id            | integer
+ patmed            | nextIssDate       | character
+ patmed            | nextIssTime       | character
+ patmed            | orderDoc          | character
+ patmed            | orgMedSub         | character varying
+ patmed            | periodPerDay      | smallint
+ patmed            | printFlag         | character
+ patmed            | qty               | double precision
+ patmed            | qtyPerFeed        | character
+ patmed            | registDate        | character
+ patmed            | registNo          | character
+ patmed            | reqNo             | character
+ patmed            | reqType           | character
+ patmed            | returnMed         | character
+ patmed            | runNo             | smallint
+ patmed            | stockID           | character varying
+ patmed            | unit              | character
+ patmed            | unitCost          | double precision
+ patmed            | unitPrice         | double precision
+ patmed            | usrname           | character
+ quali_goal        | WORKING_CODE      | character varying
+ quali_rcv         | WORKING_CODE      | character varying
+ sm_po_c           | WORKING_CODE      | character
+ sm_po_c_copy      | WORKING_CODE      | character
+ sm_po_e           | WORKING_CODE      | character
+(740 rows)
+

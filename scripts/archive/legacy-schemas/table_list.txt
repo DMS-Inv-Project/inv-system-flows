@@ -1,0 +1,165 @@
+Tables found in INVS Legacy Database:
+=====================================
+
+  1. accr_disp
+  2. add_in_programs
+  3. adj_reason
+  4. aic
+  5. aic_name
+  6. area
+  7. bdg_amt
+  8. bdg_type
+  9. bill_status
+ 10. buycommon
+ 11. buymethod
+ 12. buyplan
+ 13. buyplan_c
+ 14. buyplan_log
+ 15. buy_re_m
+ 16. buy_re_y
+ 17. card
+ 18. card_backup
+ 19. card_copy
+ 20. cnt
+ 21. cnt_c
+ 22. company
+ 23. concept
+ 24. dept_id
+ 25. dept_map
+ 26. df_con
+ 27. dispensed
+ 28. dist_type
+ 29. doc_flow
+ 30. doc_flow_c
+ 31. doc_type
+ 32. dosage_form
+ 33. drug_compos
+ 34. drug_gn
+ 35. drug_gn_20231101
+ 36. drug_gn_copy
+ 37. drug_gn_new
+ 38. drug_gn_old
+ 39. drug_spec
+ 40. drug_vn
+ 41. drug_vnx
+ 42. drug_vn_backup
+ 43. drug_vn_new
+ 44. edi_drug_vn
+ 45. ed_group
+ 46. e_po
+ 47. focus_list
+ 48. focus_list_c
+ 49. form
+ 50. gf
+ 51. gp
+ 52. gpu
+ 53. holiday
+ 54. hosp
+ 55. hosp_inv
+ 56. hosp_list
+ 57. icode_tpu_hosxp
+ 58. id_con
+ 59. inst_name
+ 60. invs_ref
+ 61. inv_has_his
+ 62. inv_md
+ 63. inv_md_backup
+ 64. inv_md_c
+ 65. inv_md_copy
+ 66. inv_md_c_20230716
+ 67. inv_md_c_backup
+ 68. inv_md_c_copy
+ 69. inv_rtn
+ 70. inv_rtn_c
+ 71. inv_site
+ 72. item_type
+ 73. lamed
+ 74. lamed_c
+ 75. location
+ 76. marital
+ 77. mbs_re_m
+ 78. mbs_re_y
+ 79. medallergy
+ 80. medallergytype
+ 81. medcausality
+ 82. med_intx
+ 83. med_inv
+ 84. med_kw
+ 85. menucon
+ 86. module_system
+ 87. ms_ivo
+ 88. ms_ivo_c
+ 89. ms_po
+ 90. ms_po_c
+ 91. nation
+ 92. new_item
+ 93. occup
+ 94. opd_h
+ 95. pack_ratio
+ 96. patient
+ 97. patmed
+ 98. position_list
+ 99. po_con
+100. po_reason
+101. prcv_con
+102. pre_ms_ivo
+103. profile
+104. ptitle
+105. quali_goal
+106. quali_item
+107. quali_rcv
+108. region
+109. relationship
+110. religion
+111. reports
+112. req_con
+113. rs_con
+114. rtn_action
+115. rtn_reason
+116. r_s_status
+117. sale_unit
+118. scan
+119. serial
+120. sm_po
+121. sm_po_c
+122. sm_po_c_copy
+123. sm_po_e
+124. special
+125. special_bk1
+126. sub_com
+127. tmt
+128. tp
+129. tpu
+130. uom
+131. PRCV_CON
+132. PRE_MS_IVO
+133. quali_goal
+134. quali_item
+135. quali_rcv
+136. DOC_FLOW
+137. doc_flow_c
+138. dist_type
+139. ADD_IN_PROGRAMS
+140. SM_PO_E
+141. INVS_REF
+142. RTN_REASON
+143. INV_RTN
+144. INV_RTN_C
+145. RTN_ACTION
+146. location
+147. focus_list
+148. focus_list_c
+149. inv_site
+150. e_po
+151. gf
+152. gf
+153. drug_compos
+154. drug_spec
+155. df_con
+156. po_reason
+157. mbs_re_m
+158. edi_drug_vn
+159. item_type
+160. usercon
+161. userimport
+162. vtm

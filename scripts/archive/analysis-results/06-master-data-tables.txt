@@ -1,0 +1,71 @@
+ table_name  |    column_name     |          data_type          
+-------------+--------------------+-----------------------------
+ company     | ADDRESS            | character varying
+ company     | ADDRESS2           | character
+ company     | BANK_ACC_NAME      | character varying
+ company     | BANK_ACC_NO        | character varying
+ company     | BANK_NAME          | character varying
+ company     | BUSINESS_TYPE      | smallint
+ company     | COMPANY_CODE       | integer
+ company     | COMPANY_NAME       | character
+ company     | CONFIRM_DATE       | timestamp without time zone
+ company     | DETAILER           | character
+ company     | DUE_DAYS           | smallint
+ company     | EDI_VENDOR_CODE    | character varying
+ company     | EMAIL              | character varying
+ company     | END_NAME           | character
+ company     | EX_CODE            | character
+ company     | FAX                | character
+ company     | HIDE               | character
+ company     | ISSUE_DATE         | character
+ company     | KEY_WORD           | character
+ company     | MANUFAC_FLAG       | character
+ company     | ORDER_TIME         | double precision
+ company     | TAX_ID             | character varying
+ company     | TEL                | character
+ company     | TITLE_NAME         | character
+ company     | VENDOR_FLAG        | character
+ dept_id     | ADDRESS            | character varying
+ dept_id     | CAL_RATE           | character varying
+ dept_id     | DEPT_ID            | character
+ dept_id     | DEPT_NAME          | character
+ dept_id     | DEPT_TYPE          | character varying
+ dept_id     | DEPT_UID           | character varying
+ dept_id     | DISP_DEPT          | character
+ dept_id     | DOC_REF            | character
+ dept_id     | EMAIL              | character varying
+ dept_id     | HIDE               | character
+ dept_id     | HOSP_TYPE          | integer
+ dept_id     | INV_DIRECTOR       | character varying
+ dept_id     | INV_DIRECTOR_ID    | integer
+ dept_id     | INV_TYPE           | character varying
+ dept_id     | KEEP_INV           | character
+ dept_id     | LINE_TOKEN         | character varying
+ dept_id     | MOD_SYS            | character varying
+ dept_id     | PREFIX_PO          | character varying
+ dept_id     | RCV_TRANSFER       | character varying
+ dept_id     | RECORD_NUMBER      | integer
+ dept_id     | STD_CODE           | character varying
+ dept_id     | SUPPLY_DIRECTOR    | character
+ dept_id     | SUPPLY_DIRECTOR_ID | integer
+ dept_id     | SUPPLY_OFFICER     | character
+ dept_id     | SUPPLY_OFFICER_ID  | integer
+ dept_map    | AUTO_DISP          | character varying
+ dept_map    | HIS_DEPT           | character varying
+ dept_map    | HIS_DEPT_NAME      | character varying
+ dept_map    | INVS_DEPT          | character varying
+ dosage_form | DFORM_ID           | integer
+ dosage_form | DFORM_NAME         | character varying
+ dosage_form | HIDE               | character
+ location    | DEPT_ID            | character varying
+ location    | LOCATION_ID        | character varying
+ location    | TRADE_CODE         | character varying
+ location    | WORKING_CODE       | character varying
+ sale_unit   | HIDE               | character
+ sale_unit   | SALE_UNIT          | character varying
+ sale_unit   | SU_ID              | integer
+ sale_unit   | SU_ID_EX           | character varying
+ uom         | UOM_ID             | integer
+ uom         | UOM_NAME           | character varying
+(67 rows)
+

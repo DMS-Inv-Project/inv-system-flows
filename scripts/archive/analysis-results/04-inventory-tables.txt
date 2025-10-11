@@ -1,0 +1,617 @@
+    table_name     |     column_name      |          data_type          
+-------------------+----------------------+-----------------------------
+ INVS_REF          | RETURN_CON           | integer
+ INVS_REF          | RETURN_DATE          | character
+ INV_RTN           | CONFIRM_FLAG         | character
+ INV_RTN           | DEPT_ID              | character varying
+ INV_RTN           | RETURN_DATE          | character
+ INV_RTN           | RETURN_NO            | character
+ INV_RTN           | RETURN_TIME          | character
+ INV_RTN           | STOCK_ID             | character varying
+ INV_RTN           | TOTAL_ITEM           | integer
+ INV_RTN           | TOTAL_VALUE_ALL      | character varying
+ INV_RTN           | TOTAL_VALUE_RETURN   | double precision
+ INV_RTN           | USER_ID              | character varying
+ INV_RTN_C         | ACTION_ID            | integer
+ INV_RTN_C         | CANCEL_FLAG          | character
+ INV_RTN_C         | EXPIRED_DATE         | character
+ INV_RTN_C         | ID                   | character
+ INV_RTN_C         | LOCATION             | character varying
+ INV_RTN_C         | LOT_NO               | character varying
+ INV_RTN_C         | PACK_RATIO           | integer
+ INV_RTN_C         | RCV_FLAG             | character
+ INV_RTN_C         | REASON_ID            | integer
+ INV_RTN_C         | REF_DATA             | character varying
+ INV_RTN_C         | RETURN_COST          | double precision
+ INV_RTN_C         | RETURN_DATE          | character
+ INV_RTN_C         | RETURN_NO            | character
+ INV_RTN_C         | RETURN_QTY           | double precision
+ INV_RTN_C         | RETURN_TIME          | character
+ INV_RTN_C         | TOTAL_COST           | double precision
+ INV_RTN_C         | TOTAL_QTY            | double precision
+ INV_RTN_C         | TRADE_CODE           | character varying
+ INV_RTN_C         | UNIT_COST            | double precision
+ INV_RTN_C         | USER_CANCEL          | character varying
+ INV_RTN_C         | USER_CONFIRM         | character varying
+ INV_RTN_C         | USER_ID              | character varying
+ INV_RTN_C         | WORKING_CODE         | character varying
+ PRE_MS_IVO        | QTY                  | integer
+ SM_PO_E           | INV_REMAIN_QTY       | double precision
+ SM_PO_E           | QTY_DIST             | double precision
+ SM_PO_E           | QTY_DIST_E           | double precision
+ SM_PO_E           | STOCK_ID             | character varying
+ accr_disp         | QTY_DIST             | double precision
+ accr_disp         | QTY_REQ              | double precision
+ accr_disp         | STOCK_ID             | character varying
+ buyplan_c         | BUY_QTY              | double precision
+ buyplan_c         | QTY_BUY_TRI1         | double precision
+ buyplan_c         | QTY_BUY_TRI2         | double precision
+ buyplan_c         | QTY_BUY_TRI3         | double precision
+ buyplan_c         | QTY_BUY_TRI4         | double precision
+ buyplan_c         | QTY_FORECAST         | double precision
+ buyplan_c         | QTY_FREE_Y3          | double precision
+ buyplan_c         | QTY_ON_HAND          | double precision
+ buyplan_c         | QTY_PRE_PLAN         | double precision
+ buyplan_c         | QTY_RCV_TRI1         | double precision
+ buyplan_c         | QTY_RCV_TRI2         | double precision
+ buyplan_c         | QTY_RCV_TRI3         | double precision
+ buyplan_c         | QTY_RCV_TRI4         | double precision
+ buyplan_c         | QTY_RM_TRI1          | double precision
+ buyplan_c         | QTY_RM_TRI2          | double precision
+ buyplan_c         | QTY_RM_TRI3          | double precision
+ buyplan_c         | QTY_RM_TRI4          | double precision
+ buyplan_c         | QTY_THIS_YEAR        | double precision
+ buyplan_c         | QTY_TRI1             | double precision
+ buyplan_c         | QTY_TRI2             | double precision
+ buyplan_c         | QTY_TRI3             | double precision
+ buyplan_c         | QTY_TRI4             | double precision
+ buyplan_c         | REMAIN_QTY           | double precision
+ buyplan_log       | QTY_THIS_YEAR        | double precision
+ buyplan_log       | QTY_TRI1             | double precision
+ buyplan_log       | QTY_TRI2             | double precision
+ buyplan_log       | QTY_TRI3             | double precision
+ buyplan_log       | QTY_TRI4             | double precision
+ card              | ACTIVE_PACK          | double precision
+ card              | ACTIVE_PACK1         | double precision
+ card              | ACTIVE_PACK2         | double precision
+ card              | ACTIVE_PACK3         | double precision
+ card              | ACTIVE_QTY           | double precision
+ card              | ACTIVE_QTY1          | double precision
+ card              | ACTIVE_QTY2          | double precision
+ card              | ACTIVE_QTY3          | double precision
+ card              | APP_VERSION          | character varying
+ card              | BDG_TYPE             | character
+ card              | CANCEL_FLAG          | character
+ card              | COST                 | double precision
+ card              | DEPT_ID              | character
+ card              | EXPIRED_DATE         | character
+ card              | FREE_FLAG            | character
+ card              | LOT_NO               | character varying
+ card              | MOD_SYS              | character varying
+ card              | NLEM                 | smallint
+ card              | OPERATE_DATE         | timestamp without time zone
+ card              | PACK_CODE            | integer
+ card              | RECORD_NUMBER        | integer
+ card              | REMAIN_COST          | double precision
+ card              | REMAIN_COST_LOT      | real
+ card              | REMAIN_COST_T        | real
+ card              | REMAIN_QTY           | double precision
+ card              | REMAIN_QTY_LOT       | real
+ card              | REMAIN_QTY_T         | real
+ card              | REMAIN_VALUE         | double precision
+ card              | REMAIN_VALUE_LOT     | real
+ card              | REMAIN_VALUE_T       | real
+ card              | R_S_DATE             | character
+ card              | R_S_NUMBER           | character
+ card              | R_S_STATUS           | character
+ card              | SMPOC_RECNO          | integer
+ card              | STOCK_ID             | character
+ card              | TRADE_CODE           | character varying
+ card              | USER_ID              | character varying
+ card              | VALUE                | double precision
+ card              | VENDOR_CODE          | integer
+ card              | WORKING_CODE         | character
+ card              | WT_AVG               | real
+ card_backup       | ACTIVE_PACK          | double precision
+ card_backup       | ACTIVE_PACK1         | double precision
+ card_backup       | ACTIVE_PACK2         | double precision
+ card_backup       | ACTIVE_PACK3         | double precision
+ card_backup       | ACTIVE_QTY           | double precision
+ card_backup       | ACTIVE_QTY1          | double precision
+ card_backup       | ACTIVE_QTY2          | double precision
+ card_backup       | ACTIVE_QTY3          | double precision
+ card_backup       | APP_VERSION          | character varying
+ card_backup       | BDG_TYPE             | character
+ card_backup       | CANCEL_FLAG          | character
+ card_backup       | COST                 | double precision
+ card_backup       | DEPT_ID              | character
+ card_backup       | EXPIRED_DATE         | character
+ card_backup       | FREE_FLAG            | character
+ card_backup       | LOT_NO               | character varying
+ card_backup       | MOD_SYS              | character varying
+ card_backup       | NLEM                 | smallint
+ card_backup       | OPERATE_DATE         | timestamp without time zone
+ card_backup       | RECORD_NUMBER        | integer
+ card_backup       | REMAIN_COST          | double precision
+ card_backup       | REMAIN_COST_T        | real
+ card_backup       | REMAIN_QTY           | double precision
+ card_backup       | REMAIN_QTY_T         | real
+ card_backup       | REMAIN_VALUE         | double precision
+ card_backup       | REMAIN_VALUE_T       | real
+ card_backup       | R_S_DATE             | character
+ card_backup       | R_S_NUMBER           | character
+ card_backup       | R_S_STATUS           | character
+ card_backup       | SMPOC_RECNO          | integer
+ card_backup       | STOCK_ID             | character
+ card_backup       | TRADE_CODE           | character varying
+ card_backup       | USER_ID              | character varying
+ card_backup       | VALUE                | double precision
+ card_backup       | WORKING_CODE         | character
+ card_copy         | ACTIVE_PACK          | double precision
+ card_copy         | ACTIVE_PACK1         | double precision
+ card_copy         | ACTIVE_PACK2         | double precision
+ card_copy         | ACTIVE_PACK3         | double precision
+ card_copy         | ACTIVE_QTY           | double precision
+ card_copy         | ACTIVE_QTY1          | double precision
+ card_copy         | ACTIVE_QTY2          | double precision
+ card_copy         | ACTIVE_QTY3          | double precision
+ card_copy         | APP_VERSION          | character varying
+ card_copy         | BDG_TYPE             | character
+ card_copy         | CANCEL_FLAG          | character
+ card_copy         | COST                 | double precision
+ card_copy         | DEPT_ID              | character
+ card_copy         | EXPIRED_DATE         | character
+ card_copy         | FREE_FLAG            | character
+ card_copy         | LOT_NO               | character varying
+ card_copy         | MOD_SYS              | character varying
+ card_copy         | NLEM                 | smallint
+ card_copy         | OPERATE_DATE         | timestamp without time zone
+ card_copy         | RECORD_NUMBER        | integer
+ card_copy         | REMAIN_COST          | double precision
+ card_copy         | REMAIN_COST_T        | real
+ card_copy         | REMAIN_QTY           | double precision
+ card_copy         | REMAIN_QTY_T         | real
+ card_copy         | REMAIN_VALUE         | double precision
+ card_copy         | REMAIN_VALUE_T       | real
+ card_copy         | R_S_DATE             | character
+ card_copy         | R_S_NUMBER           | character
+ card_copy         | R_S_STATUS           | character
+ card_copy         | SMPOC_RECNO          | integer
+ card_copy         | STOCK_ID             | character
+ card_copy         | TRADE_CODE           | character varying
+ card_copy         | USER_ID              | character varying
+ card_copy         | VALUE                | double precision
+ card_copy         | WORKING_CODE         | character
+ cnt_c             | QTY_CNT              | double precision
+ cnt_c             | QTY_REMAIN           | double precision
+ dispensed         | DISP_QTY             | double precision
+ drug_gn           | QTY_ON_HAND          | double precision
+ drug_gn           | QTY_UNIT             | double precision
+ drug_gn           | REORDER_QTY          | double precision
+ drug_gn_20231101  | QTY_ON_HAND          | double precision
+ drug_gn_20231101  | QTY_UNIT             | double precision
+ drug_gn_20231101  | REORDER_QTY          | double precision
+ drug_gn_copy      | QTY_ON_HAND          | double precision
+ drug_gn_copy      | QTY_UNIT             | double precision
+ drug_gn_copy      | REORDER_QTY          | double precision
+ drug_gn_new       | QTY_ON_HAND          | double precision
+ drug_gn_new       | QTY_UNIT             | double precision
+ drug_gn_new       | REORDER_QTY          | double precision
+ drug_gn_old       | QTY_ON_HAND          | double precision
+ drug_gn_old       | QTY_UNIT             | double precision
+ drug_gn_old       | REORDER_QTY          | double precision
+ hosp_inv          | ADDRESS              | character varying
+ hosp_inv          | DB_VERSION           | double precision
+ hosp_inv          | DMSIC_TOKEN          | character varying
+ hosp_inv          | DOC_REF_NO           | character varying
+ hosp_inv          | GOVERNOR             | character varying
+ hosp_inv          | HOSP_DIRECTOR        | character varying
+ hosp_inv          | HOSP_ID              | character
+ hosp_inv          | HOSP_NAME            | character varying
+ hosp_inv          | INVSCL_PASS          | character varying
+ hosp_inv          | INVSCL_USER          | character varying
+ hosp_inv          | KEEP_INV_DATE        | character
+ hosp_inv          | LAST_DATA_SEND       | character
+ hosp_inv          | PHARM_DIRECTOR       | character varying
+ hosp_inv          | PREFIX               | character varying
+ hosp_inv          | PROVINCE             | character varying
+ hosp_inv          | START_EXPORT         | timestamp without time zone
+ hosp_inv          | SUPPLY_DIRECTOR      | character varying
+ hosp_inv          | SYNC_MED_ITEMS       | smallint
+ hosp_inv          | TMTAPI_PASSWORD      | character varying
+ hosp_inv          | TMTAPI_USERNAME      | character varying
+ hosp_inv          | TMTRF_VERSION        | character varying
+ hosp_inv          | TOKEN                | character varying
+ hosp_inv          | URL_DC               | character varying
+ hosp_inv          | URL_UPDATE           | character varying
+ inv_has_his       | CONVER_FACT          | double precision
+ inv_has_his       | HIS_CODE             | character varying
+ inv_has_his       | HIS_NAME             | character varying
+ inv_has_his       | INVALID_DATE         | character
+ inv_has_his       | INV_CODE             | character varying
+ inv_md            | ABC_CUM              | double precision
+ inv_md            | ABC_FLAG             | character
+ inv_md            | ABC_PERCENT          | double precision
+ inv_md            | ABC_USE              | double precision
+ inv_md            | ACCRUED_QTY          | double precision
+ inv_md            | DEPT_ID              | character
+ inv_md            | FIRST_PACK_RATIO     | double precision
+ inv_md            | FORECAST             | double precision
+ inv_md            | HIDE                 | character
+ inv_md            | HIS_RATE             | double precision
+ inv_md            | KANBAN_RATIO         | integer
+ inv_md            | LAST_PACK_CODE       | integer
+ inv_md            | LAST_PACK_RATIO      | double precision
+ inv_md            | LAST_UPDATE          | timestamp without time zone
+ inv_md            | LAST_VENDOR_CODE     | integer
+ inv_md            | LOCATION             | character varying
+ inv_md            | MAX_LEVEL            | double precision
+ inv_md            | MIN_LEVEL            | double precision
+ inv_md            | MOD_SYS              | character varying
+ inv_md            | NOTE                 | character
+ inv_md            | PACK_UNIT            | character
+ inv_md            | PRODUCTION           | character
+ inv_md            | QTY_ADV              | double precision
+ inv_md            | QTY_DISP             | double precision
+ inv_md            | QTY_ON_HAND          | double precision
+ inv_md            | QTY_REQ              | double precision
+ inv_md            | QTY_UNIT             | double precision
+ inv_md            | RATE                 | double precision
+ inv_md            | RATE_PER_DAY         | double precision
+ inv_md            | RECORD_NUMBER        | integer
+ inv_md            | REORDER_QTY          | double precision
+ inv_md            | SALE_UNIT_PRICE      | double precision
+ inv_md            | SELECT_FLAG          | character
+ inv_md            | SPECIAL_CODE         | character
+ inv_md            | STD_PRICE            | double precision
+ inv_md            | STD_RATIO            | double precision
+ inv_md            | TOTAL_COST           | double precision
+ inv_md            | TOTAL_VALUE          | double precision
+ inv_md            | USER_ID              | character varying
+ inv_md            | USE_MINMAX           | character varying
+ inv_md            | WA_COST              | numeric
+ inv_md            | WORKING_CODE         | character
+ inv_md            | WORK_CODE_KEY        | character
+ inv_md_backup     | ABC_CUM              | double precision
+ inv_md_backup     | ABC_FLAG             | character
+ inv_md_backup     | ABC_PERCENT          | double precision
+ inv_md_backup     | ABC_USE              | double precision
+ inv_md_backup     | ACCRUED_QTY          | double precision
+ inv_md_backup     | DEPT_ID              | character
+ inv_md_backup     | FIRST_PACK_RATIO     | double precision
+ inv_md_backup     | FORECAST             | double precision
+ inv_md_backup     | HIDE                 | character
+ inv_md_backup     | HIS_RATE             | double precision
+ inv_md_backup     | KANBAN_RATIO         | integer
+ inv_md_backup     | LAST_PACK_CODE       | integer
+ inv_md_backup     | LAST_PACK_RATIO      | double precision
+ inv_md_backup     | LAST_UPDATE          | timestamp without time zone
+ inv_md_backup     | LAST_VENDOR_CODE     | integer
+ inv_md_backup     | LOCATION             | character
+ inv_md_backup     | MAX_LEVEL            | double precision
+ inv_md_backup     | MIN_LEVEL            | double precision
+ inv_md_backup     | MOD_SYS              | character varying
+ inv_md_backup     | NOTE                 | character
+ inv_md_backup     | PACK_UNIT            | character
+ inv_md_backup     | PRODUCTION           | character
+ inv_md_backup     | QTY_ADV              | double precision
+ inv_md_backup     | QTY_DISP             | double precision
+ inv_md_backup     | QTY_ON_HAND          | double precision
+ inv_md_backup     | QTY_REQ              | double precision
+ inv_md_backup     | QTY_UNIT             | double precision
+ inv_md_backup     | RATE                 | double precision
+ inv_md_backup     | RATE_PER_DAY         | double precision
+ inv_md_backup     | RECORD_NUMBER        | integer
+ inv_md_backup     | REORDER_QTY          | double precision
+ inv_md_backup     | SALE_UNIT_PRICE      | double precision
+ inv_md_backup     | SELECT_FLAG          | character
+ inv_md_backup     | SPECIAL_CODE         | character
+ inv_md_backup     | STD_PRICE            | double precision
+ inv_md_backup     | STD_RATIO            | double precision
+ inv_md_backup     | TOTAL_COST           | double precision
+ inv_md_backup     | TOTAL_VALUE          | double precision
+ inv_md_backup     | USER_ID              | character varying
+ inv_md_backup     | WORKING_CODE         | character
+ inv_md_backup     | WORK_CODE_KEY        | character
+ inv_md_c          | BAR_CODE             | character
+ inv_md_c          | DEPT_ID              | character
+ inv_md_c          | EXPIRED_DATE         | character
+ inv_md_c          | LOCATION             | character varying
+ inv_md_c          | LOT_COST             | double precision
+ inv_md_c          | LOT_NO               | character
+ inv_md_c          | LOT_VALUE            | double precision
+ inv_md_c          | MANUFAC_CODE         | character
+ inv_md_c          | MOD_SYS              | character varying
+ inv_md_c          | PACK_CODE            | integer
+ inv_md_c          | PACK_COST            | numeric
+ inv_md_c          | PACK_RATIO           | double precision
+ inv_md_c          | QTY_ON_HAND          | double precision
+ inv_md_c          | RECORD_NUMBER        | integer
+ inv_md_c          | RECORD_STATUS        | character
+ inv_md_c          | TRADE_CODE           | character varying
+ inv_md_c          | USER_ID              | character varying
+ inv_md_c          | VENDOR_CODE          | character
+ inv_md_c          | WORKING_CODE         | character
+ inv_md_c_20230716 | BAR_CODE             | character
+ inv_md_c_20230716 | DEPT_ID              | character
+ inv_md_c_20230716 | EXPIRED_DATE         | character
+ inv_md_c_20230716 | LOCATION             | character
+ inv_md_c_20230716 | LOT_COST             | double precision
+ inv_md_c_20230716 | LOT_NO               | character
+ inv_md_c_20230716 | LOT_VALUE            | double precision
+ inv_md_c_20230716 | MANUFAC_CODE         | character
+ inv_md_c_20230716 | MOD_SYS              | character varying
+ inv_md_c_20230716 | PACK_CODE            | integer
+ inv_md_c_20230716 | PACK_COST            | numeric
+ inv_md_c_20230716 | PACK_RATIO           | double precision
+ inv_md_c_20230716 | QTY_ON_HAND          | double precision
+ inv_md_c_20230716 | RECORD_NUMBER        | integer
+ inv_md_c_20230716 | RECORD_STATUS        | character
+ inv_md_c_20230716 | TRADE_CODE           | character varying
+ inv_md_c_20230716 | USER_ID              | character varying
+ inv_md_c_20230716 | VENDOR_CODE          | character
+ inv_md_c_20230716 | WORKING_CODE         | character
+ inv_md_c_backup   | BAR_CODE             | character
+ inv_md_c_backup   | DEPT_ID              | character
+ inv_md_c_backup   | EXPIRED_DATE         | character
+ inv_md_c_backup   | LOCATION             | character
+ inv_md_c_backup   | LOT_COST             | double precision
+ inv_md_c_backup   | LOT_NO               | character
+ inv_md_c_backup   | LOT_VALUE            | double precision
+ inv_md_c_backup   | MANUFAC_CODE         | character
+ inv_md_c_backup   | MOD_SYS              | character varying
+ inv_md_c_backup   | PACK_CODE            | integer
+ inv_md_c_backup   | PACK_COST            | numeric
+ inv_md_c_backup   | PACK_RATIO           | double precision
+ inv_md_c_backup   | QTY_ON_HAND          | double precision
+ inv_md_c_backup   | RECORD_NUMBER        | integer
+ inv_md_c_backup   | RECORD_STATUS        | character
+ inv_md_c_backup   | TRADE_CODE           | character varying
+ inv_md_c_backup   | USER_ID              | character varying
+ inv_md_c_backup   | VENDOR_CODE          | character
+ inv_md_c_backup   | WORKING_CODE         | character
+ inv_md_c_copy     | BAR_CODE             | character
+ inv_md_c_copy     | DEPT_ID              | character
+ inv_md_c_copy     | EXPIRED_DATE         | character
+ inv_md_c_copy     | LOCATION             | character
+ inv_md_c_copy     | LOT_COST             | double precision
+ inv_md_c_copy     | LOT_NO               | character
+ inv_md_c_copy     | LOT_VALUE            | double precision
+ inv_md_c_copy     | MANUFAC_CODE         | character
+ inv_md_c_copy     | MOD_SYS              | character varying
+ inv_md_c_copy     | PACK_CODE            | integer
+ inv_md_c_copy     | PACK_COST            | numeric
+ inv_md_c_copy     | PACK_RATIO           | double precision
+ inv_md_c_copy     | QTY_ON_HAND          | double precision
+ inv_md_c_copy     | RECORD_NUMBER        | integer
+ inv_md_c_copy     | RECORD_STATUS        | character
+ inv_md_c_copy     | TRADE_CODE           | character varying
+ inv_md_c_copy     | USER_ID              | character varying
+ inv_md_c_copy     | VENDOR_CODE          | character
+ inv_md_c_copy     | WORKING_CODE         | character
+ inv_md_copy       | ABC_CUM              | double precision
+ inv_md_copy       | ABC_FLAG             | character
+ inv_md_copy       | ABC_PERCENT          | double precision
+ inv_md_copy       | ABC_USE              | double precision
+ inv_md_copy       | ACCRUED_QTY          | double precision
+ inv_md_copy       | DEPT_ID              | character
+ inv_md_copy       | FIRST_PACK_RATIO     | double precision
+ inv_md_copy       | FORECAST             | double precision
+ inv_md_copy       | HIDE                 | character
+ inv_md_copy       | HIS_RATE             | double precision
+ inv_md_copy       | KANBAN_RATIO         | integer
+ inv_md_copy       | LAST_PACK_CODE       | integer
+ inv_md_copy       | LAST_PACK_RATIO      | double precision
+ inv_md_copy       | LAST_UPDATE          | timestamp without time zone
+ inv_md_copy       | LAST_VENDOR_CODE     | integer
+ inv_md_copy       | LOCATION             | character
+ inv_md_copy       | MAX_LEVEL            | double precision
+ inv_md_copy       | MIN_LEVEL            | double precision
+ inv_md_copy       | MOD_SYS              | character varying
+ inv_md_copy       | NOTE                 | character
+ inv_md_copy       | PACK_UNIT            | character
+ inv_md_copy       | PRODUCTION           | character
+ inv_md_copy       | QTY_ADV              | double precision
+ inv_md_copy       | QTY_DISP             | double precision
+ inv_md_copy       | QTY_ON_HAND          | double precision
+ inv_md_copy       | QTY_REQ              | double precision
+ inv_md_copy       | QTY_UNIT             | double precision
+ inv_md_copy       | RATE                 | double precision
+ inv_md_copy       | RATE_PER_DAY         | double precision
+ inv_md_copy       | RECORD_NUMBER        | integer
+ inv_md_copy       | REORDER_QTY          | double precision
+ inv_md_copy       | SALE_UNIT_PRICE      | double precision
+ inv_md_copy       | SELECT_FLAG          | character
+ inv_md_copy       | SPECIAL_CODE         | character
+ inv_md_copy       | STD_PRICE            | double precision
+ inv_md_copy       | STD_RATIO            | double precision
+ inv_md_copy       | TOTAL_COST           | double precision
+ inv_md_copy       | TOTAL_VALUE          | double precision
+ inv_md_copy       | USER_ID              | character varying
+ inv_md_copy       | WORKING_CODE         | character
+ inv_md_copy       | WORK_CODE_KEY        | character
+ inv_rtn           | CONFIRM_FLAG         | character
+ inv_rtn           | DEPT_ID              | character varying
+ inv_rtn           | RETURN_DATE          | character
+ inv_rtn           | RETURN_NO            | character
+ inv_rtn           | RETURN_TIME          | character
+ inv_rtn           | STOCK_ID             | character varying
+ inv_rtn           | TOTAL_ITEM           | integer
+ inv_rtn           | TOTAL_VALUE_ALL      | character varying
+ inv_rtn           | TOTAL_VALUE_RETURN   | double precision
+ inv_rtn           | USER_ID              | character varying
+ inv_rtn_c         | ACTION_ID            | integer
+ inv_rtn_c         | CANCEL_FLAG          | character
+ inv_rtn_c         | EXPIRED_DATE         | character
+ inv_rtn_c         | FREE_FLAG            | character varying
+ inv_rtn_c         | ID                   | character
+ inv_rtn_c         | LOCATION             | character varying
+ inv_rtn_c         | LOT_NO               | character varying
+ inv_rtn_c         | PACK_CODE            | integer
+ inv_rtn_c         | PACK_RATIO           | integer
+ inv_rtn_c         | RCV_FLAG             | character
+ inv_rtn_c         | REASON_ID            | integer
+ inv_rtn_c         | REF_DATA             | character varying
+ inv_rtn_c         | RETURN_COST          | double precision
+ inv_rtn_c         | RETURN_DATE          | character
+ inv_rtn_c         | RETURN_NO            | character
+ inv_rtn_c         | RETURN_QTY           | double precision
+ inv_rtn_c         | RETURN_TIME          | character
+ inv_rtn_c         | TOTAL_COST           | double precision
+ inv_rtn_c         | TOTAL_QTY            | double precision
+ inv_rtn_c         | TRADE_CODE           | character varying
+ inv_rtn_c         | UNIT_COST            | double precision
+ inv_rtn_c         | USER_CANCEL          | character varying
+ inv_rtn_c         | USER_CONFIRM         | character varying
+ inv_rtn_c         | USER_ID              | character varying
+ inv_rtn_c         | WORKING_CODE         | character varying
+ inv_site          | AUTO_DISP            | character
+ inv_site          | DEPT_ID              | character
+ inv_site          | EFFECT_DATE          | timestamp without time zone
+ inv_site          | LOCATION             | character
+ inv_site          | TRADE_CODE           | character varying
+ inv_site          | USER_ID              | character varying
+ inv_site          | WORKING_CODE         | character
+ invs_ref          | RETURN_CON           | integer
+ invs_ref          | RETURN_DATE          | character
+ lamed             | calcQty              | character
+ mbs_re_m          | BFW_QTY              | double precision
+ med_inv           | ATM                  | character
+ med_inv           | Chemo                | character
+ med_inv           | Code_CA              | character
+ med_inv           | TMT                  | character varying
+ med_inv           | abbr                 | character
+ med_inv           | acc_disp             | character
+ med_inv           | acc_recv             | character
+ med_inv           | allowZeroCost        | character
+ med_inv           | average_qty          | character
+ med_inv           | bold                 | character
+ med_inv           | buy_prc              | character
+ med_inv           | canFree              | character
+ med_inv           | canReimburse         | character
+ med_inv           | charge_c             | character
+ med_inv           | chro_flag            | character
+ med_inv           | code                 | character
+ med_inv           | color                | integer
+ med_inv           | color_old            | character
+ med_inv           | cost                 | character
+ med_inv           | cur_bal              | character
+ med_inv           | cur_lot_no           | character
+ med_inv           | def_dose             | character
+ med_inv           | dform                | character
+ med_inv           | disc_f               | character
+ med_inv           | dispCause            | character
+ med_inv           | equi_unit            | character
+ med_inv           | foreign_ipd_prc      | character
+ med_inv           | foreign_opd_prc      | character
+ med_inv           | gen_name             | character
+ med_inv           | gen_shname           | character
+ med_inv           | gpscCode             | character varying
+ med_inv           | hiPrice              | character
+ med_inv           | hideSelect           | character
+ med_inv           | home_charge_c        | character
+ med_inv           | hour_expire          | smallint
+ med_inv           | indication           | character
+ med_inv           | inv_grp              | character varying
+ med_inv           | ipd_charge_c         | character
+ med_inv           | ipd_prc              | character
+ med_inv           | ipd_sale_u           | double precision
+ med_inv           | italic               | character
+ med_inv           | lastUPrice           | character varying
+ med_inv           | last_lot_no          | character
+ med_inv           | last_reorder_cal     | character
+ med_inv           | last_vendor          | character
+ med_inv           | manufac              | character
+ med_inv           | max_adj              | character
+ med_inv           | max_stock            | character
+ med_inv           | maxuses              | character
+ med_inv           | medPointQNo          | character
+ med_inv           | med_class_code       | character
+ med_inv           | mid_prc              | double precision
+ med_inv           | min_stock            | character
+ med_inv           | mtd_adj              | character
+ med_inv           | name                 | character
+ med_inv           | notNPC               | character
+ med_inv           | opd_prc              | character
+ med_inv           | opd_sale_u           | double precision
+ med_inv           | package              | character
+ med_inv           | packsize             | character
+ med_inv           | pair_code            | character
+ med_inv           | pair_ratio           | double precision
+ med_inv           | pregcate             | character
+ med_inv           | prod_type            | character
+ med_inv           | recal_day            | character
+ med_inv           | refund               | character
+ med_inv           | reorder_day          | character
+ med_inv           | reorder_qty          | character
+ med_inv           | sendDate             | character
+ med_inv           | single_use           | character
+ med_inv           | site                 | character
+ med_inv           | smooth_factor        | character
+ med_inv           | special_med          | character
+ med_inv           | staff_ipd_prc        | character
+ med_inv           | staff_opd_prc        | character
+ med_inv           | start_bal            | character
+ med_inv           | strgth               | character
+ med_inv           | strgth_u             | character
+ med_inv           | subCnt               | smallint
+ med_inv           | sysID                | character
+ med_inv           | term_reason          | character
+ med_inv           | terminate            | character
+ med_inv           | underline            | character
+ med_inv           | unit                 | character
+ med_inv           | upd_med_code         | character
+ med_inv           | vat_flag             | character
+ med_inv           | verify_flag          | character
+ med_inv           | volume               | character varying
+ med_inv           | weight_rate          | character
+ med_inv           | weight_vary          | character
+ med_inv           | ytd_adj              | character
+ ms_ivo_c          | QTY_FREE             | double precision
+ ms_ivo_c          | QTY_ORDER            | double precision
+ ms_ivo_c          | QTY_RCV              | double precision
+ ms_ivo_c          | QTY_REMPLAN          | double precision
+ ms_ivo_c          | REMAIN_QTY           | real
+ ms_po_c           | BF_QTY_BP            | double precision
+ ms_po_c           | BF_QTY_CNT           | double precision
+ ms_po_c           | QTY_FREE             | double precision
+ ms_po_c           | QTY_FREE_RCV         | double precision
+ ms_po_c           | QTY_ON_HAND          | double precision
+ ms_po_c           | QTY_ORDER            | double precision
+ ms_po_c           | QTY_ORDER_RCV        | double precision
+ ms_po_c           | RCV_QTY_EX           | double precision
+ ms_po_c           | REMAIN_QTY_BP        | double precision
+ ms_po_c           | REMAIN_QTY_BUYPLAN_Y | double precision
+ ms_po_c           | REMAIN_QTY_CNT       | double precision
+ ms_po_c           | REMAIN_QTY_EX        | double precision
+ patmed            | accQty               | double precision
+ patmed            | firstQty             | double precision
+ patmed            | lamedQty             | character
+ patmed            | qty                  | double precision
+ patmed            | qtyPerFeed           | character
+ patmed            | reqType              | character
+ patmed            | stockID              | character varying
+ pre_ms_ivo        | QTY                  | integer
+ req_con           | STOCK_FOR_WEEK       | integer
+ req_con           | STOCK_ID             | character
+ sm_po             | STOCK_ID             | character
+ sm_po_c           | QTY_CFM              | character varying
+ sm_po_c           | QTY_ORDER            | double precision
+ sm_po_c           | QTY_RCV              | double precision
+ sm_po_c           | QTY_RCV1             | double precision
+ sm_po_c           | QTY_RCV2             | double precision
+ sm_po_c           | QTY_RCV3             | double precision
+ sm_po_c_copy      | QTY_CFM              | character varying
+ sm_po_c_copy      | QTY_ORDER            | double precision
+ sm_po_c_copy      | QTY_RCV              | double precision
+ sm_po_c_copy      | QTY_RCV1             | double precision
+ sm_po_c_copy      | QTY_RCV2             | double precision
+ sm_po_c_copy      | QTY_RCV3             | double precision
+ sm_po_e           | INV_REMAIN_QTY       | double precision
+ sm_po_e           | QTY_DIST             | double precision
+ sm_po_e           | QTY_DIST_E           | double precision
+ sm_po_e           | STOCK_ID             | character varying
+ special           | REORDER_QTY          | double precision
+ special_bk1       | REORDER_QTY          | double precision
+(613 rows)
+

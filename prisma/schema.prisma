@@ -1,0 +1,790 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Location {
+  id                BigInt       @id @default(autoincrement())
+  locationCode      String       @unique @map("location_code") @db.VarChar(10)
+  locationName      String       @map("location_name") @db.VarChar(100)
+  locationType      LocationType @default(WAREHOUSE) @map("location_type")
+  parentId          BigInt?      @map("parent_id")
+  address           String?
+  responsiblePerson String?      @map("responsible_person") @db.VarChar(50)
+  isActive          Boolean      @default(true) @map("is_active")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  drugLots                DrugLot[]
+  inventory               Inventory[]
+  parent                  Location?          @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children                Location[]         @relation("LocationHierarchy")
+  distributionsFrom       DrugDistribution[] @relation("DistributionFromLocation")
+  distributionsTo         DrugDistribution[] @relation("DistributionToLocation")
+
+  @@map("locations")
+}
+
+model Department {
+  id                BigInt             @id @default(autoincrement())
+  deptCode          String             @unique @map("dept_code") @db.VarChar(10)
+  deptName          String             @map("dept_name") @db.VarChar(100)
+  parentId          BigInt?            @map("parent_id")
+  headPerson        String?            @map("head_person") @db.VarChar(50)
+  budgetCode        String?            @map("budget_code") @db.VarChar(10)
+  isActive          Boolean            @default(true) @map("is_active")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  budgetAllocations BudgetAllocation[]
+  parent            Department?        @relation("DepartmentHierarchy", fields: [parentId], references: [id])
+  children          Department[]       @relation("DepartmentHierarchy")
+  purchaseOrders    PurchaseOrder[]
+  purchaseRequests  PurchaseRequest[]
+  tmtUsageStats     TmtUsageStats[]
+  drugDistributions DrugDistribution[]
+
+  @@map("departments")
+}
+
+model BudgetType {
+  id                BigInt             @id @default(autoincrement())
+  budgetCode        String             @unique @map("budget_code") @db.VarChar(10)
+  budgetName        String             @map("budget_name") @db.VarChar(100)
+  budgetDescription String?            @map("budget_description")
+  isActive          Boolean            @default(true) @map("is_active")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  budgetAllocations BudgetAllocation[]
+  purchaseOrders    PurchaseOrder[]
+
+  @@map("budget_types")
+}
+
+model Company {
+  id                  BigInt          @id @default(autoincrement())
+  companyCode         String?         @unique @map("company_code") @db.VarChar(10)
+  companyName         String          @map("company_name") @db.VarChar(100)
+  companyType         CompanyType     @default(VENDOR) @map("company_type")
+  taxId               String?         @map("tax_id") @db.VarChar(20)
+  address             String?
+  phone               String?         @db.VarChar(20)
+  email               String?         @db.VarChar(100)
+  contactPerson       String?         @map("contact_person") @db.VarChar(50)
+  isActive            Boolean         @default(true) @map("is_active")
+  createdAt           DateTime        @default(now()) @map("created_at")
+  updatedAt           DateTime        @default(now()) @updatedAt @map("updated_at")
+  tmtManufacturerCode String?         @map("tmt_manufacturer_code") @db.VarChar(20)
+  fdaLicenseNumber    String?         @map("fda_license_number") @db.VarChar(20)
+  gmpCertificate      String?         @map("gmp_certificate") @db.VarChar(30)
+  drugs               Drug[]
+  purchaseOrders      PurchaseOrder[]
+
+  @@map("companies")
+}
+
+model DrugGeneric {
+  id                   BigInt                          @id @default(autoincrement())
+  workingCode          String                          @unique @map("working_code") @db.VarChar(7)
+  drugName             String                          @map("drug_name") @db.VarChar(60)
+  dosageForm           String                          @map("dosage_form") @db.VarChar(20)
+  saleUnit             String                          @map("sale_unit") @db.VarChar(5)
+  composition          String?                         @db.VarChar(50)
+  strength             Decimal?                        @db.Decimal(10, 2)
+  strengthUnit         String?                         @map("strength_unit") @db.VarChar(20)
+  isActive             Boolean                         @default(true) @map("is_active")
+  createdAt            DateTime                        @default(now()) @map("created_at")
+  tmtVtmCode           String?                         @map("tmt_vtm_code") @db.VarChar(10)
+  tmtVtmId             BigInt?                         @map("tmt_vtm_id")
+  tmtGpCode            String?                         @map("tmt_gp_code") @db.VarChar(10)
+  tmtGpId              BigInt?                         @map("tmt_gp_id")
+  tmtGpfCode           String?                         @map("tmt_gpf_code") @db.VarChar(10)
+  tmtGpfId             BigInt?                         @map("tmt_gpf_id")
+  tmtGpxCode           String?                         @map("tmt_gpx_code") @db.VarChar(10)
+  tmtGpxId             BigInt?                         @map("tmt_gpx_id")
+  tmtCode              String?                         @map("tmt_code") @db.VarChar(10)
+  standardUnit         String?                         @map("standard_unit") @db.VarChar(10)
+  therapeuticGroup     String?                         @map("therapeutic_group") @db.VarChar(50)
+  drugs                Drug[]
+  hppProducts          HospitalPharmaceuticalProduct[]
+  purchaseRequestItems PurchaseRequestItem[]
+  tmtMappings          TmtMapping[]
+
+  @@map("drug_generics")
+}
+
+model Drug {
+  id                 BigInt                          @id @default(autoincrement())
+  drugCode           String                          @unique @map("drug_code") @db.VarChar(24)
+  tradeName          String                          @map("trade_name") @db.VarChar(100)
+  genericId          BigInt?                         @map("generic_id")
+  strength           String?                         @db.VarChar(50)
+  dosageForm         String?                         @map("dosage_form") @db.VarChar(30)
+  manufacturerId     BigInt?                         @map("manufacturer_id")
+  atcCode            String?                         @map("atc_code") @db.VarChar(10)
+  standardCode       String?                         @map("standard_code") @db.VarChar(24)
+  barcode            String?                         @db.VarChar(20)
+  packSize           Int                             @default(1) @map("pack_size")
+  unit               String                          @default("TAB") @db.VarChar(10)
+  isActive           Boolean                         @default(true) @map("is_active")
+  createdAt          DateTime                        @default(now()) @map("created_at")
+  updatedAt          DateTime                        @default(now()) @updatedAt @map("updated_at")
+  tmtTpCode          String?                         @map("tmt_tp_code") @db.VarChar(10)
+  tmtTpId            BigInt?                         @map("tmt_tp_id")
+  tmtTpuCode         String?                         @map("tmt_tpu_code") @db.VarChar(10)
+  tmtTpuId           BigInt?                         @map("tmt_tpu_id")
+  tmtTppCode         String?                         @map("tmt_tpp_code") @db.VarChar(10)
+  tmtTppId           BigInt?                         @map("tmt_tpp_id")
+  nc24Code           String?                         @map("nc24_code") @db.VarChar(24)
+  registrationNumber String?                         @map("registration_number") @db.VarChar(20)
+  gpoCode            String?                         @map("gpo_code") @db.VarChar(15)
+  hppType            HppType?                        @map("hpp_type")
+  specPrep           String?                         @map("spec_prep") @db.VarChar(10)
+  isHpp              Boolean                         @default(false) @map("is_hpp")
+  baseProductId      BigInt?                         @map("base_product_id")
+  formulaReference   String?                         @map("formula_reference")
+  drugLots           DrugLot[]
+  baseProduct        Drug?                           @relation("HppBaseProduct", fields: [baseProductId], references: [id])
+  derivedProducts    Drug[]                          @relation("HppBaseProduct")
+  generic            DrugGeneric?                    @relation(fields: [genericId], references: [id])
+  manufacturer       Company?                        @relation(fields: [manufacturerId], references: [id])
+  hppBaseReferences     HospitalPharmaceuticalProduct[] @relation("HppBaseReference")
+  hppProducts           HospitalPharmaceuticalProduct[]
+  inventory             Inventory[]
+  purchaseOrderItems    PurchaseOrderItem[]
+  receiptItems          ReceiptItem[]
+  tmtMappings           TmtMapping[]
+  drugDistributionItems DrugDistributionItem[]
+
+  @@map("drugs")
+}
+
+model Inventory {
+  id             BigInt                 @id @default(autoincrement())
+  drugId         BigInt                 @map("drug_id")
+  locationId     BigInt                 @map("location_id")
+  quantityOnHand Decimal                @default(0) @map("quantity_on_hand") @db.Decimal(10, 2)
+  minLevel       Decimal                @default(0) @map("min_level") @db.Decimal(10, 2)
+  maxLevel       Decimal                @default(0) @map("max_level") @db.Decimal(10, 2)
+  reorderPoint   Decimal                @default(0) @map("reorder_point") @db.Decimal(10, 2)
+  averageCost    Decimal                @default(0) @map("average_cost") @db.Decimal(10, 2)
+  lastCost       Decimal                @default(0) @map("last_cost") @db.Decimal(10, 2)
+  lastUpdated    DateTime               @default(now()) @map("last_updated")
+  drug           Drug                   @relation(fields: [drugId], references: [id])
+  location       Location               @relation(fields: [locationId], references: [id])
+  transactions   InventoryTransaction[]
+
+  @@unique([drugId, locationId])
+  @@map("inventory")
+}
+
+model DrugLot {
+  id                BigInt   @id @default(autoincrement())
+  drugId            BigInt   @map("drug_id")
+  locationId        BigInt   @map("location_id")
+  lotNumber         String   @map("lot_number") @db.VarChar(20)
+  expiryDate        DateTime @map("expiry_date") @db.Date
+  quantityAvailable Decimal  @map("quantity_available") @db.Decimal(10, 2)
+  unitCost          Decimal  @map("unit_cost") @db.Decimal(10, 2)
+  receivedDate      DateTime @map("received_date") @db.Date
+  receiptId         BigInt?  @map("receipt_id")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  drug              Drug     @relation(fields: [drugId], references: [id])
+  location          Location @relation(fields: [locationId], references: [id])
+  receipt           Receipt? @relation(fields: [receiptId], references: [id])
+
+  @@map("drug_lots")
+}
+
+model InventoryTransaction {
+  id              BigInt          @id @default(autoincrement())
+  inventoryId     BigInt          @map("inventory_id")
+  transactionType TransactionType @map("transaction_type")
+  quantity        Decimal         @db.Decimal(10, 2)
+  unitCost        Decimal?        @map("unit_cost") @db.Decimal(10, 2)
+  referenceId     BigInt?         @map("reference_id")
+  referenceType   String?         @map("reference_type") @db.VarChar(20)
+  notes           String?
+  createdBy       BigInt          @map("created_by")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  inventory       Inventory       @relation(fields: [inventoryId], references: [id])
+
+  @@map("inventory_transactions")
+}
+
+model BudgetAllocation {
+  id              BigInt              @id @default(autoincrement())
+  fiscalYear      Int                 @map("fiscal_year")
+  budgetTypeId    BigInt              @map("budget_type_id")
+  departmentId    BigInt              @map("department_id")
+  totalBudget     Decimal             @map("total_budget") @db.Decimal(15, 2)
+  q1Budget        Decimal             @map("q1_budget") @db.Decimal(15, 2)
+  q2Budget        Decimal             @map("q2_budget") @db.Decimal(15, 2)
+  q3Budget        Decimal             @map("q3_budget") @db.Decimal(15, 2)
+  q4Budget        Decimal             @map("q4_budget") @db.Decimal(15, 2)
+  totalSpent      Decimal             @default(0) @map("total_spent") @db.Decimal(15, 2)
+  q1Spent         Decimal             @default(0) @map("q1_spent") @db.Decimal(15, 2)
+  q2Spent         Decimal             @default(0) @map("q2_spent") @db.Decimal(15, 2)
+  q3Spent         Decimal             @default(0) @map("q3_spent") @db.Decimal(15, 2)
+  q4Spent         Decimal             @default(0) @map("q4_spent") @db.Decimal(15, 2)
+  remainingBudget Decimal             @map("remaining_budget") @db.Decimal(15, 2)
+  status          BudgetStatus        @default(ACTIVE)
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @default(now()) @updatedAt @map("updated_at")
+  budgetType      BudgetType          @relation(fields: [budgetTypeId], references: [id])
+  department      Department          @relation(fields: [departmentId], references: [id])
+  reservations    BudgetReservation[]
+
+  @@unique([fiscalYear, budgetTypeId, departmentId])
+  @@map("budget_allocations")
+}
+
+model BudgetReservation {
+  id              BigInt            @id @default(autoincrement())
+  allocationId    BigInt            @map("allocation_id")
+  prId            BigInt?           @map("pr_id")
+  poId            BigInt?           @map("po_id")
+  reservedAmount  Decimal           @map("reserved_amount") @db.Decimal(15, 2)
+  reservationDate DateTime          @map("reservation_date") @db.Date
+  status          ReservationStatus @default(ACTIVE)
+  expiresDate     DateTime?         @map("expires_date") @db.Date
+  createdAt       DateTime          @default(now()) @map("created_at")
+  allocation      BudgetAllocation  @relation(fields: [allocationId], references: [id])
+  purchaseOrder   PurchaseOrder?    @relation(fields: [poId], references: [id])
+  purchaseRequest PurchaseRequest?  @relation(fields: [prId], references: [id])
+
+  @@map("budget_reservations")
+}
+
+model PurchaseRequest {
+  id                 BigInt                @id @default(autoincrement())
+  prNumber           String                @unique @map("pr_number") @db.VarChar(20)
+  prDate             DateTime              @map("pr_date") @db.Date
+  departmentId       BigInt                @map("department_id")
+  budgetAllocationId BigInt?               @map("budget_allocation_id")
+  requestedAmount    Decimal               @map("requested_amount") @db.Decimal(15, 2)
+  purpose            String?
+  urgency            Urgency               @default(NORMAL)
+  status             RequestStatus         @default(DRAFT)
+  requestedBy        String                @map("requested_by") @db.VarChar(50)
+  approvedBy         String?               @map("approved_by") @db.VarChar(50)
+  approvalDate       DateTime?             @map("approval_date") @db.Date
+  convertedToPo      Boolean               @default(false) @map("converted_to_po")
+  poId               BigInt?               @map("po_id")
+  remarks            String?
+  createdAt          DateTime              @default(now()) @map("created_at")
+  reservations       BudgetReservation[]
+  items              PurchaseRequestItem[]
+  department         Department            @relation(fields: [departmentId], references: [id])
+  purchaseOrder      PurchaseOrder?        @relation(fields: [poId], references: [id])
+
+  @@map("purchase_requests")
+}
+
+model PurchaseRequestItem {
+  id                 BigInt          @id @default(autoincrement())
+  prId               BigInt          @map("pr_id")
+  itemNumber         Int             @map("item_number")
+  genericId          BigInt?         @map("generic_id")
+  description        String?
+  quantityRequested  Decimal         @map("quantity_requested") @db.Decimal(10, 2)
+  estimatedUnitCost  Decimal?        @map("estimated_unit_cost") @db.Decimal(10, 2)
+  estimatedTotalCost Decimal?        @map("estimated_total_cost") @db.Decimal(15, 2)
+  justification      String?
+  status             ItemStatus      @default(PENDING)
+  generic            DrugGeneric?    @relation(fields: [genericId], references: [id])
+  purchaseRequest    PurchaseRequest @relation(fields: [prId], references: [id], onDelete: Cascade)
+
+  @@map("purchase_request_items")
+}
+
+model PurchaseOrder {
+  id           BigInt              @id @default(autoincrement())
+  poNumber     String              @unique @map("po_number") @db.VarChar(20)
+  vendorId     BigInt              @map("vendor_id")
+  poDate       DateTime            @map("po_date") @db.Date
+  deliveryDate DateTime?           @map("delivery_date") @db.Date
+  departmentId BigInt?             @map("department_id")
+  budgetTypeId BigInt?             @map("budget_type_id")
+  status       PoStatus            @default(DRAFT)
+  totalAmount  Decimal             @default(0) @map("total_amount") @db.Decimal(12, 2)
+  totalItems   Int                 @default(0) @map("total_items")
+  notes        String?
+  createdBy    BigInt              @map("created_by")
+  approvedBy   BigInt?             @map("approved_by")
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @default(now()) @updatedAt @map("updated_at")
+  reservations BudgetReservation[]
+  items        PurchaseOrderItem[]
+  budgetType   BudgetType?         @relation(fields: [budgetTypeId], references: [id])
+  department   Department?         @relation(fields: [departmentId], references: [id])
+  vendor       Company             @relation(fields: [vendorId], references: [id])
+  requests     PurchaseRequest[]
+  receipts     Receipt[]
+
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id               BigInt        @id @default(autoincrement())
+  poId             BigInt        @map("po_id")
+  drugId           BigInt        @map("drug_id")
+  quantityOrdered  Decimal       @map("quantity_ordered") @db.Decimal(10, 2)
+  unitCost         Decimal       @map("unit_cost") @db.Decimal(10, 2)
+  quantityReceived Decimal       @default(0) @map("quantity_received") @db.Decimal(10, 2)
+  notes            String?
+  drug             Drug          @relation(fields: [drugId], references: [id])
+  purchaseOrder    PurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+
+  @@unique([poId, drugId])
+  @@map("purchase_order_items")
+}
+
+model Receipt {
+  id            BigInt        @id @default(autoincrement())
+  receiptNumber String        @unique @map("receipt_number") @db.VarChar(20)
+  poId          BigInt        @map("po_id")
+  receiptDate   DateTime      @map("receipt_date") @db.Date
+  deliveryNote  String?       @map("delivery_note") @db.VarChar(50)
+  status        ReceiptStatus @default(DRAFT)
+  totalItems    Int           @default(0) @map("total_items")
+  totalAmount   Decimal       @default(0) @map("total_amount") @db.Decimal(12, 2)
+  receivedBy    BigInt        @map("received_by")
+  verifiedBy    BigInt?       @map("verified_by")
+  notes         String?
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
+  drugLots      DrugLot[]
+  items         ReceiptItem[]
+  purchaseOrder PurchaseOrder @relation(fields: [poId], references: [id])
+
+  @@map("receipts")
+}
+
+model ReceiptItem {
+  id               BigInt    @id @default(autoincrement())
+  receiptId        BigInt    @map("receipt_id")
+  drugId           BigInt    @map("drug_id")
+  quantityReceived Decimal   @map("quantity_received") @db.Decimal(10, 2)
+  unitCost         Decimal   @map("unit_cost") @db.Decimal(10, 2)
+  lotNumber        String?   @map("lot_number") @db.VarChar(20)
+  expiryDate       DateTime? @map("expiry_date") @db.Date
+  notes            String?
+  drug             Drug      @relation(fields: [drugId], references: [id])
+  receipt          Receipt   @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@map("receipt_items")
+}
+
+model TmtConcept {
+  id                    BigInt            @id @default(autoincrement())
+  tmtId                 BigInt            @unique @map("tmt_id")
+  conceptCode           String?           @map("concept_code") @db.VarChar(20)
+  level                 TmtLevel          @map("level")
+  fsn                   String            @map("fsn") @db.VarChar(2000)
+  preferredTerm         String?           @map("preferred_term") @db.VarChar(300)
+  strength              String?           @db.VarChar(100)
+  dosageForm            String?           @map("dosage_form") @db.VarChar(50)
+  manufacturer          String?           @db.VarChar(300)
+  packSize              String?           @map("pack_size") @db.VarChar(50)
+  unitOfUse             String?           @map("unit_of_use") @db.VarChar(20)
+  routeOfAdministration String?           @map("route_of_administration") @db.VarChar(50)
+  isActive              Boolean           @default(true) @map("is_active")
+  effectiveDate         DateTime?         @map("effective_date")
+  releaseDate           String?           @map("release_date") @db.VarChar(20)
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at")
+  mappings              TmtMapping[]
+  childRelations        TmtRelationship[] @relation("ChildConcept")
+  parentRelations       TmtRelationship[] @relation("ParentConcept")
+  attributes            TmtAttribute[]
+  hisDrugMaster         HisDrugMaster[]
+  hppProducts           HospitalPharmaceuticalProduct[]
+  usageStats            TmtUsageStats[]
+
+  @@map("tmt_concepts")
+}
+
+model TmtRelationship {
+  id                BigInt          @id @default(autoincrement())
+  parentId          BigInt          @map("parent_id")
+  childId           BigInt          @map("child_id")
+  relationshipType  TmtRelationType @map("relationship_type")
+  strengthValue     String?         @map("strength_value") @db.VarChar(100)
+  dosageFormValue   String?         @map("dosage_form_value") @db.VarChar(50)
+  manufacturerValue String?         @map("manufacturer_value") @db.VarChar(300)
+  packSizeValue     String?         @map("pack_size_value") @db.VarChar(50)
+  isActive          Boolean         @default(true) @map("is_active")
+  effectiveDate     DateTime?       @map("effective_date")
+  releaseDate       String?         @map("release_date") @db.VarChar(20)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  child             TmtConcept      @relation("ChildConcept", fields: [childId], references: [id])
+  parent            TmtConcept      @relation("ParentConcept", fields: [parentId], references: [id])
+
+  @@unique([parentId, childId, relationshipType])
+  @@map("tmt_relationships")
+}
+
+model HospitalPharmaceuticalProduct {
+  id               BigInt       @id @default(autoincrement())
+  hppCode          String       @unique @map("hpp_code") @db.VarChar(20)
+  hppType          HppType      @map("hpp_type")
+  productName      String       @map("product_name") @db.VarChar(200)
+  genericId        BigInt?      @map("generic_id")
+  drugId           BigInt?      @map("drug_id")
+  baseProductId    BigInt?      @map("base_product_id")
+  strength         String?      @db.VarChar(100)
+  dosageForm       String?      @map("dosage_form") @db.VarChar(50)
+  packSize         String?      @map("pack_size") @db.VarChar(50)
+  unitOfUse        String?      @map("unit_of_use") @db.VarChar(20)
+  formulaReference String?      @map("formula_reference")
+  formulaSource    String?      @map("formula_source") @db.VarChar(100)
+  tmtCode          String?      @map("tmt_code") @db.VarChar(10)
+  tmtId            BigInt?      @map("tmt_id")
+  specPrep         String?      @map("spec_prep") @db.VarChar(10)
+  isOutsourced     Boolean      @default(false) @map("is_outsourced")
+  hospitalCode     String?      @map("hospital_code") @db.VarChar(10)
+  isActive         Boolean      @default(true) @map("is_active")
+  approvedBy       String?      @map("approved_by") @db.VarChar(50)
+  approvalDate     DateTime?    @map("approval_date")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @default(now()) @updatedAt @map("updated_at")
+  baseProduct      Drug?        @relation("HppBaseReference", fields: [baseProductId], references: [id])
+  drug             Drug?        @relation(fields: [drugId], references: [id])
+  generic          DrugGeneric? @relation(fields: [genericId], references: [id])
+  tmtConcept       TmtConcept?  @relation(fields: [tmtId], references: [id])
+  formulations     HppFormulation[]
+
+  @@map("hospital_pharmaceutical_products")
+}
+
+model TmtMapping {
+  id               BigInt       @id @default(autoincrement())
+  workingCode      String?      @map("working_code") @db.VarChar(7)
+  drugCode         String?      @map("drug_code") @db.VarChar(24)
+  genericId        BigInt?      @map("generic_id")
+  drugId           BigInt?      @map("drug_id")
+  tmtLevel         TmtLevel     @map("tmt_level")
+  tmtConceptId     BigInt       @map("tmt_concept_id")
+  tmtCode          String?      @map("tmt_code") @db.VarChar(10)
+  tmtId            BigInt       @map("tmt_id")
+  mappingSource    String?      @map("mapping_source") @db.VarChar(50)
+  confidence       Decimal?     @db.Decimal(3, 2)
+  mappedBy         String?      @map("mapped_by") @db.VarChar(50)
+  verifiedBy       String?      @map("verified_by") @db.VarChar(50)
+  isActive         Boolean      @default(true) @map("is_active")
+  isVerified       Boolean      @default(false) @map("is_verified")
+  mappingDate      DateTime     @map("mapping_date")
+  verificationDate DateTime?    @map("verification_date")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @default(now()) @updatedAt @map("updated_at")
+  drug             Drug?        @relation(fields: [drugId], references: [id])
+  generic          DrugGeneric? @relation(fields: [genericId], references: [id])
+  tmtConcept       TmtConcept   @relation(fields: [tmtConceptId], references: [id])
+
+  @@map("tmt_mappings")
+}
+
+model TmtAttribute {
+  id            BigInt     @id @default(autoincrement())
+  conceptId     BigInt     @map("concept_id")
+  attributeType String     @map("attribute_type") @db.VarChar(50)
+  attributeValue String    @map("attribute_value") @db.Text
+  valueType     String     @map("value_type") @db.VarChar(20)
+  unit          String?    @db.VarChar(20)
+  isActive      Boolean    @default(true) @map("is_active")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  concept       TmtConcept @relation(fields: [conceptId], references: [id])
+
+  @@map("tmt_attributes")
+}
+
+model TmtManufacturer {
+  id               BigInt    @id @default(autoincrement())
+  manufacturerCode String?   @unique @map("manufacturer_code") @db.VarChar(20)
+  manufacturerName String    @map("manufacturer_name") @db.VarChar(300)
+  manufacturerNameEn String? @map("manufacturer_name_en") @db.VarChar(300)
+  countryCode      String?   @map("country_code") @db.VarChar(3)
+  fdaLicense       String?   @map("fda_license") @db.VarChar(50)
+  gmpStatus        String?   @map("gmp_status") @db.VarChar(20)
+  isActive         Boolean   @default(true) @map("is_active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at")
+  hisDrugMaster    HisDrugMaster[]
+
+  @@map("tmt_manufacturers")
+}
+
+model TmtDosageForm {
+  id                    BigInt    @id @default(autoincrement())
+  formCode              String    @unique @map("form_code") @db.VarChar(20)
+  formName              String    @map("form_name") @db.VarChar(100)
+  formNameEn            String?   @map("form_name_en") @db.VarChar(100)
+  category              String?   @db.VarChar(50)
+  routeOfAdministration String?   @map("route_of_administration") @db.VarChar(50)
+  isActive              Boolean   @default(true) @map("is_active")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  hisDrugMaster         HisDrugMaster[]
+
+  @@map("tmt_dosage_forms")
+}
+
+model TmtUnit {
+  id               BigInt    @id @default(autoincrement())
+  unitCode         String    @unique @map("unit_code") @db.VarChar(20)
+  unitName         String    @map("unit_name") @db.VarChar(50)
+  unitNameEn       String?   @map("unit_name_en") @db.VarChar(50)
+  unitType         String?   @map("unit_type") @db.VarChar(20)
+  baseUnit         String?   @map("base_unit") @db.VarChar(20)
+  conversionFactor Decimal?  @map("conversion_factor") @db.Decimal(15, 6)
+  isActive         Boolean   @default(true) @map("is_active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  @@map("tmt_units")
+}
+
+model HisDrugMaster {
+  id                  BigInt              @id @default(autoincrement())
+  hisDrugCode         String              @unique @map("his_drug_code") @db.VarChar(50)
+  drugName            String              @map("drug_name") @db.VarChar(200)
+  genericName         String?             @map("generic_name") @db.VarChar(200)
+  strength            String?             @db.VarChar(100)
+  dosageForm          String?             @map("dosage_form") @db.VarChar(50)
+  manufacturer        String?             @db.VarChar(200)
+  registrationNumber  String?             @map("registration_number") @db.VarChar(30)
+  tmtConceptId        BigInt?             @map("tmt_concept_id")
+  tmtLevel            TmtLevel?           @map("tmt_level")
+  mappingConfidence   Decimal?            @map("mapping_confidence") @db.Decimal(3, 2)
+  mappingStatus       HisMappingStatus    @default(PENDING) @map("mapping_status")
+  nc24Code            String?             @map("nc24_code") @db.VarChar(24)
+  nc24Status          String?             @map("nc24_status") @db.VarChar(20)
+  tmtManufacturerId   BigInt?             @map("tmt_manufacturer_id")
+  tmtDosageFormId     BigInt?             @map("tmt_dosage_form_id")
+  isActive            Boolean             @default(true) @map("is_active")
+  lastSync            DateTime?           @map("last_sync")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @default(now()) @updatedAt @map("updated_at")
+  tmtConcept          TmtConcept?         @relation(fields: [tmtConceptId], references: [id])
+  tmtManufacturer     TmtManufacturer?    @relation(fields: [tmtManufacturerId], references: [id])
+  tmtDosageForm       TmtDosageForm?      @relation(fields: [tmtDosageFormId], references: [id])
+  usageStats          TmtUsageStats[]
+
+  @@map("his_drug_master")
+}
+
+model HppFormulation {
+  id               BigInt                        @id @default(autoincrement())
+  hppId            BigInt                        @map("hpp_id")
+  componentType    String                        @map("component_type") @db.VarChar(20)
+  componentName    String                        @map("component_name") @db.VarChar(200)
+  componentStrength String?                      @map("component_strength") @db.VarChar(100)
+  componentUnit    String?                       @map("component_unit") @db.VarChar(20)
+  componentRatio   Decimal?                      @map("component_ratio") @db.Decimal(10, 4)
+  notes            String?                       @db.Text
+  createdAt        DateTime                      @default(now()) @map("created_at")
+  hpp              HospitalPharmaceuticalProduct @relation(fields: [hppId], references: [id], onDelete: Cascade)
+
+  @@map("hpp_formulations")
+}
+
+model TmtUsageStats {
+  id                BigInt         @id @default(autoincrement())
+  periodType        String         @map("period_type") @db.VarChar(20)
+  periodDate        DateTime       @map("period_date") @db.Date
+  tmtConceptId      BigInt?        @map("tmt_concept_id")
+  hisDrugMasterId   BigInt?        @map("his_drug_master_id")
+  usageCount        Int            @default(0) @map("usage_count")
+  prescriptionCount Int            @default(0) @map("prescription_count")
+  dispensingCount   Int            @default(0) @map("dispensing_count")
+  consumptionAmount Decimal?       @map("consumption_amount") @db.Decimal(15, 3)
+  unit              String?        @db.VarChar(20)
+  departmentId      BigInt?        @map("department_id")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  tmtConcept        TmtConcept?    @relation(fields: [tmtConceptId], references: [id])
+  hisDrugMaster     HisDrugMaster? @relation(fields: [hisDrugMasterId], references: [id])
+  department        Department?    @relation(fields: [departmentId], references: [id])
+
+  @@map("tmt_usage_stats")
+}
+
+model MinistryReport {
+  id                  BigInt   @id @default(autoincrement())
+  reportType          String   @map("report_type") @db.VarChar(50)
+  reportPeriod        String   @map("report_period") @db.VarChar(20)
+  reportDate          DateTime @map("report_date") @db.Date
+  hospitalCode        String?  @map("hospital_code") @db.VarChar(10)
+  dataJson            Json?    @map("data_json")
+  tmtComplianceRate   Decimal? @map("tmt_compliance_rate") @db.Decimal(5, 2)
+  totalItems          Int?     @map("total_items")
+  mappedItems         Int?     @map("mapped_items")
+  verificationStatus  String?  @map("verification_status") @db.VarChar(20)
+  submittedAt         DateTime? @map("submitted_at")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  @@map("ministry_reports")
+}
+
+model DrugDistribution {
+  id                 BigInt                 @id @default(autoincrement())
+  distributionNumber String                 @unique @map("distribution_number") @db.VarChar(20)
+  distributionDate   DateTime               @map("distribution_date") @db.Date
+  fromLocationId     BigInt                 @map("from_location_id")
+  toLocationId       BigInt?                @map("to_location_id")
+  requestingDeptId   BigInt?                @map("requesting_dept_id")
+  purpose            String?                @db.Text
+  requestedBy        String                 @map("requested_by") @db.VarChar(50)
+  approvedBy         String?                @map("approved_by") @db.VarChar(50)
+  dispensedBy        String?                @map("dispensed_by") @db.VarChar(50)
+  approvalDate       DateTime?              @map("approval_date") @db.Date
+  dispensedDate      DateTime?              @map("dispensed_date") @db.Date
+  status             DistributionStatus     @default(PENDING)
+  totalItems         Int                    @default(0) @map("total_items")
+  totalAmount        Decimal                @default(0) @map("total_amount") @db.Decimal(12, 2)
+  notes              String?
+  createdAt          DateTime               @default(now()) @map("created_at")
+  updatedAt          DateTime               @default(now()) @updatedAt @map("updated_at")
+  fromLocation       Location               @relation("DistributionFromLocation", fields: [fromLocationId], references: [id])
+  toLocation         Location?              @relation("DistributionToLocation", fields: [toLocationId], references: [id])
+  requestingDept     Department?            @relation(fields: [requestingDeptId], references: [id])
+  items              DrugDistributionItem[]
+
+  @@map("drug_distributions")
+}
+
+model DrugDistributionItem {
+  id                BigInt            @id @default(autoincrement())
+  distributionId    BigInt            @map("distribution_id")
+  itemNumber        Int               @map("item_number")
+  drugId            BigInt            @map("drug_id")
+  lotNumber         String            @map("lot_number") @db.VarChar(20)
+  quantityDispensed Decimal           @map("quantity_dispensed") @db.Decimal(10, 2)
+  unitCost          Decimal           @map("unit_cost") @db.Decimal(10, 2)
+  totalCost         Decimal           @map("total_cost") @db.Decimal(12, 2)
+  expiryDate        DateTime          @map("expiry_date") @db.Date
+  batchNumber       String?           @map("batch_number") @db.VarChar(20)
+  purposeDetail     String?           @map("purpose_detail") @db.VarChar(200)
+  notes             String?
+  createdAt         DateTime          @default(now()) @map("created_at")
+  distribution      DrugDistribution  @relation(fields: [distributionId], references: [id], onDelete: Cascade)
+  drug              Drug              @relation(fields: [drugId], references: [id])
+
+  @@map("drug_distribution_items")
+}
+
+enum LocationType {
+  WAREHOUSE      @map("warehouse")
+  PHARMACY       @map("pharmacy")
+  WARD           @map("ward")
+  EMERGENCY      @map("emergency")
+  LABORATORY     @map("laboratory")
+  OPERATING_ROOM @map("operating_room")
+}
+
+enum CompanyType {
+  VENDOR       @map("vendor")
+  MANUFACTURER @map("manufacturer")
+  BOTH         @map("both")
+}
+
+enum TransactionType {
+  RECEIVE  @map("receive")
+  ISSUE    @map("issue")
+  TRANSFER @map("transfer")
+  ADJUST   @map("adjust")
+  RETURN   @map("return")
+}
+
+enum BudgetStatus {
+  ACTIVE   @map("active")
+  INACTIVE @map("inactive")
+  LOCKED   @map("locked")
+}
+
+enum ReservationStatus {
+  ACTIVE    @map("active")
+  RELEASED  @map("released")
+  COMMITTED @map("committed")
+}
+
+enum Urgency {
+  URGENT @map("urgent")
+  NORMAL @map("normal")
+  LOW    @map("low")
+}
+
+enum RequestStatus {
+  DRAFT     @map("draft")
+  SUBMITTED @map("submitted")
+  APPROVED  @map("approved")
+  REJECTED  @map("rejected")
+  CONVERTED @map("converted")
+}
+
+enum ItemStatus {
+  PENDING  @map("pending")
+  APPROVED @map("approved")
+  REJECTED @map("rejected")
+}
+
+enum PoStatus {
+  DRAFT    @map("draft")
+  PENDING  @map("pending")
+  APPROVED @map("approved")
+  SENT     @map("sent")
+  RECEIVED @map("received")
+  CLOSED   @map("closed")
+}
+
+enum ReceiptStatus {
+  DRAFT    @map("draft")
+  RECEIVED @map("received")
+  VERIFIED @map("verified")
+  POSTED   @map("posted")
+}
+
+enum TmtLevel {
+  SUBS @map("SUBS")
+  VTM  @map("VTM")
+  GP   @map("GP")
+  TP   @map("TP")
+  GPU  @map("GPU")
+  TPU  @map("TPU")
+  GPP  @map("GPP")
+  TPP  @map("TPP")
+  GP_F @map("GP-F")
+  GP_X @map("GP-X")
+}
+
+enum HppType {
+  REPACKAGED       @map("R")
+  MODIFIED         @map("M")
+  HOSPITAL_FORMULA @map("F")
+  EXTEMPORANEOUS   @map("X")
+  OUTSOURCED       @map("OHPP")
+}
+
+enum TmtRelationType {
+  IS_A                     @map("IS_A")
+  HAS_ACTIVE_INGREDIENT    @map("HAS_ACTIVE_INGREDIENT")
+  HAS_DOSE_FORM            @map("HAS_DOSE_FORM")
+  HAS_MANUFACTURER         @map("HAS_MANUFACTURER")
+  HAS_PACK_SIZE            @map("HAS_PACK_SIZE")
+  HAS_STRENGTH             @map("HAS_STRENGTH")
+  HAS_UNIT_OF_USE          @map("HAS_UNIT_OF_USE")
+  HAS_ROUTE_OF_ADMINISTRATION @map("HAS_ROUTE_OF_ADMINISTRATION")
+}
+
+enum HisMappingStatus {
+  PENDING   @map("pending")
+  MAPPED    @map("mapped")
+  VERIFIED  @map("verified")
+  REJECTED  @map("rejected")
+}
+
+enum DistributionStatus {
+  PENDING   @map("pending")
+  APPROVED  @map("approved")
+  DISPENSED @map("dispensed")
+  CANCELLED @map("cancelled")
+  COMPLETED @map("completed")
+}

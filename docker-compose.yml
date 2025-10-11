@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: invs-modern-db
+    restart: always
+    environment:
+      POSTGRES_DB: invs_modern
+      POSTGRES_USER: invs_user
+      POSTGRES_PASSWORD: invs123
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d
+    networks:
+      - invs-network
+
+  postgres-legacy:
+    image: postgres:15-alpine
+    container_name: invs-legacy-db
+    restart: always
+    environment:
+      POSTGRES_DB: invs_legacy
+      POSTGRES_USER: invs_user
+      POSTGRES_PASSWORD: invs123
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=th_TH.UTF-8 --lc-ctype=th_TH.UTF-8"
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_legacy_data:/var/lib/postgresql/data
+      - ./scripts/legacy-init:/docker-entrypoint-initdb.d
+    networks:
+      - invs-network
+
+  mysql-original:
+    image: mariadb:10.11
+    container_name: invs-mysql-original
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: invs123
+      MYSQL_DATABASE: invs_banpong
+      MYSQL_USER: invs_user
+      MYSQL_PASSWORD: invs123
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/mysql-init:/docker-entrypoint-initdb.d
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-time-zone=+07:00
+    networks:
+      - invs-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: invs-modern-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@invs.local
+      PGADMIN_DEFAULT_PASSWORD: invs123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+      - postgres-legacy
+    networks:
+      - invs-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: invs-phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql-original
+      PMA_PORT: 3306
+      PMA_USER: invs_user
+      PMA_PASSWORD: invs123
+      MYSQL_ROOT_PASSWORD: invs123
+    ports:
+      - "8082:80"
+    depends_on:
+      - mysql-original
+    networks:
+      - invs-network
+
+volumes:
+  postgres_data:
+  postgres_legacy_data:
+  mysql_data:
+
+networks:
+  invs-network:
+    driver: bridge

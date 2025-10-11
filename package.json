@@ -1,0 +1,48 @@
+{
+  "name": "invs-modern",
+  "version": "1.0.0",
+  "description": "Modern INVS Hospital Inventory Management System",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "ts-node prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "tmt:import": "node scripts/import-tmt-data.js",
+    "tmt:sync": "node scripts/sync-tmt-updates.js",
+    "tmt:import:concepts": "node scripts/import-tmt-data.js --concepts-only",
+    "tmt:import:relationships": "node scripts/import-tmt-data.js --relationships-only",
+    "tmt:update-codes": "node scripts/import-tmt-data.js --update-codes-only",
+    "tmt:stats": "node scripts/import-tmt-data.js --stats-only",
+    "tmt:seed-refs": "npx ts-node scripts/seed-tmt-references.ts",
+    "his:sync": "npx ts-node scripts/his-integration.ts",
+    "migrate:legacy": "node scripts/migrate-legacy-to-modern.js",
+    "migrate:legacy:dry-run": "node scripts/migrate-legacy-to-modern.js --dry-run",
+    "migrate:legacy:debug": "node scripts/migrate-legacy-to-modern.js --debug",
+    "migrate:validate": "node scripts/validate-migration.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "inventory",
+    "hospital",
+    "postgresql",
+    "prisma"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.3",
+    "prisma": "^6.16.3",
+    "xlsx": "^0.18.5",
+    "mysql2": "^3.11.0"
+  }
+}

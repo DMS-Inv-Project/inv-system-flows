@@ -1,0 +1,126 @@
+    table_name     |   column_name   |     data_type     
+-------------------+-----------------+-------------------
+ DOC_FLOW          | BUDGET_TYPE     | integer
+ INV_RTN_C         | RETURN_COST     | double precision
+ INV_RTN_C         | TOTAL_COST      | double precision
+ INV_RTN_C         | UNIT_COST       | double precision
+ PRE_MS_IVO        | AMOUNT          | double precision
+ SM_PO_E           | COST            | double precision
+ bdg_amt           | BUDGET_AMOUNT   | double precision
+ bdg_amt           | BUDGET_AMT_TRI1 | double precision
+ bdg_amt           | BUDGET_AMT_TRI2 | double precision
+ bdg_amt           | BUDGET_AMT_TRI3 | double precision
+ bdg_amt           | BUDGET_AMT_TRI4 | double precision
+ bdg_amt           | BUDGET_REMAIN   | double precision
+ bdg_amt           | BUDGET_RM_TRI1  | double precision
+ bdg_amt           | BUDGET_RM_TRI2  | double precision
+ bdg_amt           | BUDGET_RM_TRI3  | double precision
+ bdg_amt           | BUDGET_RM_TRI4  | double precision
+ bdg_amt           | BUDGET_TYPE     | character
+ bdg_amt           | DEBT            | double precision
+ bdg_amt           | FISCAL_YEAR     | character
+ bdg_amt           | LIMIT_FLAG      | character
+ bdg_amt           | MOD_SYS         | character varying
+ bdg_amt           | TOTAL_BUY       | double precision
+ bdg_amt           | TOTAL_BUY_TRI1  | double precision
+ bdg_amt           | TOTAL_BUY_TRI2  | double precision
+ bdg_amt           | TOTAL_BUY_TRI3  | double precision
+ bdg_amt           | TOTAL_BUY_TRI4  | double precision
+ bdg_type          | BUDGET_AMOUNT   | double precision
+ bdg_type          | BUDGET_NAME     | character
+ bdg_type          | BUDGET_TYPE     | character
+ bdg_type          | DEFAULT_FLAG    | character varying
+ bdg_type          | EXPRESS_TYPE    | character
+ bdg_type          | HIDE            | character
+ bdg_type          | RECORD_NUMBER   | integer
+ bdg_type          | TOTAL_BUY       | double precision
+ buy_re_m          | BUDGET_TYPE     | character
+ buy_re_y          | BUDGET_TYPE     | character
+ buyplan_c         | PACK_UNIT_COST  | double precision
+ buyplan_log       | PACK_UNIT_COST  | double precision
+ card              | COST            | double precision
+ card              | REMAIN_COST     | double precision
+ card              | REMAIN_COST_LOT | real
+ card              | REMAIN_COST_T   | real
+ card_backup       | COST            | double precision
+ card_backup       | REMAIN_COST     | double precision
+ card_backup       | REMAIN_COST_T   | real
+ card_copy         | COST            | double precision
+ card_copy         | REMAIN_COST     | double precision
+ card_copy         | REMAIN_COST_T   | real
+ cnt               | REMAIN_COST     | double precision
+ cnt               | TOTAL_COST      | double precision
+ cnt_c             | BUY_UNIT_COST   | double precision
+ cnt_c             | COST_CNT        | double precision
+ cnt_c             | COST_REMAIN     | double precision
+ doc_flow          | BUDGET_TYPE     | integer
+ drug_gn           | LAST_BUY_COST   | double precision
+ drug_gn           | TOTAL_COST      | double precision
+ drug_gn_20231101  | LAST_BUY_COST   | double precision
+ drug_gn_20231101  | TOTAL_COST      | double precision
+ drug_gn_copy      | LAST_BUY_COST   | double precision
+ drug_gn_copy      | TOTAL_COST      | double precision
+ drug_gn_new       | LAST_BUY_COST   | double precision
+ drug_gn_new       | TOTAL_COST      | double precision
+ drug_gn_old       | LAST_BUY_COST   | double precision
+ drug_gn_old       | TOTAL_COST      | double precision
+ drug_vn           | BUY_UNIT_COST   | double precision
+ drug_vn           | LAST_BUY_COST   | double precision
+ drug_vn_backup    | BUY_UNIT_COST   | double precision
+ drug_vn_backup    | LAST_BUY_COST   | double precision
+ drug_vn_new       | BUY_UNIT_COST   | double precision
+ drug_vn_new       | LAST_BUY_COST   | double precision
+ drug_vnx          | BUY_UNIT_COST   | double precision
+ drug_vnx          | LAST_BUY_COST   | double precision
+ gf                | AMOUNT          | double precision
+ inv_md            | TOTAL_COST      | double precision
+ inv_md            | WA_COST         | numeric
+ inv_md_backup     | TOTAL_COST      | double precision
+ inv_md_c          | LOT_COST        | double precision
+ inv_md_c          | PACK_COST       | numeric
+ inv_md_c_20230716 | LOT_COST        | double precision
+ inv_md_c_20230716 | PACK_COST       | numeric
+ inv_md_c_backup   | LOT_COST        | double precision
+ inv_md_c_backup   | PACK_COST       | numeric
+ inv_md_c_copy     | LOT_COST        | double precision
+ inv_md_c_copy     | PACK_COST       | numeric
+ inv_md_copy       | TOTAL_COST      | double precision
+ inv_rtn_c         | RETURN_COST     | double precision
+ inv_rtn_c         | TOTAL_COST      | double precision
+ inv_rtn_c         | UNIT_COST       | double precision
+ med_inv           | allowZeroCost   | character
+ med_inv           | cost            | character
+ ms_ivo            | BUDGET_TYPE     | character
+ ms_ivo            | TOTAL_COST      | double precision
+ ms_ivo_c          | BUY_UNIT_COST   | double precision
+ ms_ivo_c          | COST            | double precision
+ ms_po             | BUDGET_TYPE     | character
+ ms_po             | TOTAL_COST      | double precision
+ ms_po             | TOTAL_COST_AD   | double precision
+ ms_po             | TOTAL_COST_AV   | double precision
+ ms_po             | TOTAL_COST_RCV  | double precision
+ ms_po             | VAT_COST        | double precision
+ ms_po_c           | BUY_UNIT_COST   | double precision
+ ms_po_c           | COST            | double precision
+ opd_h             | totalAmount     | character
+ pack_ratio        | BUY_UNIT_COST   | double precision
+ patmed            | amount          | double precision
+ patmed            | unitCost        | double precision
+ pre_ms_ivo        | AMOUNT          | double precision
+ sm_po             | TOTAL_COST      | double precision
+ sm_po_c           | BUY_UNIT_COST   | double precision
+ sm_po_c           | COST            | double precision
+ sm_po_c           | COST1           | double precision
+ sm_po_c           | COST2           | double precision
+ sm_po_c           | COST3           | double precision
+ sm_po_c           | PACK_COST       | numeric
+ sm_po_c           | WA_COST         | numeric
+ sm_po_c_copy      | BUY_UNIT_COST   | double precision
+ sm_po_c_copy      | COST            | double precision
+ sm_po_c_copy      | COST1           | double precision
+ sm_po_c_copy      | COST2           | double precision
+ sm_po_c_copy      | COST3           | double precision
+ sm_po_c_copy      | PACK_COST       | numeric
+ sm_po_e           | COST            | double precision
+(122 rows)
+

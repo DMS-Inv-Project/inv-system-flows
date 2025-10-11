@@ -1,0 +1,545 @@
+    table_name     |    column_name     |     data_type     
+-------------------+--------------------+-------------------
+ ADD_IN_PROGRAMS   | USER_ID            | character varying
+ DOC_FLOW          | REF_NO             | character varying
+ DOC_FLOW          | USER_ID            | character varying
+ INV_RTN           | DEPT_ID            | character varying
+ INV_RTN           | RETURN_NO          | character
+ INV_RTN           | STOCK_ID           | character varying
+ INV_RTN           | USER_ID            | character varying
+ INV_RTN_C         | ACTION_ID          | integer
+ INV_RTN_C         | LOT_NO             | character varying
+ INV_RTN_C         | REASON_ID          | integer
+ INV_RTN_C         | RETURN_NO          | character
+ INV_RTN_C         | TRADE_CODE         | character varying
+ INV_RTN_C         | USER_ID            | character varying
+ INV_RTN_C         | WORKING_CODE       | character varying
+ PRE_MS_IVO        | INVOICE_NO         | character varying
+ PRE_MS_IVO        | PO_NO              | character varying
+ PRE_MS_IVO        | PRE_RECEIVE_NO     | character
+ PRE_MS_IVO        | USER_ID            | character varying
+ PRE_MS_IVO        | VENDOR_CODE        | character
+ SM_PO_E           | DEPT_ID            | character varying
+ SM_PO_E           | INV_NO             | character varying
+ SM_PO_E           | LOT_NO             | character varying
+ SM_PO_E           | RECEIVE_NO         | character varying
+ SM_PO_E           | STOCK_ID           | character varying
+ SM_PO_E           | SUB_PO_NO          | character
+ SM_PO_E           | TRADE_CODE         | character varying
+ SM_PO_E           | USER_ID            | character varying
+ SM_PO_E           | WORKING_CODE       | character
+ accr_disp         | DEPT_ID            | character varying
+ accr_disp         | DIST_NO            | character
+ accr_disp         | REQ_NO             | character
+ accr_disp         | STOCK_ID           | character varying
+ accr_disp         | USER_ID            | character varying
+ accr_disp         | WORKING_CODE       | character
+ add_in_programs   | USER_ID            | character varying
+ adj_reason        | AR_ID              | integer
+ aic               | AIC_CODE           | integer
+ aic               | REF_NO             | character varying
+ aic_name          | AIC_CODE           | integer
+ area              | areaCode           | character
+ bill_status       | id                 | integer
+ buycommon         | COMMON_CODE        | integer
+ buycommon         | STD_CODE           | character varying
+ buymethod         | BUYMET_CODE        | integer
+ buymethod         | STD_CODE           | character varying
+ buyplan           | DEPT_ID            | character
+ buyplan           | LAST_RVC_NO        | character
+ buyplan_c         | BUYMET_CODE        | integer
+ buyplan_c         | DEPT_ID            | character
+ buyplan_c         | LAST_RCV_NO        | character
+ buyplan_c         | TRADE_CODE         | character
+ buyplan_c         | WORKING_CODE       | character
+ buyplan_log       | DEPT_ID            | character
+ buyplan_log       | USER_ID            | character
+ buyplan_log       | WORKING_CODE       | character
+ card              | DEPT_ID            | character
+ card              | LOT_NO             | character varying
+ card              | PACK_CODE          | integer
+ card              | SMPOC_RECNO        | integer
+ card              | STOCK_ID           | character
+ card              | TRADE_CODE         | character varying
+ card              | USER_ID            | character varying
+ card              | VENDOR_CODE        | integer
+ card              | WORKING_CODE       | character
+ card_backup       | DEPT_ID            | character
+ card_backup       | LOT_NO             | character varying
+ card_backup       | SMPOC_RECNO        | integer
+ card_backup       | STOCK_ID           | character
+ card_backup       | TRADE_CODE         | character varying
+ card_backup       | USER_ID            | character varying
+ card_backup       | WORKING_CODE       | character
+ card_copy         | DEPT_ID            | character
+ card_copy         | LOT_NO             | character varying
+ card_copy         | SMPOC_RECNO        | integer
+ card_copy         | STOCK_ID           | character
+ card_copy         | TRADE_CODE         | character varying
+ card_copy         | USER_ID            | character varying
+ card_copy         | WORKING_CODE       | character
+ cnt               | AIC_NO             | character varying
+ cnt               | AUTH_NO            | character varying
+ cnt               | CNT_NO             | character varying
+ cnt               | DOC_NO             | character varying
+ cnt               | EGP_NO             | character varying
+ cnt               | GF_NO              | character varying
+ cnt               | PARTIES_CODE       | character varying
+ cnt               | PJT_NO             | character varying
+ cnt               | USER_ID            | character varying
+ cnt_c             | CNT_NO             | character varying
+ cnt_c             | PACK_CODE          | integer
+ cnt_c             | TRADE_CODE         | character varying
+ cnt_c             | USER_ID            | character varying
+ cnt_c             | WORKING_CODE       | character
+ company           | BANK_ACC_NO        | character varying
+ company           | COMPANY_CODE       | integer
+ company           | EDI_VENDOR_CODE    | character varying
+ company           | EX_CODE            | character
+ company           | TAX_ID             | character varying
+ concept           | TMTID              | bigint
+ dept_id           | DEPT_ID            | character
+ dept_id           | DEPT_UID           | character varying
+ dept_id           | INV_DIRECTOR_ID    | integer
+ dept_id           | STD_CODE           | character varying
+ dept_id           | SUPPLY_DIRECTOR_ID | integer
+ dept_id           | SUPPLY_OFFICER_ID  | integer
+ dispensed         | MED_CODE           | character varying
+ dispensed         | SUB_PO_NO          | character
+ dist_type         | DIST_TYPE_CODE     | integer
+ doc_flow          | REF_NO             | character varying
+ doc_flow          | USER_ID            | character varying
+ doc_flow_c        | INVOICE_NO         | character varying
+ doc_flow_c        | PACK_CODE          | integer
+ doc_flow_c        | PO_NO              | character varying
+ doc_flow_c        | RECEIVE_NO         | character
+ doc_flow_c        | REF_NO             | character varying
+ doc_type          | DOC_CODE           | character varying
+ dosage_form       | DFORM_ID           | integer
+ drug_compos       | COMPOS_CODE        | integer
+ drug_compos       | TMTID              | bigint
+ drug_compos       | WORKING_CODE       | character varying
+ drug_gn           | CONT_UNIT_ID       | integer
+ drug_gn           | DFORM_ID           | integer
+ drug_gn           | ED_LIST_CODE       | character
+ drug_gn           | EXPRESS_CODE       | character
+ drug_gn           | GPUID              | integer
+ drug_gn           | GROUP_CODE         | character
+ drug_gn           | LAST_PACK_CODE     | integer
+ drug_gn           | LAST_VENDOR_CODE   | character
+ drug_gn           | SALE_UNIT_ID       | integer
+ drug_gn           | SPECIAL_CODE       | character
+ drug_gn           | STRENGTH_DENO      | double precision
+ drug_gn           | STR_DENO_UID       | integer
+ drug_gn           | STR_UID            | integer
+ drug_gn           | USER_ID            | character varying
+ drug_gn           | WORKING_CODE       | character
+ drug_gn_20231101  | CONT_UNIT_ID       | integer
+ drug_gn_20231101  | DFORM_ID           | integer
+ drug_gn_20231101  | ED_LIST_CODE       | character
+ drug_gn_20231101  | EXPRESS_CODE       | character
+ drug_gn_20231101  | GPUID              | integer
+ drug_gn_20231101  | GROUP_CODE         | character
+ drug_gn_20231101  | LAST_PACK_CODE     | integer
+ drug_gn_20231101  | LAST_VENDOR_CODE   | character
+ drug_gn_20231101  | SALE_UNIT_ID       | integer
+ drug_gn_20231101  | SPECIAL_CODE       | character
+ drug_gn_20231101  | STRENGTH_DENO      | double precision
+ drug_gn_20231101  | STR_DENO_UID       | integer
+ drug_gn_20231101  | STR_UID            | integer
+ drug_gn_20231101  | USER_ID            | character varying
+ drug_gn_20231101  | WORKING_CODE       | character
+ drug_gn_copy      | DFORM_ID           | integer
+ drug_gn_copy      | ED_LIST_CODE       | character
+ drug_gn_copy      | EXPRESS_CODE       | character
+ drug_gn_copy      | GPUID              | integer
+ drug_gn_copy      | GROUP_CODE         | character
+ drug_gn_copy      | LAST_PACK_CODE     | integer
+ drug_gn_copy      | LAST_VENDOR_CODE   | character
+ drug_gn_copy      | SALE_UNIT_ID       | integer
+ drug_gn_copy      | SPECIAL_CODE       | character
+ drug_gn_copy      | STRENGTH_DENO      | double precision
+ drug_gn_copy      | STR_DENO_UID       | integer
+ drug_gn_copy      | STR_UID            | integer
+ drug_gn_copy      | USER_ID            | character varying
+ drug_gn_copy      | WORKING_CODE       | character
+ drug_gn_new       | CONT_UNIT_ID       | integer
+ drug_gn_new       | DFORM_ID           | integer
+ drug_gn_new       | ED_LIST_CODE       | character
+ drug_gn_new       | EXPRESS_CODE       | character
+ drug_gn_new       | GPUID              | integer
+ drug_gn_new       | GROUP_CODE         | character
+ drug_gn_new       | LAST_PACK_CODE     | integer
+ drug_gn_new       | LAST_VENDOR_CODE   | character
+ drug_gn_new       | SALE_UNIT_ID       | integer
+ drug_gn_new       | SPECIAL_CODE       | character
+ drug_gn_new       | STRENGTH_DENO      | double precision
+ drug_gn_new       | STR_DENO_UID       | integer
+ drug_gn_new       | STR_UID            | integer
+ drug_gn_new       | USER_ID            | character varying
+ drug_gn_new       | WORKING_CODE       | character
+ drug_gn_old       | DFORM_ID           | integer
+ drug_gn_old       | ED_LIST_CODE       | character
+ drug_gn_old       | EXPRESS_CODE       | character
+ drug_gn_old       | GPUID              | integer
+ drug_gn_old       | GROUP_CODE         | character
+ drug_gn_old       | LAST_PACK_CODE     | integer
+ drug_gn_old       | LAST_VENDOR_CODE   | character
+ drug_gn_old       | SALE_UNIT_ID       | integer
+ drug_gn_old       | SPECIAL_CODE       | character
+ drug_gn_old       | STRENGTH_DENO      | double precision
+ drug_gn_old       | STR_DENO_UID       | integer
+ drug_gn_old       | STR_UID            | integer
+ drug_gn_old       | USER_ID            | character varying
+ drug_gn_old       | WORKING_CODE       | character
+ drug_spec         | WORKING_CODE       | character varying
+ drug_vn           | BAR_CODE           | character
+ drug_vn           | GENERIC_CODE       | character
+ drug_vn           | MANUFAC_CODE       | character
+ drug_vn           | REGIST_NO          | character
+ drug_vn           | STD_CODE           | character
+ drug_vn           | SUB_COM_CODE       | integer
+ drug_vn           | TMTID              | bigint
+ drug_vn           | TRADE_CODE         | character varying
+ drug_vn           | USER_ID            | character varying
+ drug_vn           | VENDOR_CODE        | character
+ drug_vn           | WORKING_CODE       | character
+ drug_vn_backup    | BAR_CODE           | character
+ drug_vn_backup    | GENERIC_CODE       | character
+ drug_vn_backup    | MANUFAC_CODE       | character
+ drug_vn_backup    | REGIST_NO          | character
+ drug_vn_backup    | STD_CODE           | character
+ drug_vn_backup    | SUB_COM_CODE       | integer
+ drug_vn_backup    | TMTID              | bigint
+ drug_vn_backup    | TRADE_CODE         | character varying
+ drug_vn_backup    | USER_ID            | character varying
+ drug_vn_backup    | VENDOR_CODE        | character
+ drug_vn_backup    | WORKING_CODE       | character
+ drug_vn_new       | BAR_CODE           | character
+ drug_vn_new       | GENERIC_CODE       | character
+ drug_vn_new       | MANUFAC_CODE       | character
+ drug_vn_new       | REGIST_NO          | character
+ drug_vn_new       | STD_CODE           | character
+ drug_vn_new       | SUB_COM_CODE       | integer
+ drug_vn_new       | TMTID              | bigint
+ drug_vn_new       | TRADE_CODE         | character varying
+ drug_vn_new       | USER_ID            | character varying
+ drug_vn_new       | VENDOR_CODE        | character
+ drug_vn_new       | WORKING_CODE       | character
+ drug_vnx          | BAR_CODE           | character
+ drug_vnx          | GENERIC_CODE       | character
+ drug_vnx          | GPUID              | integer
+ drug_vnx          | MANUFAC_CODE       | character
+ drug_vnx          | REGIST_NO          | character
+ drug_vnx          | STD_CODE           | character
+ drug_vnx          | SUB_COM_CODE       | integer
+ drug_vnx          | TMTID              | bigint
+ drug_vnx          | TRADE_CODE         | character varying
+ drug_vnx          | VENDOR_CODE        | character
+ drug_vnx          | WORKING_CODE       | character
+ e_po              | CLIENT_ID          | character varying
+ e_po              | DEPT_ID            | character varying
+ ed_group          | SUB_COMMIT_CODE    | integer
+ edi_drug_vn       | INVS_TRADE_CODE    | character varying
+ edi_drug_vn       | TMTID              | character varying
+ edi_drug_vn       | VENDOR_CODE        | character varying
+ edi_drug_vn       | VENDOR_TRADE_CODE  | character varying
+ focus_list        | DEPT_ID            | character varying
+ focus_list        | LIST_CODE          | integer
+ focus_list        | USER_ID            | character varying
+ focus_list_c      | LIST_CODE          | integer
+ focus_list_c      | USER_ID            | character varying
+ focus_list_c      | WORKING_CODE       | character varying
+ form              | FORM_CODE          | character varying
+ form              | USER_ID            | character varying
+ gf                | GF_NO              | character varying
+ gf                | PJT_NO             | character varying
+ gf                | RCV_NO             | character varying
+ gf                | RUNNO              | smallint
+ gp                | dformid            | bigint
+ gp                | gpid               | bigint
+ gp                | invalid            | smallint
+ gp                | replace_id         | bigint
+ gp                | userid             | character varying
+ gp                | vtmid              | bigint
+ gpu               | contunitid         | bigint
+ gpu               | dispid             | bigint
+ gpu               | gpid               | bigint
+ gpu               | gpuid              | bigint
+ gpu               | invalid            | smallint
+ gpu               | replace_id         | bigint
+ gpu               | userid             | character varying
+ hosp              | HOSP_CODE          | character
+ hosp_inv          | DOC_REF_NO         | character varying
+ hosp_inv          | HOSP_ID            | character
+ hosp_list         | HOSP_LIST_CODE     | integer
+ icode_tpu_hosxp   | icode              | character varying
+ inst_name         | REF_CODE           | character varying
+ inst_name         | USER_ID            | character varying
+ inv_has_his       | HIS_CODE           | character varying
+ inv_has_his       | INV_CODE           | character varying
+ inv_md            | DEPT_ID            | character
+ inv_md            | LAST_PACK_CODE     | integer
+ inv_md            | LAST_VENDOR_CODE   | integer
+ inv_md            | SPECIAL_CODE       | character
+ inv_md            | USER_ID            | character varying
+ inv_md            | WORKING_CODE       | character
+ inv_md_backup     | DEPT_ID            | character
+ inv_md_backup     | LAST_PACK_CODE     | integer
+ inv_md_backup     | LAST_VENDOR_CODE   | integer
+ inv_md_backup     | SPECIAL_CODE       | character
+ inv_md_backup     | USER_ID            | character varying
+ inv_md_backup     | WORKING_CODE       | character
+ inv_md_c          | BAR_CODE           | character
+ inv_md_c          | DEPT_ID            | character
+ inv_md_c          | LOT_NO             | character
+ inv_md_c          | MANUFAC_CODE       | character
+ inv_md_c          | PACK_CODE          | integer
+ inv_md_c          | TRADE_CODE         | character varying
+ inv_md_c          | USER_ID            | character varying
+ inv_md_c          | VENDOR_CODE        | character
+ inv_md_c          | WORKING_CODE       | character
+ inv_md_c_20230716 | BAR_CODE           | character
+ inv_md_c_20230716 | DEPT_ID            | character
+ inv_md_c_20230716 | LOT_NO             | character
+ inv_md_c_20230716 | MANUFAC_CODE       | character
+ inv_md_c_20230716 | PACK_CODE          | integer
+ inv_md_c_20230716 | TRADE_CODE         | character varying
+ inv_md_c_20230716 | USER_ID            | character varying
+ inv_md_c_20230716 | VENDOR_CODE        | character
+ inv_md_c_20230716 | WORKING_CODE       | character
+ inv_md_c_backup   | BAR_CODE           | character
+ inv_md_c_backup   | DEPT_ID            | character
+ inv_md_c_backup   | LOT_NO             | character
+ inv_md_c_backup   | MANUFAC_CODE       | character
+ inv_md_c_backup   | PACK_CODE          | integer
+ inv_md_c_backup   | TRADE_CODE         | character varying
+ inv_md_c_backup   | USER_ID            | character varying
+ inv_md_c_backup   | VENDOR_CODE        | character
+ inv_md_c_backup   | WORKING_CODE       | character
+ inv_md_c_copy     | BAR_CODE           | character
+ inv_md_c_copy     | DEPT_ID            | character
+ inv_md_c_copy     | LOT_NO             | character
+ inv_md_c_copy     | MANUFAC_CODE       | character
+ inv_md_c_copy     | PACK_CODE          | integer
+ inv_md_c_copy     | TRADE_CODE         | character varying
+ inv_md_c_copy     | USER_ID            | character varying
+ inv_md_c_copy     | VENDOR_CODE        | character
+ inv_md_c_copy     | WORKING_CODE       | character
+ inv_md_copy       | DEPT_ID            | character
+ inv_md_copy       | LAST_PACK_CODE     | integer
+ inv_md_copy       | LAST_VENDOR_CODE   | integer
+ inv_md_copy       | SPECIAL_CODE       | character
+ inv_md_copy       | USER_ID            | character varying
+ inv_md_copy       | WORKING_CODE       | character
+ inv_rtn           | DEPT_ID            | character varying
+ inv_rtn           | RETURN_NO          | character
+ inv_rtn           | STOCK_ID           | character varying
+ inv_rtn           | USER_ID            | character varying
+ inv_rtn_c         | ACTION_ID          | integer
+ inv_rtn_c         | LOT_NO             | character varying
+ inv_rtn_c         | PACK_CODE          | integer
+ inv_rtn_c         | REASON_ID          | integer
+ inv_rtn_c         | RETURN_NO          | character
+ inv_rtn_c         | TRADE_CODE         | character varying
+ inv_rtn_c         | USER_ID            | character varying
+ inv_rtn_c         | WORKING_CODE       | character varying
+ inv_site          | DEPT_ID            | character
+ inv_site          | TRADE_CODE         | character varying
+ inv_site          | USER_ID            | character varying
+ inv_site          | WORKING_CODE       | character
+ item_type         | USER_ID            | character varying
+ item_type         | WORKING_CODE       | character varying
+ lamed             | lamed_code         | character
+ location          | DEPT_ID            | character varying
+ location          | LOCATION_ID        | character varying
+ location          | TRADE_CODE         | character varying
+ location          | WORKING_CODE       | character varying
+ marital           | maritalCode        | character
+ mbs_re_m          | DEPT_ID            | character
+ mbs_re_y          | WORKING_CODE       | character
+ med_intx          | firstCode          | character
+ med_intx          | secondCode         | character
+ med_inv           | cur_lot_no         | character
+ med_inv           | gpscCode           | character varying
+ med_inv           | last_lot_no        | character
+ med_inv           | medPointQNo        | character
+ med_inv           | med_class_code     | character
+ med_inv           | pair_code          | character
+ med_inv           | sysID              | character
+ med_inv           | upd_med_code       | character
+ med_kw            | medCode            | character
+ medallergy        | classCode          | character
+ medallergy        | medCode            | character
+ medallergy        | regNo              | character
+ medallergytype    | AllergyTypeCode    | character varying
+ medcausality      | id                 | bigint
+ menucon           | id                 | smallint
+ module_system     | MODULE_ID          | character varying
+ ms_ivo            | AI_NO              | character varying
+ ms_ivo            | ASN_NO             | character varying
+ ms_ivo            | BILL_STATUS_ID     | integer
+ ms_ivo            | DEPT_ID            | character
+ ms_ivo            | INVOICE_NO         | character
+ ms_ivo            | PO_NO              | character varying
+ ms_ivo            | PRE_RECEIVE_NO     | character varying
+ ms_ivo            | RECEIVE_NO         | character
+ ms_ivo            | USER_ID            | character varying
+ ms_ivo            | VENDOR_CODE        | character
+ ms_ivo_c          | BAR_CODE           | character
+ ms_ivo_c          | DEPT_ID            | character
+ ms_ivo_c          | INVOICE_NO         | character
+ ms_ivo_c          | LOT_NO             | character varying
+ ms_ivo_c          | MANUFAC_CODE       | character
+ ms_ivo_c          | MSPOC_RECNO        | integer
+ ms_ivo_c          | PACK_CODE          | integer
+ ms_ivo_c          | RECEIVE_NO         | character
+ ms_ivo_c          | TRADE_CODE         | character varying
+ ms_ivo_c          | USER_ID            | character varying
+ ms_ivo_c          | WORKING_CODE       | character
+ ms_po             | CNT_NO             | character varying
+ ms_po             | DEPT_ID            | character
+ ms_po             | EGP_NO             | character varying
+ ms_po             | GF_NO              | character varying
+ ms_po             | PO_NO              | character
+ ms_po             | PROJECT_NO         | character varying
+ ms_po             | REF_NO             | character varying
+ ms_po             | REQ_APP_NO         | character varying
+ ms_po             | SUPPLIER_CODE      | character varying
+ ms_po             | USER_ID            | character varying
+ ms_po             | VENDOR_CODE        | character
+ ms_po_c           | CNT_NO             | character varying
+ ms_po_c           | MANUFAC_CODE       | character
+ ms_po_c           | MSIVOC_RECNO       | integer
+ ms_po_c           | PACK_CODE          | integer
+ ms_po_c           | PO_NO              | character
+ ms_po_c           | RUNNO              | smallint
+ ms_po_c           | SALE_UNIT_ID       | integer
+ ms_po_c           | TRADE_CODE         | character varying
+ ms_po_c           | USER_ID            | character varying
+ ms_po_c           | VENDOR_CODE        | character
+ ms_po_c           | WORKING_CODE       | character
+ nation            | NATCODE            | character
+ new_item          | WORKING_CODE       | character varying
+ occup             | occcode            | character
+ opd_h             | VisitNo            | integer
+ opd_h             | areaCode           | character
+ opd_h             | docCode            | character
+ opd_h             | regNo              | character
+ opd_h             | userCode           | character
+ opd_h             | visitcat_code      | character varying
+ pack_ratio        | BAR_CODE           | character varying
+ pack_ratio        | MANUFAC_CODE       | character
+ pack_ratio        | PACK_CODE          | character varying
+ pack_ratio        | TRADE_CODE         | character varying
+ pack_ratio        | VENDOR_CODE        | character
+ pack_ratio        | WORKING_CODE       | character
+ pack_ratio        | user_id            | character varying
+ patient           | CardID             | character varying
+ patient           | areaCode           | character
+ patient           | regionCode         | character
+ patient           | tambonCode         | character
+ patient           | titleCode          | character
+ patmed            | invCode            | character varying
+ patmed            | lastReqNo          | character
+ patmed            | lastReqRunNo       | smallint
+ patmed            | med_id             | integer
+ patmed            | registNo           | character
+ patmed            | reqNo              | character
+ patmed            | runNo              | smallint
+ patmed            | stockID            | character varying
+ pre_ms_ivo        | DEPT_ID            | character varying
+ pre_ms_ivo        | INVOICE_NO         | character varying
+ pre_ms_ivo        | PO_NO              | character varying
+ pre_ms_ivo        | PRE_RECEIVE_NO     | character
+ pre_ms_ivo        | USER_ID            | character varying
+ pre_ms_ivo        | VENDOR_CODE        | character
+ profile           | DEPT_ID            | character
+ profile           | UserCode           | character
+ profile           | deptCode           | character
+ ptitle            | titleCode          | character
+ quali_goal        | QUALI_ID           | integer
+ quali_goal        | UOM_ID             | integer
+ quali_goal        | WORKING_CODE       | character varying
+ quali_item        | QUALI_ID           | integer
+ quali_rcv         | LOT_NO             | character varying
+ quali_rcv         | QUALI_ID           | integer
+ quali_rcv         | RECEIVE_NO         | character
+ quali_rcv         | TRADE_CODE         | character varying
+ quali_rcv         | USER_ID            | character varying
+ quali_rcv         | WORKING_CODE       | character varying
+ region            | postalCode         | character
+ region            | regionCode         | character
+ religion          | REGCODE            | character
+ reports           | ReportNo           | integer
+ req_con           | STOCK_ID           | character
+ sale_unit         | SU_ID              | integer
+ scan              | DOC_CODE           | character varying
+ scan              | REF_NO             | character varying
+ scan              | USER_ID            | character varying
+ serial            | node_id            | character
+ serial            | serial_no          | integer
+ sm_po             | ACC_NO             | character
+ sm_po             | DEPT_ID            | character
+ sm_po             | REF_NO             | character varying
+ sm_po             | STOCK_ID           | character
+ sm_po             | SUB_PO_NO          | character
+ sm_po             | SUB_PO_UNO         | character varying
+ sm_po             | USER_ID            | character varying
+ sm_po_c           | BAR_CODE           | character
+ sm_po_c           | LOT_NO             | character varying
+ sm_po_c           | MANUFAC_CODE       | character
+ sm_po_c           | PACK_CODE          | integer
+ sm_po_c           | SUB_PO_NO          | character
+ sm_po_c           | TRADE_CODE         | character varying
+ sm_po_c           | USER_ID            | character varying
+ sm_po_c           | VENDOR_CODE        | character
+ sm_po_c           | WORKING_CODE       | character
+ sm_po_c_copy      | BAR_CODE           | character
+ sm_po_c_copy      | LOT_NO             | character varying
+ sm_po_c_copy      | MANUFAC_CODE       | character
+ sm_po_c_copy      | PACK_CODE          | integer
+ sm_po_c_copy      | SUB_PO_NO          | character
+ sm_po_c_copy      | TRADE_CODE         | character varying
+ sm_po_c_copy      | USER_ID            | character varying
+ sm_po_c_copy      | VENDOR_CODE        | character
+ sm_po_c_copy      | WORKING_CODE       | character
+ sm_po_e           | DEPT_ID            | character varying
+ sm_po_e           | INV_NO             | character varying
+ sm_po_e           | LOT_NO             | character varying
+ sm_po_e           | RECEIVE_NO         | character varying
+ sm_po_e           | STOCK_ID           | character varying
+ sm_po_e           | SUB_PO_NO          | character
+ sm_po_e           | TRADE_CODE         | character varying
+ sm_po_e           | USER_ID            | character varying
+ sm_po_e           | WORKING_CODE       | character
+ special           | DEPT_ID            | character
+ special           | SPECIAL_CODE       | character
+ special_bk1       | DEPT_ID            | character
+ special_bk1       | SPECIAL_CODE       | character
+ sub_com           | SUB_COMMIT_CODE    | integer
+ tmt               | RegNo              | character varying
+ tmt               | TMTID              | bigint
+ tmt               | TPUCode            | character varying
+ tp                | gpid               | bigint
+ tp                | hosp_id            | character
+ tp                | invalid            | smallint
+ tp                | label_str_deno     | numeric
+ tp                | mftid              | bigint
+ tp                | replace_id         | bigint
+ tp                | tpid               | bigint
+ tp                | userid             | character varying
+ tpu               | gpuid              | bigint
+ tpu               | invalid            | smallint
+ tpu               | replace_id         | bigint
+ tpu               | tpid               | bigint
+ tpu               | tpuid              | bigint
+ tpu               | userid             | character varying
+ uom               | UOM_ID             | integer
+ usercon           | UserCode           | character
+ vtm               | invalid            | smallint
+ vtm               | replace_id         | bigint
+ vtm               | userid             | character varying
+ vtm               | vtmid              | bigint
+(541 rows)
+

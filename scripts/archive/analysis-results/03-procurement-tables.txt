@@ -1,0 +1,642 @@
+    table_name    |      column_name       |          data_type          
+------------------+------------------------+-----------------------------
+ PRE_MS_IVO       | AMOUNT                 | double precision
+ PRE_MS_IVO       | ARRIVE_DATE            | character
+ PRE_MS_IVO       | CANCEL_FLAG            | character
+ PRE_MS_IVO       | GROSS_WEIGHT           | double precision
+ PRE_MS_IVO       | INVOICE_NO             | character varying
+ PRE_MS_IVO       | LAST_UPDATE            | timestamp without time zone
+ PRE_MS_IVO       | PO_NO                  | character varying
+ PRE_MS_IVO       | PRE_RECEIVE_NO         | character
+ PRE_MS_IVO       | QTY                    | integer
+ PRE_MS_IVO       | RCV_FLAG               | character
+ PRE_MS_IVO       | REMARK                 | character varying
+ PRE_MS_IVO       | USER_ID                | character varying
+ PRE_MS_IVO       | VENDOR_CODE            | character
+ SM_PO_E          | CANCEL_DIST            | character
+ SM_PO_E          | COMPLETE_FLAG          | character varying
+ SM_PO_E          | COST                   | double precision
+ SM_PO_E          | DEPT_ID                | character varying
+ SM_PO_E          | DIST_DATE              | character varying
+ SM_PO_E          | DIST_TIME              | character varying
+ SM_PO_E          | EXPIRED_DATE           | character
+ SM_PO_E          | INV_NO                 | character varying
+ SM_PO_E          | INV_REMAIN_QTY         | double precision
+ SM_PO_E          | LOCATION               | character
+ SM_PO_E          | LOT_NO                 | character varying
+ SM_PO_E          | MSIVOC_RECORD          | integer
+ SM_PO_E          | PACK_RATIO             | double precision
+ SM_PO_E          | QTY_DIST               | double precision
+ SM_PO_E          | QTY_DIST_E             | double precision
+ SM_PO_E          | RECEIVE_NO             | character varying
+ SM_PO_E          | RECORD_NUMBER          | integer
+ SM_PO_E          | STOCK_ID               | character varying
+ SM_PO_E          | SUB_PO_NO              | character
+ SM_PO_E          | TRADE_CODE             | character varying
+ SM_PO_E          | USER_ID                | character varying
+ SM_PO_E          | WORKING_CODE           | character
+ aic_name         | POSITION               | character varying
+ buy_re_m         | BUDGET_TYPE            | character
+ buy_re_m         | MONTH                  | character
+ buy_re_m         | MONTH_VALUE            | double precision
+ buy_re_m         | RECORD_NUMBER          | integer
+ buy_re_m         | SUPPLY_TYPE            | character
+ buy_re_m         | YEAR                   | character
+ buy_re_y         | BUDGET_TYPE            | character
+ buy_re_y         | RECORD_NUMBER          | integer
+ buy_re_y         | SUPPLY_TYPE            | character
+ buy_re_y         | YEAR_VALUE             | double precision
+ buy_re_y         | YEA_                   | character
+ buycommon        | AUTHOR_SIGN            | character varying
+ buycommon        | COMMON_CODE            | integer
+ buycommon        | COMMON_DES             | character varying
+ buycommon        | DEAL_DAYS              | smallint
+ buycommon        | DEFAULT_FLAG           | character varying
+ buycommon        | HIDE                   | character
+ buycommon        | STD_CODE               | character varying
+ buymethod        | AUTHOR_SIGN            | character varying
+ buymethod        | BUYMET_CODE            | integer
+ buymethod        | BUYMET_DES             | character varying
+ buymethod        | DEAL_DAYS              | smallint
+ buymethod        | DEFAULT_FLAG           | character varying
+ buymethod        | HIDE                   | character
+ buymethod        | MAX_AMT                | double precision
+ buymethod        | MIN_AMT                | double precision
+ buymethod        | REPORT_NAME            | character varying
+ buymethod        | STD_CODE               | character varying
+ buyplan          | APPROVE                | character
+ buyplan          | BUY_TRIMES1            | double precision
+ buyplan          | BUY_TRIMES2            | double precision
+ buyplan          | BUY_TRIMES3            | double precision
+ buyplan          | BUY_TRIMES4            | double precision
+ buyplan          | BUY_VALUE              | double precision
+ buyplan          | CAL_MONTH              | character
+ buyplan          | CAL_YEAR               | character
+ buyplan          | DEPT_ID                | character
+ buyplan          | LAST_RCV_DATE          | character
+ buyplan          | LAST_RVC_NO            | character
+ buyplan          | LAST_UPDATE            | timestamp without time zone
+ buyplan          | LAST_USER              | character
+ buyplan          | MOD_SYS                | character varying
+ buyplan          | RCV_VALUE              | double precision
+ buyplan          | REMAIN_RCV_VALUE       | double precision
+ buyplan          | REMAIN_VALUE           | double precision
+ buyplan          | RM_TRIMES1             | double precision
+ buyplan          | RM_TRIMES2             | double precision
+ buyplan          | RM_TRIMES3             | double precision
+ buyplan          | RM_TRIMES4             | double precision
+ buyplan          | TRIMESTER1             | double precision
+ buyplan          | TRIMESTER2             | double precision
+ buyplan          | TRIMESTER3             | double precision
+ buyplan          | TRIMESTER4             | double precision
+ buyplan          | VALUE_1_YEAR           | double precision
+ buyplan          | VALUE_2_YEAR           | double precision
+ buyplan          | VALUE_3_YEAR           | double precision
+ buyplan          | VALUE_DEFENCE          | double precision
+ buyplan          | VALUE_THIS_YEAR        | double precision
+ buyplan          | YEAR                   | character
+ buyplan_c        | ADJ_REASON             | integer
+ buyplan_c        | APPROVE                | character
+ buyplan_c        | AVG_3_YEAR             | double precision
+ buyplan_c        | BUYMET_CODE            | integer
+ buyplan_c        | BUY_QTY                | double precision
+ buyplan_c        | BUY_TRIMES1            | double precision
+ buyplan_c        | BUY_TRIMES2            | double precision
+ buyplan_c        | BUY_TRIMES3            | double precision
+ buyplan_c        | BUY_TRIMES4            | double precision
+ buyplan_c        | BUY_VALUE              | double precision
+ buyplan_c        | CAL_MONTH              | character
+ buyplan_c        | DEPT_ID                | character
+ buyplan_c        | DISP_RATIO1            | double precision
+ buyplan_c        | DISP_RATIO2            | double precision
+ buyplan_c        | DISP_RATIO3            | double precision
+ buyplan_c        | DISP_RATIO4            | double precision
+ buyplan_c        | FORECAST               | double precision
+ buyplan_c        | HIDE                   | character varying
+ buyplan_c        | LAST_RCV_DATE          | character
+ buyplan_c        | LAST_RCV_NO            | character
+ buyplan_c        | LAST_UPDATE            | timestamp without time zone
+ buyplan_c        | LAST_USER              | character
+ buyplan_c        | MIN_LEVEL              | double precision
+ buyplan_c        | MOD_SYS                | character varying
+ buyplan_c        | PACK_RATIO             | double precision
+ buyplan_c        | PACK_UNIT_COST         | double precision
+ buyplan_c        | PLAN_TYPE              | integer
+ buyplan_c        | QTY_BUY_TRI1           | double precision
+ buyplan_c        | QTY_BUY_TRI2           | double precision
+ buyplan_c        | QTY_BUY_TRI3           | double precision
+ buyplan_c        | QTY_BUY_TRI4           | double precision
+ buyplan_c        | QTY_FORECAST           | double precision
+ buyplan_c        | QTY_FREE_Y3            | double precision
+ buyplan_c        | QTY_ON_HAND            | double precision
+ buyplan_c        | QTY_PRE_PLAN           | double precision
+ buyplan_c        | QTY_RCV_TRI1           | double precision
+ buyplan_c        | QTY_RCV_TRI2           | double precision
+ buyplan_c        | QTY_RCV_TRI3           | double precision
+ buyplan_c        | QTY_RCV_TRI4           | double precision
+ buyplan_c        | QTY_RM_TRI1            | double precision
+ buyplan_c        | QTY_RM_TRI2            | double precision
+ buyplan_c        | QTY_RM_TRI3            | double precision
+ buyplan_c        | QTY_RM_TRI4            | double precision
+ buyplan_c        | QTY_THIS_YEAR          | double precision
+ buyplan_c        | QTY_TRI1               | double precision
+ buyplan_c        | QTY_TRI2               | double precision
+ buyplan_c        | QTY_TRI3               | double precision
+ buyplan_c        | QTY_TRI4               | double precision
+ buyplan_c        | RATE_1_YEAR            | double precision
+ buyplan_c        | RATE_2_YEAR            | double precision
+ buyplan_c        | RATE_3_YEAR            | double precision
+ buyplan_c        | RCV_TRI1               | double precision
+ buyplan_c        | RCV_TRI2               | double precision
+ buyplan_c        | RCV_TRI3               | double precision
+ buyplan_c        | RCV_TRI4               | double precision
+ buyplan_c        | REMAIN_QTY             | double precision
+ buyplan_c        | REMAIN_VALUE           | double precision
+ buyplan_c        | RM_TRIMES1             | double precision
+ buyplan_c        | RM_TRIMES2             | double precision
+ buyplan_c        | RM_TRIMES3             | double precision
+ buyplan_c        | RM_TRIMES4             | double precision
+ buyplan_c        | TRADE_CODE             | character
+ buyplan_c        | TRIMESTER1             | double precision
+ buyplan_c        | TRIMESTER2             | double precision
+ buyplan_c        | TRIMESTER3             | double precision
+ buyplan_c        | TRIMESTER4             | double precision
+ buyplan_c        | VALUE_1_YEAE           | double precision
+ buyplan_c        | VALUE_2_YEAR           | double precision
+ buyplan_c        | VALUE_3_YEAR           | double precision
+ buyplan_c        | VALUE_DEFENCE          | double precision
+ buyplan_c        | VALUE_FREE_Y3          | double precision
+ buyplan_c        | VALUE_THIS_YEAR        | double precision
+ buyplan_c        | WORKING_CODE           | character
+ buyplan_c        | YEAR                   | character
+ buyplan_log      | ADJ_REASON             | integer
+ buyplan_log      | CHANGE_DATE            | timestamp without time zone
+ buyplan_log      | CHANGE_FLAG            | smallint
+ buyplan_log      | DEPT_ID                | character
+ buyplan_log      | MOD_SYS                | character varying
+ buyplan_log      | PACK_RATIO             | double precision
+ buyplan_log      | PACK_UNIT_COST         | double precision
+ buyplan_log      | QTY_THIS_YEAR          | double precision
+ buyplan_log      | QTY_TRI1               | double precision
+ buyplan_log      | QTY_TRI2               | double precision
+ buyplan_log      | QTY_TRI3               | double precision
+ buyplan_log      | QTY_TRI4               | double precision
+ buyplan_log      | USER_ID                | character
+ buyplan_log      | VALUE_THIS_YEAR        | double precision
+ buyplan_log      | WORKING_CODE           | character
+ buyplan_log      | YEAR                   | character
+ card             | SMPOC_RECNO            | integer
+ card_backup      | SMPOC_RECNO            | integer
+ card_copy        | SMPOC_RECNO            | integer
+ cnt              | DEPOSIT                | double precision
+ dispensed        | SUB_PO_NO              | character
+ doc_flow_c       | PO_NO                  | character varying
+ drug_compos      | COMPOS_CODE            | integer
+ drug_compos      | COMPOS_NAME            | character varying
+ drug_compos      | TMTID                  | bigint
+ drug_compos      | WORKING_CODE           | character varying
+ drug_gn          | COMPOSITION            | character
+ drug_gn_20231101 | COMPOSITION            | character
+ drug_gn_copy     | COMPOSITION            | character
+ drug_gn_new      | COMPOSITION            | character
+ drug_gn_old      | COMPOSITION            | character
+ drug_vn          | IMPORT_FLAG            | character
+ drug_vn          | USE_IMPORT_PROD        | character varying
+ drug_vn_backup   | IMPORT_FLAG            | character
+ drug_vn_backup   | USE_IMPORT_PROD        | character varying
+ drug_vn_new      | IMPORT_FLAG            | character
+ drug_vn_new      | USE_IMPORT_PROD        | character varying
+ drug_vnx         | IMPORT_FLAG            | character
+ e_po             | CLIENT_ID              | character varying
+ e_po             | CLIENT_SECRET          | character varying
+ e_po             | DEPT_ID                | character varying
+ e_po             | EMAIL_ACC              | character varying
+ e_po             | EMAIL_CC               | character varying
+ e_po             | EMAIL_MSG              | character varying
+ e_po             | EMAIL_PASS             | character varying
+ e_po             | EMAIL_SUBJECT          | character varying
+ e_po             | GoogleToken            | character varying
+ e_po             | ID                     | integer
+ hosp_inv         | START_EXPORT           | timestamp without time zone
+ med_inv          | medPointQNo            | character
+ medallergy       | report_date            | character varying
+ ms_ivo           | AIC_NAME               | character varying
+ ms_ivo           | AI_NO                  | character varying
+ ms_ivo           | ASN_NO                 | character varying
+ ms_ivo           | BILLING_DATE           | character varying
+ ms_ivo           | BILL_STATUS_ID         | integer
+ ms_ivo           | BUDGET_TYPE            | character
+ ms_ivo           | BUY_COMMON             | character
+ ms_ivo           | BUY_METHOD             | character
+ ms_ivo           | CHEQUE_RCV_DATE        | date
+ ms_ivo           | DATE_ACC               | timestamp without time zone
+ ms_ivo           | DEPT_ID                | character
+ ms_ivo           | DISCOUNT               | double precision
+ ms_ivo           | DISCOUNT2              | double precision
+ ms_ivo           | ERROR_ENTER            | character
+ ms_ivo           | ERROR_PROCESS          | character
+ ms_ivo           | HOLD_ACC               | character
+ ms_ivo           | INVOICE_DATE           | character
+ ms_ivo           | INVOICE_NO             | character
+ ms_ivo           | MOD_SYS                | character varying
+ ms_ivo           | PAYMENT_DATE           | date
+ ms_ivo           | PO_DATE                | character
+ ms_ivo           | PO_NO                  | character varying
+ ms_ivo           | PRE_RECEIVE_NO         | character varying
+ ms_ivo           | PROCESS                | character
+ ms_ivo           | RCV_CHKER1             | character
+ ms_ivo           | RCV_CHKER2             | character
+ ms_ivo           | RCV_CHKER3             | character
+ ms_ivo           | RCV_FLAG               | character
+ ms_ivo           | RCV_TIME               | character
+ ms_ivo           | RECEIVE_DATE           | character
+ ms_ivo           | RECEIVE_NO             | character
+ ms_ivo           | RECORD_NUMBER          | integer
+ ms_ivo           | SEND_FLAG              | character varying
+ ms_ivo           | TOTAL_COST             | double precision
+ ms_ivo           | TOTAL_ITEM             | double precision
+ ms_ivo           | TOTAL_VALUE            | double precision
+ ms_ivo           | USER_ID                | character varying
+ ms_ivo           | VENDOR_CODE            | character
+ ms_ivo_c         | BAR_CODE               | character
+ ms_ivo_c         | BUY_UNIT_COST          | double precision
+ ms_ivo_c         | COST                   | double precision
+ ms_ivo_c         | DEPT_ID                | character
+ ms_ivo_c         | EXPIRED_DATE           | character
+ ms_ivo_c         | EXPIRED_DATE1          | date
+ ms_ivo_c         | EXPIRED_DATE2          | timestamp without time zone
+ ms_ivo_c         | FREE_FLAG              | character
+ ms_ivo_c         | INVOICE_NO             | character
+ ms_ivo_c         | LOCATION               | character varying
+ ms_ivo_c         | LOCATION2              | character
+ ms_ivo_c         | LOT_NO                 | character varying
+ ms_ivo_c         | MANUFAC_CODE           | character
+ ms_ivo_c         | MOD_SYS                | character varying
+ ms_ivo_c         | MSPOC_RECNO            | integer
+ ms_ivo_c         | NLEM                   | smallint
+ ms_ivo_c         | PACK_CODE              | integer
+ ms_ivo_c         | PACK_RATIO             | double precision
+ ms_ivo_c         | PACK_RATIO2            | double precision
+ ms_ivo_c         | PLAN_DATE              | timestamp without time zone
+ ms_ivo_c         | PO_ITEM_TYPE           | integer
+ ms_ivo_c         | PROCESS                | character
+ ms_ivo_c         | QTY_FREE               | double precision
+ ms_ivo_c         | QTY_ORDER              | double precision
+ ms_ivo_c         | QTY_RCV                | double precision
+ ms_ivo_c         | QTY_REMPLAN            | double precision
+ ms_ivo_c         | RCV_FLAG               | character
+ ms_ivo_c         | RECEIVE_NO             | character
+ ms_ivo_c         | RECORD_NUMBER          | integer
+ ms_ivo_c         | REF_FREE               | character varying
+ ms_ivo_c         | REMAIN_QTY             | real
+ ms_ivo_c         | REV_FLAG               | character
+ ms_ivo_c         | SEND_FLAG              | character varying
+ ms_ivo_c         | SUB_PROCESS            | character
+ ms_ivo_c         | TRADE_CODE             | character varying
+ ms_ivo_c         | TRANSDATA_DATE         | timestamp without time zone
+ ms_ivo_c         | TRANSDATA_FLAG         | character
+ ms_ivo_c         | USER_CFM               | character varying
+ ms_ivo_c         | USER_ID                | character varying
+ ms_ivo_c         | VALUE                  | double precision
+ ms_ivo_c         | VALUE_REMPLAN          | double precision
+ ms_ivo_c         | WORKING_CODE           | character
+ ms_po            | ACK_DATE               | character varying
+ ms_po            | AIC_NAME               | character varying
+ ms_po            | BDG_BF                 | double precision
+ ms_po            | BDG_RM                 | double precision
+ ms_po            | BILLNUMBER_DATE_EX     | character varying
+ ms_po            | BILLNUMBER_EX          | character varying
+ ms_po            | BUDGET_TYPE            | character
+ ms_po            | BUY_COMMON             | character
+ ms_po            | BUY_METHOD             | character
+ ms_po            | CNT_NO                 | character varying
+ ms_po            | DELIVERY_DATE          | character
+ ms_po            | DEPT_ID                | character
+ ms_po            | DISCOUNT               | double precision
+ ms_po            | DISCOUNT2              | double precision
+ ms_po            | EDI_FLAG               | character varying
+ ms_po            | EDI_RES                | character varying
+ ms_po            | EGP_NO                 | character varying
+ ms_po            | ERROR_ENTER            | character
+ ms_po            | GF_NO                  | character varying
+ ms_po            | MESSAGE_REC_DATE       | character varying
+ ms_po            | MIDPRICE               | double precision
+ ms_po            | MOD_SYS                | character varying
+ ms_po            | OK                     | character
+ ms_po            | OUTPLAN_REASON         | character varying
+ ms_po            | PO_DATE                | character
+ ms_po            | PO_NO                  | character
+ ms_po            | PRINTED                | character
+ ms_po            | PRINT_PODATE           | character varying
+ ms_po            | PRINT_PO_FLAG          | character
+ ms_po            | PRINT_PO_USER          | character varying
+ ms_po            | PROCESS                | character
+ ms_po            | PROJECT_NO             | character varying
+ ms_po            | RCV_CHKER1             | character
+ ms_po            | RCV_CHKER2             | character
+ ms_po            | RCV_CHKER3             | character
+ ms_po            | RCV_DATE               | character varying
+ ms_po            | RCV_DATE_EX            | character varying
+ ms_po            | RCV_NO_EX              | character varying
+ ms_po            | RECORD_NUMBER          | integer
+ ms_po            | REF_NO                 | character varying
+ ms_po            | REMARK                 | character varying
+ ms_po            | REQ_APP_DATE           | character
+ ms_po            | REQ_APP_NO             | character varying
+ ms_po            | RES_DATE               | character
+ ms_po            | REV_FLAG               | character
+ ms_po            | SEND_FLAG              | character
+ ms_po            | SEND_PO_DATE           | character varying
+ ms_po            | SUPPLIER               | character varying
+ ms_po            | SUPPLIER_CODE          | character varying
+ ms_po            | TOTAL_COST             | double precision
+ ms_po            | TOTAL_COST_AD          | double precision
+ ms_po            | TOTAL_COST_AV          | double precision
+ ms_po            | TOTAL_COST_RCV         | double precision
+ ms_po            | TOTAL_ITEM             | double precision
+ ms_po            | TRANS_CREDIT           | character varying
+ ms_po            | USER_ID                | character varying
+ ms_po            | VAT_COST               | double precision
+ ms_po            | VAT_PERCENT            | double precision
+ ms_po            | VENDOR_CODE            | character
+ ms_po            | flg_vat                | character
+ ms_po_c          | BF_QTY_BP              | double precision
+ ms_po_c          | BF_QTY_CNT             | double precision
+ ms_po_c          | BF_VALUE_BP            | double precision
+ ms_po_c          | BF_VALUE_CNT           | double precision
+ ms_po_c          | BUY_COMMON             | character varying
+ ms_po_c          | BUY_UNIT_COST          | double precision
+ ms_po_c          | CHG_REF                | character varying
+ ms_po_c          | CNT_NO                 | character varying
+ ms_po_c          | CONTRACT_DATE          | timestamp without time zone
+ ms_po_c          | COST                   | double precision
+ ms_po_c          | CP_FLAG_YEAR           | character
+ ms_po_c          | EDI_FLAG               | character varying
+ ms_po_c          | FREE_FLAG              | character
+ ms_po_c          | MANUFAC_CODE           | character
+ ms_po_c          | MIDPRICE               | double precision
+ ms_po_c          | MOD_SYS                | character varying
+ ms_po_c          | MSIVOC_RECNO           | integer
+ ms_po_c          | NLEM                   | smallint
+ ms_po_c          | PACKUNIT               | character varying
+ ms_po_c          | PACK_CODE              | integer
+ ms_po_c          | PACK_RATIO             | double precision
+ ms_po_c          | PACK_RATIO1            | double precision
+ ms_po_c          | PACK_RATIO2            | double precision
+ ms_po_c          | PO_DATE                | character
+ ms_po_c          | PO_NO                  | character
+ ms_po_c          | PRINT_PODATE           | character varying
+ ms_po_c          | PRINT_PO_FLAG          | character
+ ms_po_c          | PRINT_PO_USER          | character varying
+ ms_po_c          | PROCESS                | character
+ ms_po_c          | QTY_FREE               | double precision
+ ms_po_c          | QTY_FREE_RCV           | double precision
+ ms_po_c          | QTY_ON_HAND            | double precision
+ ms_po_c          | QTY_ORDER              | double precision
+ ms_po_c          | QTY_ORDER_RCV          | double precision
+ ms_po_c          | RATE_3_MONTH           | double precision
+ ms_po_c          | RATE_PER_MONTH         | double precision
+ ms_po_c          | RCV_DATE               | character
+ ms_po_c          | RCV_FLAG               | character
+ ms_po_c          | RCV_QTY_EX             | double precision
+ ms_po_c          | REASON_CANCEL          | integer
+ ms_po_c          | RECORD_NUMBER          | integer
+ ms_po_c          | REMAIN_QTY_BP          | double precision
+ ms_po_c          | REMAIN_QTY_BUYPLAN_Y   | double precision
+ ms_po_c          | REMAIN_QTY_CNT         | double precision
+ ms_po_c          | REMAIN_QTY_EX          | double precision
+ ms_po_c          | REMAIN_VALUE_BP        | double precision
+ ms_po_c          | REMAIN_VALUE_BUYPLAN_Y | double precision
+ ms_po_c          | REMAIN_VALUE_CNT       | double precision
+ ms_po_c          | REV_FLAG               | character
+ ms_po_c          | RUNNO                  | smallint
+ ms_po_c          | SALE_UNIT_ID           | integer
+ ms_po_c          | SEND_EX_FLAG           | character
+ ms_po_c          | SEND_FLAG              | character
+ ms_po_c          | TRADE_CODE             | character varying
+ ms_po_c          | TRANS_CREDIT           | character varying
+ ms_po_c          | USER_APPLOVE           | character varying
+ ms_po_c          | USER_CANCEL            | character varying
+ ms_po_c          | USER_CHECK             | character varying
+ ms_po_c          | USER_ID                | character varying
+ ms_po_c          | VENDOR_CODE            | character
+ ms_po_c          | WORKING_CODE           | character
+ ms_po_c          | del_flag               | character
+ ms_po_c          | ref_free               | character
+ occup            | mapocc                 | character
+ occup            | mapocc1                | character
+ po_con           | PO_CON                 | integer
+ po_con           | PO_DATE                | character
+ po_reason        | HIDE                   | character varying
+ po_reason        | ID                     | integer
+ po_reason        | REASON_DES             | character varying
+ position_list    | POSITION_DES           | character varying
+ pre_ms_ivo       | AMOUNT                 | double precision
+ pre_ms_ivo       | ARRIVE_DATE            | character
+ pre_ms_ivo       | CANCEL_FLAG            | character
+ pre_ms_ivo       | DEPT_ID                | character varying
+ pre_ms_ivo       | GROSS_WEIGHT           | double precision
+ pre_ms_ivo       | INVOICE_NO             | character varying
+ pre_ms_ivo       | LAST_UPDATE            | timestamp without time zone
+ pre_ms_ivo       | PO_NO                  | character varying
+ pre_ms_ivo       | PRE_RECEIVE_NO         | character
+ pre_ms_ivo       | QTY                    | integer
+ pre_ms_ivo       | RCV_FLAG               | character
+ pre_ms_ivo       | REMARK                 | character varying
+ pre_ms_ivo       | USER_ID                | character varying
+ pre_ms_ivo       | VENDOR_CODE            | character
+ region           | postalCode             | character
+ reports          | CREATE_DATE            | character varying
+ reports          | Choice                 | character varying
+ reports          | Color                  | integer
+ reports          | Height                 | integer
+ reports          | LAST_UPDATE            | character
+ reports          | LAST_UPLOAD            | character
+ reports          | LAST_VIEW              | timestamp without time zone
+ reports          | Menu                   | character varying
+ reports          | Name                   | character varying
+ reports          | Objects                | text
+ reports          | Program                | character varying
+ reports          | Query                  | text
+ reports          | ReportFrx              | bytea
+ reports          | ReportNo               | integer
+ reports          | ReportType             | integer
+ reports          | Reports                | bytea
+ reports          | Secret                 | character
+ reports          | Type                   | character
+ reports          | VIEW_COUNT             | integer
+ reports          | Width                  | integer
+ reports          | XData                  | text
+ sm_po            | ACC_NO                 | character
+ sm_po            | CFM_INTER              | character
+ sm_po            | CONFIRM_DATE           | character
+ sm_po            | CONFIRM_FLAG           | character
+ sm_po            | CONFIRM_TIME           | character
+ sm_po            | DEPT_ID                | character
+ sm_po            | DIST_TYPE              | integer
+ sm_po            | ERROR_ENTER            | character
+ sm_po            | ERROR_PROCESS          | character
+ sm_po            | MOD_SYS                | character varying
+ sm_po            | OK                     | character
+ sm_po            | PRINT_FLAG             | character
+ sm_po            | PRIOR_FLAG             | smallint
+ sm_po            | PROCESS                | character
+ sm_po            | RECORD_NUMBER          | integer
+ sm_po            | REF_NO                 | character varying
+ sm_po            | REQ_INTER              | character
+ sm_po            | RES_DATE               | character
+ sm_po            | R_S_STATUS             | character
+ sm_po            | SEND_FLAG              | character
+ sm_po            | STOCK_ID               | character
+ sm_po            | SUB_PO_DATE            | character
+ sm_po            | SUB_PO_NO              | character
+ sm_po            | SUB_PO_UNO             | character varying
+ sm_po            | SYSDATE                | timestamp without time zone
+ sm_po            | TOTAL_COST             | double precision
+ sm_po            | TOTAL_ITEM             | double precision
+ sm_po            | TOTAL_VALUE            | double precision
+ sm_po            | USER_ID                | character varying
+ sm_po_c          | APP_VERSION            | character varying
+ sm_po_c          | BAR_CODE               | character
+ sm_po_c          | BUY_UNIT_COST          | double precision
+ sm_po_c          | CANCEL_DISP            | character varying
+ sm_po_c          | CLIENT_IP              | character varying
+ sm_po_c          | CONFIRM_DATE           | character varying
+ sm_po_c          | CONFIRM_FLAG           | character varying
+ sm_po_c          | COST                   | double precision
+ sm_po_c          | COST1                  | double precision
+ sm_po_c          | COST2                  | double precision
+ sm_po_c          | COST3                  | double precision
+ sm_po_c          | EXPIRED_DATE           | character
+ sm_po_c          | EXPIRED_DATE1          | timestamp without time zone
+ sm_po_c          | EXPIRED_DATE2          | timestamp without time zone
+ sm_po_c          | EXPIRED_DATE3          | timestamp without time zone
+ sm_po_c          | LAST_UPD               | timestamp without time zone
+ sm_po_c          | LOCATION               | character
+ sm_po_c          | LOCATION1              | character
+ sm_po_c          | LOCATION2              | character
+ sm_po_c          | LOCATION3              | character
+ sm_po_c          | LOT_NO                 | character varying
+ sm_po_c          | MANUFAC_CODE           | character
+ sm_po_c          | MANUFAC_CODE2          | character
+ sm_po_c          | MANUFAC_CODE3          | character
+ sm_po_c          | MOD_SYS                | character varying
+ sm_po_c          | NLEM                   | smallint
+ sm_po_c          | PACK_CODE              | integer
+ sm_po_c          | PACK_COST              | numeric
+ sm_po_c          | PACK_RATIO             | double precision
+ sm_po_c          | PACK_RATIO1            | double precision
+ sm_po_c          | PACK_RATIO2            | double precision
+ sm_po_c          | PACK_RATIO3            | double precision
+ sm_po_c          | PROCESS                | character
+ sm_po_c          | QTY_CFM                | character varying
+ sm_po_c          | QTY_ORDER              | double precision
+ sm_po_c          | QTY_RCV                | double precision
+ sm_po_c          | QTY_RCV1               | double precision
+ sm_po_c          | QTY_RCV2               | double precision
+ sm_po_c          | QTY_RCV3               | double precision
+ sm_po_c          | RECORD_NUMBER          | integer
+ sm_po_c          | REMARK                 | character varying
+ sm_po_c          | REQ_DATE               | character varying
+ sm_po_c          | REV_DATE               | timestamp without time zone
+ sm_po_c          | SEND_CANCEL            | character varying
+ sm_po_c          | SUB_FLAG               | integer
+ sm_po_c          | SUB_PO_NO              | character
+ sm_po_c          | SUB_PROCESS            | character
+ sm_po_c          | TRADE_CODE             | character varying
+ sm_po_c          | USER_CFM               | character varying
+ sm_po_c          | USER_ID                | character varying
+ sm_po_c          | VALUE                  | double precision
+ sm_po_c          | VALUE1                 | double precision
+ sm_po_c          | VALUE2                 | double precision
+ sm_po_c          | VALUE3                 | double precision
+ sm_po_c          | VENDOR_CODE            | character
+ sm_po_c          | VENDOR_CODE2           | character
+ sm_po_c          | VENDOR_CODE3           | character
+ sm_po_c          | WA_COST                | numeric
+ sm_po_c          | WORKING_CODE           | character
+ sm_po_c_copy     | APP_VERSION            | character varying
+ sm_po_c_copy     | BAR_CODE               | character
+ sm_po_c_copy     | BUY_UNIT_COST          | double precision
+ sm_po_c_copy     | CANCEL_DISP            | character varying
+ sm_po_c_copy     | CLIENT_IP              | character varying
+ sm_po_c_copy     | CONFIRM_DATE           | character varying
+ sm_po_c_copy     | CONFIRM_FLAG           | character varying
+ sm_po_c_copy     | COST                   | double precision
+ sm_po_c_copy     | COST1                  | double precision
+ sm_po_c_copy     | COST2                  | double precision
+ sm_po_c_copy     | COST3                  | double precision
+ sm_po_c_copy     | EXPIRED_DATE           | character
+ sm_po_c_copy     | EXPIRED_DATE1          | timestamp without time zone
+ sm_po_c_copy     | EXPIRED_DATE2          | timestamp without time zone
+ sm_po_c_copy     | EXPIRED_DATE3          | timestamp without time zone
+ sm_po_c_copy     | LAST_UPD               | timestamp without time zone
+ sm_po_c_copy     | LOCATION               | character
+ sm_po_c_copy     | LOCATION1              | character
+ sm_po_c_copy     | LOCATION2              | character
+ sm_po_c_copy     | LOCATION3              | character
+ sm_po_c_copy     | LOT_NO                 | character varying
+ sm_po_c_copy     | MANUFAC_CODE           | character
+ sm_po_c_copy     | MANUFAC_CODE2          | character
+ sm_po_c_copy     | MANUFAC_CODE3          | character
+ sm_po_c_copy     | MOD_SYS                | character varying
+ sm_po_c_copy     | NLEM                   | smallint
+ sm_po_c_copy     | PACK_CODE              | integer
+ sm_po_c_copy     | PACK_COST              | numeric
+ sm_po_c_copy     | PACK_RATIO             | double precision
+ sm_po_c_copy     | PACK_RATIO1            | double precision
+ sm_po_c_copy     | PACK_RATIO2            | double precision
+ sm_po_c_copy     | PACK_RATIO3            | double precision
+ sm_po_c_copy     | PROCESS                | character
+ sm_po_c_copy     | QTY_CFM                | character varying
+ sm_po_c_copy     | QTY_ORDER              | double precision
+ sm_po_c_copy     | QTY_RCV                | double precision
+ sm_po_c_copy     | QTY_RCV1               | double precision
+ sm_po_c_copy     | QTY_RCV2               | double precision
+ sm_po_c_copy     | QTY_RCV3               | double precision
+ sm_po_c_copy     | RECORD_NUMBER          | integer
+ sm_po_c_copy     | REMARK                 | character varying
+ sm_po_c_copy     | REQ_DATE               | character varying
+ sm_po_c_copy     | REV_DATE               | timestamp without time zone
+ sm_po_c_copy     | SEND_CANCEL            | character varying
+ sm_po_c_copy     | SUB_FLAG               | integer
+ sm_po_c_copy     | SUB_PO_NO              | character
+ sm_po_c_copy     | SUB_PROCESS            | character
+ sm_po_c_copy     | TRADE_CODE             | character varying
+ sm_po_c_copy     | USER_CFM               | character varying
+ sm_po_c_copy     | USER_ID                | character varying
+ sm_po_c_copy     | VALUE                  | double precision
+ sm_po_c_copy     | VALUE1                 | double precision
+ sm_po_c_copy     | VALUE2                 | double precision
+ sm_po_c_copy     | VALUE3                 | double precision
+ sm_po_c_copy     | VENDOR_CODE            | character
+ sm_po_c_copy     | VENDOR_CODE2           | character
+ sm_po_c_copy     | VENDOR_CODE3           | character
+ sm_po_c_copy     | WORKING_CODE           | character
+ sm_po_e          | CANCEL_DIST            | character
+ sm_po_e          | COMPLETE_FLAG          | character varying
+ sm_po_e          | COST                   | double precision
+ sm_po_e          | DEPT_ID                | character varying
+ sm_po_e          | DIST_DATE              | character varying
+ sm_po_e          | DIST_TIME              | character varying
+ sm_po_e          | EXPIRED_DATE           | character
+ sm_po_e          | INV_NO                 | character varying
+ sm_po_e          | INV_REMAIN_QTY         | double precision
+ sm_po_e          | LOCATION               | character
+ sm_po_e          | LOT_NO                 | character varying
+ sm_po_e          | MSIVOC_RECORD          | integer
+ sm_po_e          | PACK_RATIO             | double precision
+ sm_po_e          | QTY_DIST               | double precision
+ sm_po_e          | QTY_DIST_E             | double precision
+ sm_po_e          | RECEIVE_NO             | character varying
+ sm_po_e          | RECORD_NUMBER          | integer
+ sm_po_e          | STOCK_ID               | character varying
+ sm_po_e          | SUB_PO_NO              | character
+ sm_po_e          | TRADE_CODE             | character varying
+ sm_po_e          | USER_ID                | character varying
+ sm_po_e          | WORKING_CODE           | character
+ usercon          | report_flag_only       | character
+ userimport       | name                   | character varying
+ userimport       | user                   | character varying
+(638 rows)
+

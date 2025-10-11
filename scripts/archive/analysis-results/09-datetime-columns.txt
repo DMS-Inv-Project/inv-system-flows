@@ -1,0 +1,261 @@
+    table_name     |    column_name     |          data_type          
+-------------------+--------------------+-----------------------------
+ ADD_IN_PROGRAMS   | CHANGE_DATE        | timestamp without time zone
+ ADD_IN_PROGRAMS   | ISSUE_DATE         | timestamp without time zone
+ DOC_FLOW          | LAST_UPDATE        | timestamp without time zone
+ DOC_FLOW          | RCV_DATE           | character
+ DOC_FLOW          | SEND_DATE          | character
+ INVS_REF          | RETURN_DATE        | character
+ INV_RTN           | RETURN_DATE        | character
+ INV_RTN           | RETURN_TIME        | character
+ INV_RTN_C         | EXPIRED_DATE       | character
+ INV_RTN_C         | RETURN_DATE        | character
+ INV_RTN_C         | RETURN_TIME        | character
+ PRCV_CON          | PRCV_DATE          | character
+ PRE_MS_IVO        | ARRIVE_DATE        | character
+ PRE_MS_IVO        | LAST_UPDATE        | timestamp without time zone
+ SM_PO_E           | DIST_DATE          | character varying
+ SM_PO_E           | DIST_TIME          | character varying
+ SM_PO_E           | EXPIRED_DATE       | character
+ accr_disp         | CONFIRM_DATE       | character
+ accr_disp         | REQ_DATE           | character
+ add_in_programs   | CHANGE_DATE        | timestamp without time zone
+ add_in_programs   | ISSUE_DATE         | timestamp without time zone
+ buyplan           | LAST_RCV_DATE      | character
+ buyplan           | LAST_UPDATE        | timestamp without time zone
+ buyplan_c         | LAST_RCV_DATE      | character
+ buyplan_c         | LAST_UPDATE        | timestamp without time zone
+ buyplan_log       | CHANGE_DATE        | timestamp without time zone
+ card              | EXPIRED_DATE       | character
+ card              | OPERATE_DATE       | timestamp without time zone
+ card              | R_S_DATE           | character
+ card_backup       | EXPIRED_DATE       | character
+ card_backup       | OPERATE_DATE       | timestamp without time zone
+ card_backup       | R_S_DATE           | character
+ card_copy         | EXPIRED_DATE       | character
+ card_copy         | OPERATE_DATE       | timestamp without time zone
+ card_copy         | R_S_DATE           | character
+ cnt               | AIC_DATE           | character varying
+ cnt               | AUTH_DATE          | character
+ cnt               | AUTH_TIME          | character
+ cnt               | CNT_DATE           | character varying
+ cnt               | EFFECTIVE_DATE     | character
+ cnt               | END_DATE           | character
+ cnt               | LAST_UPDATE        | timestamp without time zone
+ cnt               | LEAD_TIME          | character varying
+ cnt_c             | END_DATE           | character varying
+ company           | CONFIRM_DATE       | timestamp without time zone
+ company           | ISSUE_DATE         | character
+ company           | ORDER_TIME         | double precision
+ df_con            | LAST_UPDATE        | character
+ dispensed         | DISP_DATE          | character
+ doc_flow          | LAST_UPDATE        | timestamp without time zone
+ doc_flow          | RCV_DATE           | character
+ doc_flow          | SEND_DATE          | character
+ doc_flow_c        | LAST_UPDATE        | timestamp without time zone
+ drug_gn           | CHANGE_DATE        | timestamp without time zone
+ drug_gn           | DATE_ENTER         | timestamp without time zone
+ drug_gn           | ISSUE_DATE         | timestamp without time zone
+ drug_gn           | LAST_BUY           | timestamp without time zone
+ drug_gn           | LAST_NOTIFY_HAD    | timestamp without time zone
+ drug_gn           | REF_PRICE_DATE     | character
+ drug_gn_20231101  | CHANGE_DATE        | timestamp without time zone
+ drug_gn_20231101  | DATE_ENTER         | timestamp without time zone
+ drug_gn_20231101  | ISSUE_DATE         | timestamp without time zone
+ drug_gn_20231101  | LAST_BUY           | timestamp without time zone
+ drug_gn_20231101  | LAST_NOTIFY_HAD    | timestamp without time zone
+ drug_gn_20231101  | REF_PRICE_DATE     | character
+ drug_gn_copy      | DATE_ENTER         | timestamp without time zone
+ drug_gn_copy      | ISSUE_DATE         | timestamp without time zone
+ drug_gn_copy      | LAST_BUY           | timestamp without time zone
+ drug_gn_copy      | LAST_NOTIFY_HAD    | timestamp without time zone
+ drug_gn_copy      | REF_PRICE_DATE     | character
+ drug_gn_new       | CHANGE_DATE        | timestamp without time zone
+ drug_gn_new       | DATE_ENTER         | timestamp without time zone
+ drug_gn_new       | ISSUE_DATE         | timestamp without time zone
+ drug_gn_new       | LAST_BUY           | timestamp without time zone
+ drug_gn_new       | LAST_NOTIFY_HAD    | timestamp without time zone
+ drug_gn_new       | REF_PRICE_DATE     | character
+ drug_gn_old       | DATE_ENTER         | timestamp without time zone
+ drug_gn_old       | ISSUE_DATE         | timestamp without time zone
+ drug_gn_old       | LAST_BUY           | timestamp without time zone
+ drug_gn_old       | LAST_NOTIFY_HAD    | timestamp without time zone
+ drug_gn_old       | REF_PRICE_DATE     | character
+ drug_vn           | CHANGE_DATE        | timestamp without time zone
+ drug_vn           | ISSUE_DATE         | timestamp without time zone
+ drug_vn           | LAST_BUY           | timestamp without time zone
+ drug_vn_backup    | CHANGE_DATE        | timestamp without time zone
+ drug_vn_backup    | ISSUE_DATE         | timestamp without time zone
+ drug_vn_backup    | LAST_BUY           | timestamp without time zone
+ drug_vn_new       | CHANGE_DATE        | timestamp without time zone
+ drug_vn_new       | ISSUE_DATE         | timestamp without time zone
+ drug_vn_new       | LAST_BUY           | timestamp without time zone
+ drug_vnx          | ISSUE_DATE         | timestamp without time zone
+ drug_vnx          | LAST_BUY           | timestamp without time zone
+ form              | LAST_UPDATE        | character varying
+ gf                | GF_DATE            | character varying
+ gp                | change_date        | character varying
+ gp                | change_time        | character varying
+ gp                | effect_date        | character varying
+ gp                | invalid_date       | character varying
+ gp                | issue_date         | character varying
+ gp                | issue_time         | character varying
+ gp                | sys_date           | timestamp without time zone
+ gpu               | change_date        | character varying
+ gpu               | change_time        | character varying
+ gpu               | effect_date        | character varying
+ gpu               | invalid_date       | character varying
+ gpu               | issue_date         | character varying
+ gpu               | issue_time         | character varying
+ gpu               | sys_date           | timestamp without time zone
+ holiday           | HOL_DATE           | character
+ hosp_inv          | KEEP_INV_DATE      | character
+ hosp_inv          | START_EXPORT       | timestamp without time zone
+ hosp_inv          | URL_UPDATE         | character varying
+ id_con            | LAST_UPD           | timestamp without time zone
+ inst_name         | LAST_UPDATE        | timestamp without time zone
+ inv_has_his       | INVALID_DATE       | character
+ inv_md            | LAST_UPDATE        | timestamp without time zone
+ inv_md_backup     | LAST_UPDATE        | timestamp without time zone
+ inv_md_c          | EXPIRED_DATE       | character
+ inv_md_c_20230716 | EXPIRED_DATE       | character
+ inv_md_c_backup   | EXPIRED_DATE       | character
+ inv_md_c_copy     | EXPIRED_DATE       | character
+ inv_md_copy       | LAST_UPDATE        | timestamp without time zone
+ inv_rtn           | RETURN_DATE        | character
+ inv_rtn           | RETURN_TIME        | character
+ inv_rtn_c         | EXPIRED_DATE       | character
+ inv_rtn_c         | RETURN_DATE        | character
+ inv_rtn_c         | RETURN_TIME        | character
+ inv_site          | EFFECT_DATE        | timestamp without time zone
+ invs_ref          | RETURN_DATE        | character
+ item_type         | FIRST_DATE         | character varying
+ item_type         | LAST_DATE          | character varying
+ lamed             | time_perday        | smallint
+ lamed_c           | code_time          | character
+ lamed_c           | code_timeo         | character
+ lamed_c           | time_perday        | smallint
+ mbs_re_m          | LAST_UPDATE        | timestamp without time zone
+ med_intx          | intxOnSepTime      | character
+ med_intx          | makeDate           | timestamp without time zone
+ med_inv           | sendDate           | character
+ medallergy        | adr_date           | character varying
+ medallergy        | delDate            | timestamp without time zone
+ medallergy        | report_date        | character varying
+ medallergy        | updDate            | timestamp without time zone
+ medallergy        | updTime            | timestamp without time zone
+ ms_ivo            | BILLING_DATE       | character varying
+ ms_ivo            | CHEQUE_RCV_DATE    | date
+ ms_ivo            | DATE_ACC           | timestamp without time zone
+ ms_ivo            | INVOICE_DATE       | character
+ ms_ivo            | PAYMENT_DATE       | date
+ ms_ivo            | PO_DATE            | character
+ ms_ivo            | RCV_TIME           | character
+ ms_ivo            | RECEIVE_DATE       | character
+ ms_ivo_c          | EXPIRED_DATE       | character
+ ms_ivo_c          | EXPIRED_DATE1      | date
+ ms_ivo_c          | EXPIRED_DATE2      | timestamp without time zone
+ ms_ivo_c          | PLAN_DATE          | timestamp without time zone
+ ms_ivo_c          | TRANSDATA_DATE     | timestamp without time zone
+ ms_po             | ACK_DATE           | character varying
+ ms_po             | BILLNUMBER_DATE_EX | character varying
+ ms_po             | DELIVERY_DATE      | character
+ ms_po             | MESSAGE_REC_DATE   | character varying
+ ms_po             | PO_DATE            | character
+ ms_po             | PRINT_PODATE       | character varying
+ ms_po             | RCV_DATE           | character varying
+ ms_po             | RCV_DATE_EX        | character varying
+ ms_po             | REQ_APP_DATE       | character
+ ms_po             | RES_DATE           | character
+ ms_po             | SEND_PO_DATE       | character varying
+ ms_po_c           | CONTRACT_DATE      | timestamp without time zone
+ ms_po_c           | PO_DATE            | character
+ ms_po_c           | PRINT_PODATE       | character varying
+ ms_po_c           | RCV_DATE           | character
+ opd_h             | CardInDate         | timestamp without time zone
+ opd_h             | CardInTime         | character
+ opd_h             | CardOutDate        | timestamp without time zone
+ opd_h             | CardOutTime        | character
+ opd_h             | lastChgDate        | character
+ opd_h             | lastChgTime        | character
+ opd_h             | lastUpd            | timestamp without time zone
+ opd_h             | prnLogDate         | timestamp without time zone
+ opd_h             | registDate         | character
+ opd_h             | timePt             | character
+ pack_ratio        | LAST_BUY           | timestamp without time zone
+ patient           | issue_date         | character varying
+ patient           | memEffDate         | character varying
+ patient           | memEndDate         | character varying
+ patmed            | endDate            | character
+ patmed            | firstIssDate       | timestamp without time zone
+ patmed            | firstIssTime       | timestamp without time zone
+ patmed            | lamedTime          | character
+ patmed            | lamedTimeText      | character varying
+ patmed            | lastEditLamedDate  | timestamp without time zone
+ patmed            | lastIssDate        | timestamp without time zone
+ patmed            | lastIssTime        | timestamp without time zone
+ patmed            | nextIssDate        | character
+ patmed            | nextIssTime        | character
+ patmed            | registDate         | character
+ po_con            | PO_DATE            | character
+ prcv_con          | PRCV_DATE          | character
+ pre_ms_ivo        | ARRIVE_DATE        | character
+ pre_ms_ivo        | LAST_UPDATE        | timestamp without time zone
+ profile           | EndDate            | character
+ profile           | StartDate          | character
+ profile           | lastDate           | timestamp without time zone
+ profile           | lastDatePay        | character
+ reports           | CREATE_DATE        | character varying
+ reports           | LAST_UPDATE        | character
+ reports           | LAST_VIEW          | timestamp without time zone
+ req_con           | END_DATE           | character
+ req_con           | START_DATE         | character
+ rs_con            | RS_DATE            | character
+ scan              | SYS_DATE           | timestamp without time zone
+ sm_po             | CONFIRM_DATE       | character
+ sm_po             | CONFIRM_TIME       | character
+ sm_po             | RES_DATE           | character
+ sm_po             | SUB_PO_DATE        | character
+ sm_po             | SYSDATE            | timestamp without time zone
+ sm_po_c           | CONFIRM_DATE       | character varying
+ sm_po_c           | EXPIRED_DATE       | character
+ sm_po_c           | EXPIRED_DATE1      | timestamp without time zone
+ sm_po_c           | EXPIRED_DATE2      | timestamp without time zone
+ sm_po_c           | EXPIRED_DATE3      | timestamp without time zone
+ sm_po_c           | LAST_UPD           | timestamp without time zone
+ sm_po_c           | REQ_DATE           | character varying
+ sm_po_c           | REV_DATE           | timestamp without time zone
+ sm_po_c_copy      | CONFIRM_DATE       | character varying
+ sm_po_c_copy      | EXPIRED_DATE       | character
+ sm_po_c_copy      | EXPIRED_DATE1      | timestamp without time zone
+ sm_po_c_copy      | EXPIRED_DATE2      | timestamp without time zone
+ sm_po_c_copy      | EXPIRED_DATE3      | timestamp without time zone
+ sm_po_c_copy      | LAST_UPD           | timestamp without time zone
+ sm_po_c_copy      | REQ_DATE           | character varying
+ sm_po_c_copy      | REV_DATE           | timestamp without time zone
+ sm_po_e           | DIST_DATE          | character varying
+ sm_po_e           | DIST_TIME          | character varying
+ sm_po_e           | EXPIRED_DATE       | character
+ tp                | change_date        | character varying
+ tp                | change_time        | character varying
+ tp                | effect_date        | character varying
+ tp                | invalid_date       | character varying
+ tp                | issue_date         | character varying
+ tp                | issue_time         | character varying
+ tp                | sys_date           | timestamp without time zone
+ tpu               | change_date        | character varying
+ tpu               | change_time        | character varying
+ tpu               | effect_date        | character varying
+ tpu               | invalid_date       | character varying
+ tpu               | issue_date         | character varying
+ tpu               | issue_time         | character varying
+ tpu               | sys_date           | timestamp without time zone
+ vtm               | change_date        | character varying
+ vtm               | change_time        | character varying
+ vtm               | effect_date        | character varying
+ vtm               | invalid_date       | character varying
+ vtm               | issue_date         | character varying
+ vtm               | issue_time         | character varying
+ vtm               | sys_date           | timestamp without time zone
+(257 rows)
+
