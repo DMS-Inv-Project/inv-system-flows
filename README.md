@@ -88,8 +88,12 @@ npm run db:studio
 1. **[FLOW_01_Master_Data_Setup.md](docs/flows/FLOW_01_Master_Data_Setup.md)** - Master data management
 2. **[FLOW_02_Budget_Management.md](docs/flows/FLOW_02_Budget_Management.md)** - Budget control workflow
 3. **[FLOW_03_Procurement_Part1_PR.md](docs/flows/FLOW_03_Procurement_Part1_PR.md)** - Purchase requests
-4. **[FLOW_08_Frontend_Purchase_Request.md](docs/flows/FLOW_08_Frontend_Purchase_Request.md)** - Frontend UI guide
-5. **[DATA_FLOW_COMPLETE_GUIDE.md](docs/flows/DATA_FLOW_COMPLETE_GUIDE.md)** - All flows summary
+4. **[FLOW_04_Inventory_Management.md](docs/flows/FLOW_04_Inventory_Management.md)** - Inventory & FIFO/FEFO
+5. **[FLOW_05_Drug_Distribution.md](docs/flows/FLOW_05_Drug_Distribution.md)** - Department distribution
+6. **[FLOW_06_TMT_Integration.md](docs/flows/FLOW_06_TMT_Integration.md)** - Thai Medical Terminology
+7. **[FLOW_07_Ministry_Reporting.md](docs/flows/FLOW_07_Ministry_Reporting.md)** - Ministry reports (5 files)
+8. **[FLOW_08_Frontend_Purchase_Request.md](docs/flows/FLOW_08_Frontend_Purchase_Request.md)** - Frontend UI guide
+9. **[DATA_FLOW_COMPLETE_GUIDE.md](docs/flows/DATA_FLOW_COMPLETE_GUIDE.md)** - All flows summary
 
 ### Technical Documentation
 - **[prisma/schema.prisma](prisma/schema.prisma)** - Database schema (31 tables)
@@ -277,7 +281,7 @@ invs-modern/
 │   └── archive/               # Legacy scripts
 │
 ├── docs/
-│   ├── flows/                 # 4 detailed flow docs + complete guide
+│   ├── flows/                 # 8 detailed flow docs + complete guide
 │   ├── MYSQL_IMPORT_GUIDE.md
 │   ├── LARGE_FILES_GUIDE.md
 │   └── SCRIPT_CLEANUP_GUIDE.md

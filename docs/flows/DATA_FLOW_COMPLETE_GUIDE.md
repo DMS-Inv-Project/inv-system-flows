@@ -9,14 +9,15 @@
 1. ✅ **[FLOW_01_Master_Data_Setup.md](./FLOW_01_Master_Data_Setup.md)** - ตั้งค่าข้อมูลพื้นฐาน
 2. ✅ **[FLOW_02_Budget_Management.md](./FLOW_02_Budget_Management.md)** - บริหารงบประมาณ
 3. ✅ **[FLOW_03_Procurement_Part1_PR.md](./FLOW_03_Procurement_Part1_PR.md)** - จัดซื้อ (Purchase Request)
+4. ✅ **[FLOW_04_Inventory_Management.md](./FLOW_04_Inventory_Management.md)** - การจัดการคลังยา
+5. ✅ **[FLOW_05_Drug_Distribution.md](./FLOW_05_Drug_Distribution.md)** - การจ่ายยาให้หน่วยงาน
+6. ✅ **[FLOW_06_TMT_Integration.md](./FLOW_06_TMT_Integration.md)** - Thai Medical Terminology
+7. ✅ **[FLOW_07_Ministry_Reporting.md](./FLOW_07_Ministry_Reporting.md)** - รายงาน กสธ. 5 แฟ้ม
+8. ✅ **[FLOW_08_Frontend_Purchase_Request.md](./FLOW_08_Frontend_Purchase_Request.md)** - Frontend UI Guide
 
 ### 📋 เอกสารสรุปในไฟล์นี้:
-4. **FLOW 03 Part 2** - Purchase Order (PO)
-5. **FLOW 03 Part 3** - Goods Receipt
-6. **FLOW 04** - Inventory Management
-7. **FLOW 05** - Drug Distribution
-8. **FLOW 06** - TMT Integration
-9. **FLOW 07** - Ministry Reporting
+- **FLOW 03 Part 2** - Purchase Order (PO) - สรุปด้านล่าง
+- **FLOW 03 Part 3** - Goods Receipt - สรุปด้านล่าง
 
 ---
 
