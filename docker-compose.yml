@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Modern (Prisma) - Production Database
   postgres:
     image: postgres:15-alpine
     container_name: invs-modern-db
@@ -13,27 +14,15 @@ services:
       - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/init:/docker-entrypoint-initdb.d
     networks:
       - invs-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U invs_user -d invs_modern"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  postgres-legacy:
-    image: postgres:15-alpine
-    container_name: invs-legacy-db
-    restart: always
-    environment:
-      POSTGRES_DB: invs_legacy
-      POSTGRES_USER: invs_user
-      POSTGRES_PASSWORD: invs123
-      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=th_TH.UTF-8 --lc-ctype=th_TH.UTF-8"
-    ports:
-      - "5435:5432"
-    volumes:
-      - postgres_legacy_data:/var/lib/postgresql/data
-      - ./scripts/legacy-init:/docker-entrypoint-initdb.d
-    networks:
-      - invs-network
-
+  # MySQL Original (Legacy) - Reference Only
   mysql-original:
     image: mariadb:10.11
     container_name: invs-mysql-original
@@ -49,11 +38,16 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./scripts/mysql-init:/docker-entrypoint-initdb.d
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-time-zone=+07:00
     networks:
       - invs-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pinvs123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # pgAdmin - PostgreSQL Management
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: invs-modern-pgadmin
@@ -65,11 +59,12 @@ services:
     ports:
       - "8081:80"
     depends_on:
-      - postgres
-      - postgres-legacy
+      postgres:
+        condition: service_healthy
     networks:
       - invs-network
 
+  # phpMyAdmin - MySQL Management
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: invs-phpmyadmin
@@ -83,14 +78,16 @@ services:
     ports:
       - "8082:80"
     depends_on:
-      - mysql-original
+      mysql-original:
+        condition: service_healthy
     networks:
       - invs-network
 
 volumes:
   postgres_data:
-  postgres_legacy_data:
+    driver: local
   mysql_data:
+    driver: local
 
 networks:
   invs-network:

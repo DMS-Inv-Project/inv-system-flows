@@ -55,8 +55,8 @@ backups/
 # Large SQL files (legacy data)
 # These files are too large for git (>50MB)
 # Download from: [Add your cloud storage link here]
-scripts/legacy-init/01-invs-legacy-schema.sql
-scripts/legacy-init/01-schema-only.sql
+scripts/archive/legacy-schemas/01-invs-legacy-schema.sql
+scripts/archive/legacy-schemas/01-schema-only.sql
 scripts/INVS_MySQL_Database_*.sql
 
 # TMT Excel files (large reference data)
