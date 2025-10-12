@@ -27,11 +27,14 @@ npm run dev
 
 ### Step 3: Quick Facts (Current State)
 - **Status**: ✅ Production Ready (Development Phase)
-- **Database**: 31 tables, 11 views, 10 functions (all created)
+- **Version**: 1.1.0 (Updated 2025-01-12)
+- **Database**: 34 tables, 11 views, 12 functions (all created) ⭐
+- **Budget Planning**: Drug-level planning with historical data ⭐ NEW
+- **Manual Entry**: Support for historical data import ⭐ NEW
 - **Seed Data**: Complete (5 locations, 5 departments, 6 budget types, 5 companies, 5 drugs)
 - **Backend API**: 🚧 Not started (Next priority)
 - **Frontend**: 🚧 Not started
-- **Last Verified**: 2025-01-11
+- **Last Verified**: 2025-01-12
 
 ### Step 4: Key Files to Review
 1. `PROJECT_STATUS.md` - Complete current status
@@ -48,7 +51,7 @@ npm run dev
 - **Database**: PostgreSQL 15-alpine (Container: invs-modern-db, Port: 5434)
 - **ORM**: Prisma with full type safety
 - **Primary Language**: TypeScript with Node.js
-- **Version**: 1.0.0
+- **Version**: 1.1.0
 - **Status**: ✅ Production Ready (Development Phase - Database Complete)
 
 ---
@@ -58,19 +61,22 @@ npm run dev
 ### ✅ What's Complete
 
 **Database Infrastructure:**
-- ✅ PostgreSQL (Production) - 31 tables created
+- ✅ PostgreSQL (Production) - 34 tables created ⭐ +2 budget planning tables
 - ✅ MySQL (Legacy Reference) - Container ready, optional import
-- ✅ Database Functions - 10 business logic functions
+- ✅ Database Functions - 12 business logic functions ⭐ +2 planning functions
 - ✅ Database Views - 11 reporting views
 - ✅ Seed Data - Master data loaded
 - ✅ Docker Compose - 2 databases + 2 web UIs
+- ✅ Budget Planning - Drug-level planning with historical data ⭐ NEW
+- ✅ Manual Entry - Support for historical data import ⭐ NEW
 
 **Documentation:**
-- ✅ 13 comprehensive guides created
-- ✅ 4 detailed flow documents with UI mockups
+- ✅ 14 comprehensive guides created ⭐ +1 FLOW_02B
+- ✅ 9 detailed flow documents with UI mockups ⭐
 - ✅ Complete system setup guide
 - ✅ MySQL import guide
 - ✅ Frontend development guide
+- ✅ Budget planning with drugs guide ⭐ NEW
 
 **Testing:**
 - ✅ Fresh setup tested (2025-01-11)
@@ -158,7 +164,7 @@ npm start
 - Database: invs_modern
 - Username: invs_user
 - Password: invs123
-- **Status**: ✅ Active, 31 tables, 11 views, 10 functions
+- **Status**: ✅ Active, 34 tables, 11 views, 12 functions ⭐
 
 ### MySQL Original Database (Legacy Reference)
 - Host: localhost
@@ -194,7 +200,7 @@ npm start
 │   MySQL (Legacy)     │       │ PostgreSQL (Modern)  │
 │   Port: 3307         │       │  Port: 5434          │
 │   invs_banpong       │◄─────►│  invs_modern         │
-│   133 tables         │Compare│  31 tables           │
+│   133 tables         │Compare│  34 tables ⭐        │
 │   📖 Reference Only  │       │  📝 Production       │
 └──────────────────────┘       └──────────────────────┘
        ↓                               ↓
@@ -202,7 +208,7 @@ npm start
   :8082                          :8081    :5555
 ```
 
-### Database Schema Structure (31 Tables)
+### Database Schema Structure (34 Tables)
 
 #### 1. Master Data (6 tables)
 - `locations` - Storage locations (warehouse, pharmacy, ward, emergency)
@@ -217,9 +223,11 @@ npm start
 - `drug_lots` - FIFO/FEFO lot tracking with expiry dates
 - `inventory_transactions` - All inventory movements with audit trail
 
-#### 3. Budget Management (2 tables)
+#### 3. Budget Management (4 tables) ⭐ NEW
 - `budget_allocations` - Annual budget allocation by quarter (Q1-Q4)
 - `budget_reservations` - Budget reservations for purchase requests
+- `budget_plans` - Drug-level budget planning (from legacy buyplan) ⭐ NEW
+- `budget_plan_items` - Drug items with 3-year historical data ⭐ NEW
 
 #### 4. Procurement Workflow (6 tables)
 - `purchase_requests` - Purchase request workflow with approval
@@ -238,16 +246,23 @@ npm start
 - `tmt_mappings` - Drug-to-TMT code mappings
 - `his_drug_master` - HIS integration master data
 
-#### 7. Others (9 tables)
+#### 7. Optional Historical Data (1 table)
+- `historical_drug_data` - Manual/imported historical consumption data (optional)
+
+#### 8. Others (9 tables)
 - Supporting tables and audit logs
 
-### Database Functions (10)
+### Database Functions (12) ⭐
 
 **Budget Management:**
 - `check_budget_availability(fiscal_year, budget_type_id, department_id, amount, quarter)` - Real-time budget validation
 - `reserve_budget(allocation_id, pr_id, amount, expires_days)` - Reserve budget for PR
 - `commit_budget(allocation_id, po_id, amount, quarter)` - Commit budget when PO approved
 - `release_budget_reservation(reservation_id)` - Release expired/cancelled reservations
+
+**Budget Planning:** ⭐ NEW
+- `check_drug_in_budget_plan(fiscal_year, department_id, generic_id, requested_qty, quarter)` - Validate PR against budget plan
+- `update_budget_plan_purchase(plan_item_id, quantity, value, quarter)` - Update purchased amounts
 
 **Inventory Management:**
 - `get_fifo_lots(drug_id, location_id, quantity_needed)` - Get lots in FIFO order
@@ -311,8 +326,8 @@ Draft PR → Submit → Budget Check → Approve → Create PO → Send → Rece
 ### Core Application
 - `src/index.ts` - Main application entry point with database connection test
 - `src/lib/prisma.ts` - Prisma client configuration with global instance pattern
-- `prisma/schema.prisma` - Complete database schema (31 tables, 790 lines)
-- `prisma/functions.sql` - Business logic functions (10 functions, 473 lines)
+- `prisma/schema.prisma` - Complete database schema (34 tables, 880+ lines) ⭐
+- `prisma/functions.sql` - Business logic functions (12 functions, 610+ lines) ⭐
 - `prisma/views.sql` - Reporting views (11 views, 378 lines)
 - `prisma/seed.ts` - Master data seeding script
 
@@ -324,10 +339,15 @@ Draft PR → Submit → Budget Check → Approve → Create PO → Send → Rece
 
 ### Flow Documentation
 - `docs/flows/QUICK_START_GUIDE.md` - Quick start guide
-- `docs/flows/DATA_FLOW_COMPLETE_GUIDE.md` - All flows summary
+- `docs/flows/DATA_FLOW_COMPLETE_GUIDE.md` - All flows summary (updated)
 - `docs/flows/FLOW_01_Master_Data_Setup.md` - Master data setup
 - `docs/flows/FLOW_02_Budget_Management.md` - Budget management
+- `docs/flows/FLOW_02B_Budget_Planning_with_Drugs.md` - Drug-level planning ⭐ NEW
 - `docs/flows/FLOW_03_Procurement_Part1_PR.md` - Purchase requests
+- `docs/flows/FLOW_04_Inventory_Management.md` - Inventory & FIFO/FEFO
+- `docs/flows/FLOW_05_Drug_Distribution.md` - Distribution
+- `docs/flows/FLOW_06_TMT_Integration.md` - Thai Medical Terminology
+- `docs/flows/FLOW_07_Ministry_Reporting.md` - Ministry reports
 - `docs/flows/FLOW_08_Frontend_Purchase_Request.md` - Frontend UI guide with mockups
 
 ### Configuration
@@ -534,8 +554,37 @@ npm run dev
 
 ---
 
-**Version**: 1.0.0
-**Last Verified**: 2025-01-11
+---
+
+## 🆕 Latest Updates (v1.1.0 - 2025-01-12)
+
+### Added Features
+- ✅ **Budget Planning with Drug Details** (FLOW_02B)
+  - Drug-level budget planning matching legacy buyplan/buyplan_c
+  - 3-year historical consumption analysis
+  - Quarterly breakdown (Q1-Q4) for detailed planning
+  - Purchase vs plan tracking
+  - 2 new tables: `budget_plans`, `budget_plan_items`
+  - 2 new functions: `check_drug_in_budget_plan`, `update_budget_plan_purchase`
+
+- ✅ **Manual Historical Data Entry**
+  - Support for new system deployments without historical data
+  - `historical_drug_data` table for manual/imported data (optional)
+  - CSV bulk import with validation
+  - Multiple data sources (system, manual, legacy_import, estimated)
+  - Complete UI mockups for data entry workflows
+
+### Key Changes
+- Tables: 31 → 34 (+3: budget_plans, budget_plan_items, historical_drug_data)
+- Functions: 10 → 12 (+2 budget planning functions)
+- Documentation: 13 → 14 guides (+FLOW_02B)
+- Schema: 790 → 880+ lines
+- SQL Functions: 473 → 610+ lines
+
+---
+
+**Version**: 1.1.0
+**Last Verified**: 2025-01-12
 **Status**: ✅ Production Ready (Development Phase)
 **Next Phase**: Backend API Development
 
