@@ -246,6 +246,138 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Function: Check Drug in Budget Plan
+-- ตรวจสอบว่ายาอยู่ในแผนจัดซื้อหรือไม่ และเหลืองบพอหรือไม่
+CREATE OR REPLACE FUNCTION check_drug_in_budget_plan(
+    p_fiscal_year INT,
+    p_department_id BIGINT,
+    p_generic_id BIGINT,
+    p_requested_qty DECIMAL(10,2),
+    p_quarter INT
+)
+RETURNS TABLE (
+    in_plan BOOLEAN,
+    plan_item_id BIGINT,
+    planned_qty DECIMAL(10,2),
+    remaining_qty DECIMAL(10,2),
+    quarter_planned DECIMAL(10,2),
+    quarter_purchased DECIMAL(10,2),
+    quarter_remaining DECIMAL(10,2),
+    over_plan BOOLEAN,
+    message TEXT
+) AS $$
+DECLARE
+    v_plan_item budget_plan_items%ROWTYPE;
+    v_quarter_planned DECIMAL(10,2);
+    v_quarter_purchased DECIMAL(10,2);
+BEGIN
+    -- ดึงข้อมูล budget plan item
+    SELECT bpi.* INTO v_plan_item
+    FROM budget_plan_items bpi
+    JOIN budget_plans bp ON bpi.budget_plan_id = bp.id
+    WHERE bp.fiscal_year = p_fiscal_year
+        AND bp.department_id = p_department_id
+        AND bp.status IN ('APPROVED', 'ACTIVE')
+        AND bpi.generic_id = p_generic_id;
+
+    -- ถ้าไม่พบในแผน
+    IF NOT FOUND THEN
+        RETURN QUERY SELECT
+            FALSE,
+            NULL::BIGINT,
+            0::DECIMAL(10,2),
+            0::DECIMAL(10,2),
+            0::DECIMAL(10,2),
+            0::DECIMAL(10,2),
+            0::DECIMAL(10,2),
+            FALSE,
+            'Drug not found in budget plan'::TEXT;
+        RETURN;
+    END IF;
+
+    -- ดึงข้อมูลไตรมาส
+    CASE p_quarter
+        WHEN 1 THEN
+            v_quarter_planned := v_plan_item.q1_quantity;
+            v_quarter_purchased := v_plan_item.q1_purchased_qty;
+        WHEN 2 THEN
+            v_quarter_planned := v_plan_item.q2_quantity;
+            v_quarter_purchased := v_plan_item.q2_purchased_qty;
+        WHEN 3 THEN
+            v_quarter_planned := v_plan_item.q3_quantity;
+            v_quarter_purchased := v_plan_item.q3_purchased_qty;
+        WHEN 4 THEN
+            v_quarter_planned := v_plan_item.q4_quantity;
+            v_quarter_purchased := v_plan_item.q4_purchased_qty;
+        ELSE
+            v_quarter_planned := 0;
+            v_quarter_purchased := 0;
+    END CASE;
+
+    -- คำนวณเหลือและคืนผลลัพธ์
+    RETURN QUERY SELECT
+        TRUE,
+        v_plan_item.id,
+        v_plan_item.planned_quantity,
+        v_plan_item.remaining_quantity,
+        v_quarter_planned,
+        v_quarter_purchased,
+        (v_quarter_planned - v_quarter_purchased),
+        (p_requested_qty > (v_quarter_planned - v_quarter_purchased)),
+        CASE
+            WHEN p_requested_qty > (v_quarter_planned - v_quarter_purchased) THEN
+                format('Request exceeds quarterly plan (planned: %s, purchased: %s, requested: %s)',
+                    v_quarter_planned, v_quarter_purchased, p_requested_qty)
+            ELSE
+                'Within budget plan'
+        END::TEXT;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function: Update Budget Plan Purchase
+-- อัปเดตยอดจัดซื้อในแผนงบประมาณ
+CREATE OR REPLACE FUNCTION update_budget_plan_purchase(
+    p_plan_item_id BIGINT,
+    p_quantity DECIMAL(10,2),
+    p_value DECIMAL(15,2),
+    p_quarter INT
+)
+RETURNS BOOLEAN AS $$
+BEGIN
+    -- อัปเดตยอดจัดซื้อในแผน
+    UPDATE budget_plan_items
+    SET
+        purchased_quantity = purchased_quantity + p_quantity,
+        purchased_value = purchased_value + p_value,
+        remaining_quantity = planned_quantity - (purchased_quantity + p_quantity),
+        remaining_value = planned_total_cost - (purchased_value + p_value),
+        q1_purchased_qty = CASE WHEN p_quarter = 1 THEN q1_purchased_qty + p_quantity ELSE q1_purchased_qty END,
+        q2_purchased_qty = CASE WHEN p_quarter = 2 THEN q2_purchased_qty + p_quantity ELSE q2_purchased_qty END,
+        q3_purchased_qty = CASE WHEN p_quarter = 3 THEN q3_purchased_qty + p_quantity ELSE q3_purchased_qty END,
+        q4_purchased_qty = CASE WHEN p_quarter = 4 THEN q4_purchased_qty + p_quantity ELSE q4_purchased_qty END,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = p_plan_item_id;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Budget plan item not found';
+    END IF;
+
+    -- อัปเดตยอดรวมในแผน
+    UPDATE budget_plans bp
+    SET
+        total_purchased = total_purchased + p_value,
+        remaining_budget = total_planned_budget - (total_purchased + p_value),
+        q1_purchased = CASE WHEN p_quarter = 1 THEN q1_purchased + p_value ELSE q1_purchased END,
+        q2_purchased = CASE WHEN p_quarter = 2 THEN q2_purchased + p_value ELSE q2_purchased END,
+        q3_purchased = CASE WHEN p_quarter = 3 THEN q3_purchased + p_value ELSE q3_purchased END,
+        q4_purchased = CASE WHEN p_quarter = 4 THEN q4_purchased + p_value ELSE q4_purchased END,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = (SELECT budget_plan_id FROM budget_plan_items WHERE id = p_plan_item_id);
+
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
 -- ============================================================
 -- 2. INVENTORY MANAGEMENT FUNCTIONS
 -- ============================================================
@@ -465,6 +597,8 @@ COMMENT ON FUNCTION check_budget_availability IS 'ตรวจสอบว่า
 COMMENT ON FUNCTION reserve_budget IS 'จองงบประมาณสำหรับ Purchase Request (ล็อคงบชั่วคราว)';
 COMMENT ON FUNCTION commit_budget IS 'ตัดงบประมาณจริงเมื่อ approve Purchase Order';
 COMMENT ON FUNCTION release_budget IS 'ปลดล็อคงบประมาณที่จองไว้ (เมื่อยกเลิก PR)';
+COMMENT ON FUNCTION check_drug_in_budget_plan IS 'ตรวจสอบว่ายาอยู่ในแผนจัดซื้อหรือไม่ และเหลือจำนวนพอหรือไม่ (แยกรายไตรมาส)';
+COMMENT ON FUNCTION update_budget_plan_purchase IS 'อัปเดตยอดจัดซื้อในแผนงบประมาณเมื่อจัดซื้อจริง';
 COMMENT ON FUNCTION calculate_reorder_point IS 'คำนวณจุด reorder point โดยใช้ daily usage และ lead time';
 COMMENT ON FUNCTION get_fifo_lots IS 'ดึง lot ตามหลัก FIFO (First In First Out)';
 COMMENT ON FUNCTION get_fefo_lots IS 'ดึง lot ตามหลัก FEFO (First Expire First Out)';

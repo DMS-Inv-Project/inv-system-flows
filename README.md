@@ -9,10 +9,11 @@ Modern Hospital Inventory Management System built with PostgreSQL, Prisma, and T
 ## 📊 Current Project Status
 
 ```
-✅ Database: Complete (31 tables, 11 views, 10 functions)
+✅ Database: Complete (34 tables, 11 views, 12 functions)
 ✅ Docker Setup: Working (PostgreSQL + MySQL legacy)
-✅ Documentation: Complete (13 comprehensive guides)
+✅ Documentation: Complete (14 comprehensive guides)
 ✅ Seed Data: Complete (5 entities, 29 records)
+✅ Budget Planning: Drug-level planning feature added
 🚧 Backend API: Not started (Next priority)
 🚧 Frontend: Not started
 ```
@@ -87,17 +88,18 @@ npm run db:studio
 ### Flow Documentation
 1. **[FLOW_01_Master_Data_Setup.md](docs/flows/FLOW_01_Master_Data_Setup.md)** - Master data management
 2. **[FLOW_02_Budget_Management.md](docs/flows/FLOW_02_Budget_Management.md)** - Budget control workflow
-3. **[FLOW_03_Procurement_Part1_PR.md](docs/flows/FLOW_03_Procurement_Part1_PR.md)** - Purchase requests
-4. **[FLOW_04_Inventory_Management.md](docs/flows/FLOW_04_Inventory_Management.md)** - Inventory & FIFO/FEFO
-5. **[FLOW_05_Drug_Distribution.md](docs/flows/FLOW_05_Drug_Distribution.md)** - Department distribution
-6. **[FLOW_06_TMT_Integration.md](docs/flows/FLOW_06_TMT_Integration.md)** - Thai Medical Terminology
-7. **[FLOW_07_Ministry_Reporting.md](docs/flows/FLOW_07_Ministry_Reporting.md)** - Ministry reports (5 files)
-8. **[FLOW_08_Frontend_Purchase_Request.md](docs/flows/FLOW_08_Frontend_Purchase_Request.md)** - Frontend UI guide
-9. **[DATA_FLOW_COMPLETE_GUIDE.md](docs/flows/DATA_FLOW_COMPLETE_GUIDE.md)** - All flows summary
+3. **[FLOW_02B_Budget_Planning_with_Drugs.md](docs/flows/FLOW_02B_Budget_Planning_with_Drugs.md)** - Drug-level budget planning ⭐ NEW
+4. **[FLOW_03_Procurement_Part1_PR.md](docs/flows/FLOW_03_Procurement_Part1_PR.md)** - Purchase requests
+5. **[FLOW_04_Inventory_Management.md](docs/flows/FLOW_04_Inventory_Management.md)** - Inventory & FIFO/FEFO
+6. **[FLOW_05_Drug_Distribution.md](docs/flows/FLOW_05_Drug_Distribution.md)** - Department distribution
+7. **[FLOW_06_TMT_Integration.md](docs/flows/FLOW_06_TMT_Integration.md)** - Thai Medical Terminology
+8. **[FLOW_07_Ministry_Reporting.md](docs/flows/FLOW_07_Ministry_Reporting.md)** - Ministry reports (5 files)
+9. **[FLOW_08_Frontend_Purchase_Request.md](docs/flows/FLOW_08_Frontend_Purchase_Request.md)** - Frontend UI guide
+10. **[DATA_FLOW_COMPLETE_GUIDE.md](docs/flows/DATA_FLOW_COMPLETE_GUIDE.md)** - All flows summary
 
 ### Technical Documentation
-- **[prisma/schema.prisma](prisma/schema.prisma)** - Database schema (31 tables)
-- **[prisma/functions.sql](prisma/functions.sql)** - Business logic functions (10)
+- **[prisma/schema.prisma](prisma/schema.prisma)** - Database schema (34 tables)
+- **[prisma/functions.sql](prisma/functions.sql)** - Business logic functions (12)
 - **[prisma/views.sql](prisma/views.sql)** - Reporting views (11)
 - **[MYSQL_IMPORT_GUIDE.md](docs/MYSQL_IMPORT_GUIDE.md)** - Import legacy database
 
@@ -120,7 +122,7 @@ npm run db:studio
   :8082                           :8081
 ```
 
-### PostgreSQL (Production) - 31 Tables
+### PostgreSQL (Production) - 34 Tables
 
 **Master Data (6 tables)**
 - `locations` - Storage locations
@@ -130,9 +132,11 @@ npm run db:studio
 - `drug_generics` - Generic drug catalog
 - `drugs` - Trade drugs with manufacturer links
 
-**Budget Management (2 tables)**
+**Budget Management (4 tables)** ⭐ NEW
 - `budget_allocations` - Annual budget by quarter (Q1-Q4)
 - `budget_reservations` - Budget reservation system
+- `budget_plans` - Drug-level budget planning (from legacy system)
+- `budget_plan_items` - Drug items with 3-year historical data
 
 **Procurement (6 tables)**
 - `purchase_requests` - Purchase request workflow
@@ -156,8 +160,9 @@ npm run db:studio
 - `tmt_mappings` - Drug-TMT mappings
 - `his_drug_master` - HIS integration
 
-**Database Functions (10)**
-- Budget: `check_budget_availability`, `reserve_budget`, `commit_budget`, `release_budget_reservation`
+**Database Functions (12)** ⭐ NEW
+- Budget: `check_budget_availability`, `reserve_budget`, `commit_budget`, `release_budget`
+- Budget Planning: `check_drug_in_budget_plan`, `update_budget_plan_purchase` ⭐ NEW
 - Inventory: `get_fifo_lots`, `get_fefo_lots`, `update_inventory_from_receipt`
 - Others: 3 utility functions
 
@@ -224,6 +229,11 @@ npm run db:studio        # Open Prisma Studio
 - ✅ Budget reservation system
 - ✅ Automatic budget commitment
 - ✅ Budget monitoring dashboard
+- ✅ **Drug-level budget planning** ⭐ NEW
+  - Plan drug purchases with 3-year historical analysis
+  - Quarterly quantity breakdown (Q1-Q4)
+  - Track actual purchases vs. plan
+  - Automatic PR validation against plan
 
 **Example:**
 ```typescript
@@ -233,6 +243,15 @@ const available = await check_budget_availability(
   budget_type_id: 1,
   department_id: 2,
   amount: 50000,
+  quarter: 1
+)
+
+// Check if drug is in budget plan ⭐ NEW
+const inPlan = await check_drug_in_budget_plan(
+  fiscal_year: 2025,
+  department_id: 2,
+  generic_id: 1,
+  requested_qty: 5000,
   quarter: 1
 )
 ```
@@ -263,8 +282,8 @@ Create PO → Send → Receive → Post to Inventory
 ```
 invs-modern/
 ├── prisma/
-│   ├── schema.prisma          # 31 tables, 790 lines
-│   ├── functions.sql          # 10 functions, 473 lines
+│   ├── schema.prisma          # 34 tables, 880+ lines ⭐
+│   ├── functions.sql          # 12 functions, 610+ lines ⭐
 │   ├── views.sql              # 11 views, 378 lines
 │   ├── seed.ts                # Master data seeding
 │   └── migrations/            # Version control
@@ -281,7 +300,7 @@ invs-modern/
 │   └── archive/               # Legacy scripts
 │
 ├── docs/
-│   ├── flows/                 # 8 detailed flow docs + complete guide
+│   ├── flows/                 # 9 detailed flow docs + complete guide ⭐
 │   ├── MYSQL_IMPORT_GUIDE.md
 │   ├── LARGE_FILES_GUIDE.md
 │   └── SCRIPT_CLEANUP_GUIDE.md
@@ -340,7 +359,7 @@ npm run dev
 
 # 3. Check tables
 docker exec invs-modern-db psql -U invs_user -d invs_modern -c "\dt"
-# Expected: 31 tables listed
+# Expected: 34 tables listed (includes budget_plans, budget_plan_items)
 
 # 4. Read current status
 cat PROJECT_STATUS.md
@@ -377,9 +396,10 @@ PORT=3000
 
 | Metric | Status | Details |
 |--------|--------|---------|
-| Database Design | ✅ Complete | 31 tables, normalized |
-| Business Logic | ✅ Complete | 10 functions, 11 views |
-| Documentation | ✅ Complete | 13 comprehensive guides |
+| Database Design | ✅ Complete | 34 tables, normalized ⭐ |
+| Business Logic | ✅ Complete | 12 functions, 11 views ⭐ |
+| Documentation | ✅ Complete | 14 comprehensive guides ⭐ |
+| Budget Planning | ✅ Complete | Drug-level planning ⭐ NEW |
 | Docker Setup | ✅ Complete | Tested & verified |
 | Backend API | 🚧 Not Started | Next priority |
 | Frontend | 🚧 Not Started | After backend |

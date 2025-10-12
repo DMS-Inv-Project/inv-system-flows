@@ -37,6 +37,7 @@ model Department {
   isActive          Boolean            @default(true) @map("is_active")
   createdAt         DateTime           @default(now()) @map("created_at")
   budgetAllocations BudgetAllocation[]
+  budgetPlans       BudgetPlan[]
   parent            Department?        @relation("DepartmentHierarchy", fields: [parentId], references: [id])
   children          Department[]       @relation("DepartmentHierarchy")
   purchaseOrders    PurchaseOrder[]
@@ -107,6 +108,7 @@ model DrugGeneric {
   drugs                Drug[]
   hppProducts          HospitalPharmaceuticalProduct[]
   purchaseRequestItems PurchaseRequestItem[]
+  budgetPlanItems      BudgetPlanItem[]
   tmtMappings          TmtMapping[]
 
   @@map("drug_generics")
@@ -234,9 +236,84 @@ model BudgetAllocation {
   budgetType      BudgetType          @relation(fields: [budgetTypeId], references: [id])
   department      Department          @relation(fields: [departmentId], references: [id])
   reservations    BudgetReservation[]
+  budgetPlans     BudgetPlan[]
 
   @@unique([fiscalYear, budgetTypeId, departmentId])
   @@map("budget_allocations")
+}
+
+model BudgetPlan {
+  id                   BigInt             @id @default(autoincrement())
+  fiscalYear           Int                @map("fiscal_year")
+  departmentId         BigInt             @map("department_id")
+  budgetAllocationId   BigInt             @map("budget_allocation_id")
+  totalPlannedBudget   Decimal            @map("total_planned_budget") @db.Decimal(15, 2)
+  totalPlannedQuantity Decimal            @default(0) @map("total_planned_quantity") @db.Decimal(12, 2)
+  q1PlannedBudget      Decimal            @map("q1_planned_budget") @db.Decimal(15, 2)
+  q2PlannedBudget      Decimal            @map("q2_planned_budget") @db.Decimal(15, 2)
+  q3PlannedBudget      Decimal            @map("q3_planned_budget") @db.Decimal(15, 2)
+  q4PlannedBudget      Decimal            @map("q4_planned_budget") @db.Decimal(15, 2)
+  totalPurchased       Decimal            @default(0) @map("total_purchased") @db.Decimal(15, 2)
+  q1Purchased          Decimal            @default(0) @map("q1_purchased") @db.Decimal(15, 2)
+  q2Purchased          Decimal            @default(0) @map("q2_purchased") @db.Decimal(15, 2)
+  q3Purchased          Decimal            @default(0) @map("q3_purchased") @db.Decimal(15, 2)
+  q4Purchased          Decimal            @default(0) @map("q4_purchased") @db.Decimal(15, 2)
+  remainingBudget      Decimal            @map("remaining_budget") @db.Decimal(15, 2)
+  status               BudgetPlanStatus   @default(DRAFT)
+  approvedBy           String?            @map("approved_by") @db.VarChar(50)
+  approvalDate         DateTime?          @map("approval_date") @db.Date
+  notes                String?            @db.Text
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @default(now()) @updatedAt @map("updated_at")
+  department           Department         @relation(fields: [departmentId], references: [id])
+  budgetAllocation     BudgetAllocation   @relation(fields: [budgetAllocationId], references: [id])
+  items                BudgetPlanItem[]
+
+  @@unique([fiscalYear, departmentId, budgetAllocationId])
+  @@map("budget_plans")
+}
+
+model BudgetPlanItem {
+  id                    BigInt          @id @default(autoincrement())
+  budgetPlanId          BigInt          @map("budget_plan_id")
+  itemNumber            Int             @map("item_number")
+  genericId             BigInt          @map("generic_id")
+  plannedQuantity       Decimal         @map("planned_quantity") @db.Decimal(10, 2)
+  estimatedUnitCost     Decimal         @map("estimated_unit_cost") @db.Decimal(10, 2)
+  plannedTotalCost      Decimal         @map("planned_total_cost") @db.Decimal(15, 2)
+  q1Quantity            Decimal         @default(0) @map("q1_quantity") @db.Decimal(10, 2)
+  q2Quantity            Decimal         @default(0) @map("q2_quantity") @db.Decimal(10, 2)
+  q3Quantity            Decimal         @default(0) @map("q3_quantity") @db.Decimal(10, 2)
+  q4Quantity            Decimal         @default(0) @map("q4_quantity") @db.Decimal(10, 2)
+  q1Budget              Decimal         @default(0) @map("q1_budget") @db.Decimal(15, 2)
+  q2Budget              Decimal         @default(0) @map("q2_budget") @db.Decimal(15, 2)
+  q3Budget              Decimal         @default(0) @map("q3_budget") @db.Decimal(15, 2)
+  q4Budget              Decimal         @default(0) @map("q4_budget") @db.Decimal(15, 2)
+  purchasedQuantity     Decimal         @default(0) @map("purchased_quantity") @db.Decimal(10, 2)
+  purchasedValue        Decimal         @default(0) @map("purchased_value") @db.Decimal(15, 2)
+  q1PurchasedQty        Decimal         @default(0) @map("q1_purchased_qty") @db.Decimal(10, 2)
+  q2PurchasedQty        Decimal         @default(0) @map("q2_purchased_qty") @db.Decimal(10, 2)
+  q3PurchasedQty        Decimal         @default(0) @map("q3_purchased_qty") @db.Decimal(10, 2)
+  q4PurchasedQty        Decimal         @default(0) @map("q4_purchased_qty") @db.Decimal(10, 2)
+  remainingQuantity     Decimal         @map("remaining_quantity") @db.Decimal(10, 2)
+  remainingValue        Decimal         @map("remaining_value") @db.Decimal(15, 2)
+  avgConsumption3Years  Decimal?        @map("avg_consumption_3_years") @db.Decimal(10, 2)
+  year1Consumption      Decimal?        @map("year1_consumption") @db.Decimal(10, 2)
+  year2Consumption      Decimal?        @map("year2_consumption") @db.Decimal(10, 2)
+  year3Consumption      Decimal?        @map("year3_consumption") @db.Decimal(10, 2)
+  forecastMethod        String?         @map("forecast_method") @db.VarChar(50)
+  minStockLevel         Decimal?        @map("min_stock_level") @db.Decimal(10, 2)
+  currentStock          Decimal?        @map("current_stock") @db.Decimal(10, 2)
+  justification         String?         @db.Text
+  status                ItemStatus      @default(PENDING)
+  notes                 String?         @db.Text
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @default(now()) @updatedAt @map("updated_at")
+  budgetPlan            BudgetPlan      @relation(fields: [budgetPlanId], references: [id], onDelete: Cascade)
+  generic               DrugGeneric     @relation(fields: [genericId], references: [id])
+
+  @@unique([budgetPlanId, itemNumber])
+  @@map("budget_plan_items")
 }
 
 model BudgetReservation {
@@ -787,4 +864,13 @@ enum DistributionStatus {
   DISPENSED @map("dispensed")
   CANCELLED @map("cancelled")
   COMPLETED @map("completed")
+}
+
+enum BudgetPlanStatus {
+  DRAFT    @map("draft")
+  SUBMITTED @map("submitted")
+  APPROVED @map("approved")
+  REJECTED @map("rejected")
+  ACTIVE   @map("active")
+  CLOSED   @map("closed")
 }

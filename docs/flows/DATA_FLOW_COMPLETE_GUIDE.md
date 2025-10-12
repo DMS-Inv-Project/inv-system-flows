@@ -8,12 +8,13 @@
 ### ✅ เอกสารละเอียดที่มีพร้อม:
 1. ✅ **[FLOW_01_Master_Data_Setup.md](./FLOW_01_Master_Data_Setup.md)** - ตั้งค่าข้อมูลพื้นฐาน
 2. ✅ **[FLOW_02_Budget_Management.md](./FLOW_02_Budget_Management.md)** - บริหารงบประมาณ
-3. ✅ **[FLOW_03_Procurement_Part1_PR.md](./FLOW_03_Procurement_Part1_PR.md)** - จัดซื้อ (Purchase Request)
-4. ✅ **[FLOW_04_Inventory_Management.md](./FLOW_04_Inventory_Management.md)** - การจัดการคลังยา
-5. ✅ **[FLOW_05_Drug_Distribution.md](./FLOW_05_Drug_Distribution.md)** - การจ่ายยาให้หน่วยงาน
-6. ✅ **[FLOW_06_TMT_Integration.md](./FLOW_06_TMT_Integration.md)** - Thai Medical Terminology
-7. ✅ **[FLOW_07_Ministry_Reporting.md](./FLOW_07_Ministry_Reporting.md)** - รายงาน กสธ. 5 แฟ้ม
-8. ✅ **[FLOW_08_Frontend_Purchase_Request.md](./FLOW_08_Frontend_Purchase_Request.md)** - Frontend UI Guide
+3. ✅ **[FLOW_02B_Budget_Planning_with_Drugs.md](./FLOW_02B_Budget_Planning_with_Drugs.md)** - วางแผนจัดซื้อยาระดับรายการยา
+4. ✅ **[FLOW_03_Procurement_Part1_PR.md](./FLOW_03_Procurement_Part1_PR.md)** - จัดซื้อ (Purchase Request)
+5. ✅ **[FLOW_04_Inventory_Management.md](./FLOW_04_Inventory_Management.md)** - การจัดการคลังยา
+6. ✅ **[FLOW_05_Drug_Distribution.md](./FLOW_05_Drug_Distribution.md)** - การจ่ายยาให้หน่วยงาน
+7. ✅ **[FLOW_06_TMT_Integration.md](./FLOW_06_TMT_Integration.md)** - Thai Medical Terminology
+8. ✅ **[FLOW_07_Ministry_Reporting.md](./FLOW_07_Ministry_Reporting.md)** - รายงาน กสธ. 5 แฟ้ม
+9. ✅ **[FLOW_08_Frontend_Purchase_Request.md](./FLOW_08_Frontend_Purchase_Request.md)** - Frontend UI Guide
 
 ### 📋 เอกสารสรุปในไฟล์นี้:
 - **FLOW 03 Part 2** - Purchase Order (PO) - สรุปด้านล่าง
@@ -46,6 +47,14 @@ PHASE 2: BUDGET PLANNING (รายปี)
 │ • Quarterly Breakdown (Q1-Q4)          │
 │ • Department Assignment                │
 │ • Real-time Tracking                   │
+└────────────────────────────────────────┘
+         ↓
+┌────────────────────────────────────────┐
+│ FLOW 02B: Budget Planning with Drugs  │
+│ • Drug-level Planning                  │
+│ • 3-Year Historical Analysis           │
+│ • Quarterly Quantity Breakdown         │
+│ • Purchase vs Plan Tracking            │
 └────────────────────────────────────────┘
          ↓
 PHASE 3: PROCUREMENT (ประจำวัน/สัปดาห์)
@@ -103,6 +112,212 @@ SUPPORT FLOWS (พร้อมใช้ตลอดเวลา)
 │ • Monthly/Annual Reports               │
 │ • Export Functions                     │
 └────────────────────────────────────────┘
+```
+
+---
+
+## 📊 **FLOW 02B: Budget Planning with Drugs - สรุป**
+
+### Overview
+แผนจัดซื้อยาระดับรายการ (Drug-level Budget Planning) ช่วยให้แต่ละหน่วยงานสามารถวางแผนจัดซื้อยาแต่ละรายการได้อย่างละเอียด โดยอิงจากข้อมูลการใช้งานย้อนหลัง 3 ปี และแบ่งแผนตามไตรมาส (Q1-Q4)
+
+### Key Features
+```
+✅ Historical Analysis - วิเคราะห์การใช้ยา 3 ปีย้อนหลัง
+✅ Drug-specific Planning - ระบุยาแต่ละรายการที่ต้องซื้อ
+✅ Quarterly Breakdown - แบ่งปริมาณตามไตรมาส Q1-Q4
+✅ Budget Tracking - ติดตามยอดจัดซื้อจริง vs แผน
+✅ Purchase Control - ตรวจสอบ PR กับแผนก่อนอนุมัติ
+```
+
+### Workflow
+```
+1. วิเคราะห์ข้อมูลย้อนหลัง 3 ปี
+   └─> Query historical consumption
+
+2. คำนวณ Average และ Forecast
+   └─> 3-year average + growth rate
+
+3. สร้างแผนจัดซื้อ (Budget Plan)
+   ├─> เลือกยาที่ต้องวางแผน
+   ├─> ระบุปริมาณรายไตรมาส
+   ├─> คำนวณงบประมาณ
+   └─> Status: DRAFT
+
+4. อนุมัติแผน
+   └─> Status: APPROVED → ACTIVE
+
+5. ตรวจสอบ PR กับแผน
+   └─> check_drug_in_budget_plan()
+
+6. ติดตามการจัดซื้อ
+   └─> Plan vs Actual Report
+```
+
+### Database Tables
+```sql
+-- Budget Plan Header
+CREATE TABLE budget_plans (
+  id BIGSERIAL PRIMARY KEY,
+  fiscal_year INT,
+  department_id BIGINT,
+  budget_allocation_id BIGINT,
+  total_planned_budget DECIMAL(15,2),
+  total_purchased DECIMAL(15,2),
+  remaining_budget DECIMAL(15,2),
+  q1_planned_budget DECIMAL(15,2),
+  q2_planned_budget DECIMAL(15,2),
+  q3_planned_budget DECIMAL(15,2),
+  q4_planned_budget DECIMAL(15,2),
+  status budget_plan_status DEFAULT 'DRAFT'
+);
+
+-- Budget Plan Items (Drug Details)
+CREATE TABLE budget_plan_items (
+  id BIGSERIAL PRIMARY KEY,
+  budget_plan_id BIGINT,
+  generic_id BIGINT,
+  planned_quantity DECIMAL(10,2),
+  estimated_unit_cost DECIMAL(10,2),
+  planned_total_cost DECIMAL(15,2),
+  q1_quantity DECIMAL(10,2),
+  q2_quantity DECIMAL(10,2),
+  q3_quantity DECIMAL(10,2),
+  q4_quantity DECIMAL(10,2),
+  purchased_quantity DECIMAL(10,2) DEFAULT 0,
+  remaining_quantity DECIMAL(10,2),
+  avg_consumption_3_years DECIMAL(10,2),
+  year1_consumption DECIMAL(10,2),
+  year2_consumption DECIMAL(10,2),
+  year3_consumption DECIMAL(10,2)
+);
+```
+
+### Key Functions
+```sql
+-- Check if drug is in budget plan
+SELECT * FROM check_drug_in_budget_plan(
+  p_fiscal_year := 2025,
+  p_department_id := 2,
+  p_generic_id := 1,
+  p_requested_qty := 5000,
+  p_quarter := 1
+);
+
+-- Update purchased amount
+SELECT update_budget_plan_purchase(
+  p_plan_item_id := 1,
+  p_quantity := 5000,
+  p_value := 12500,
+  p_quarter := 1
+);
+```
+
+### Example: Create Budget Plan
+```sql
+-- Step 1: Analyze 3-year consumption
+SELECT
+  d.id,
+  dg.generic_name,
+  SUM(CASE WHEN EXTRACT(YEAR FROM it.created_at) = 2022 THEN ABS(it.quantity) ELSE 0 END) as year1,
+  SUM(CASE WHEN EXTRACT(YEAR FROM it.created_at) = 2023 THEN ABS(it.quantity) ELSE 0 END) as year2,
+  SUM(CASE WHEN EXTRACT(YEAR FROM it.created_at) = 2024 THEN ABS(it.quantity) ELSE 0 END) as year3,
+  AVG(ABS(it.quantity)) as avg_3_years
+FROM inventory_transactions it
+JOIN inventory inv ON it.inventory_id = inv.id
+JOIN drugs d ON inv.drug_id = d.id
+JOIN drug_generics dg ON d.generic_id = dg.id
+WHERE it.transaction_type = 'ISSUE'
+  AND EXTRACT(YEAR FROM it.created_at) BETWEEN 2022 AND 2024
+GROUP BY d.id, dg.generic_name;
+
+-- Step 2: Create Budget Plan
+INSERT INTO budget_plans (
+  fiscal_year,
+  department_id,
+  budget_allocation_id,
+  total_planned_budget,
+  q1_planned_budget,
+  q2_planned_budget,
+  q3_planned_budget,
+  q4_planned_budget,
+  status
+) VALUES (
+  2025,
+  2, -- Pharmacy
+  1, -- Budget Allocation ID
+  5000000.00,
+  1250000.00,
+  1250000.00,
+  1250000.00,
+  1250000.00,
+  'DRAFT'
+);
+
+-- Step 3: Add Drug Items
+INSERT INTO budget_plan_items (
+  budget_plan_id,
+  item_number,
+  generic_id,
+  planned_quantity,
+  estimated_unit_cost,
+  planned_total_cost,
+  q1_quantity,
+  q2_quantity,
+  q3_quantity,
+  q4_quantity,
+  avg_consumption_3_years,
+  year1_consumption,
+  year2_consumption,
+  year3_consumption,
+  remaining_quantity
+) VALUES (
+  1, -- budget_plan_id
+  1, -- item_number
+  1, -- Paracetamol
+  50000, -- planned_quantity
+  2.50, -- estimated_unit_cost
+  125000.00, -- planned_total_cost
+  15000, -- Q1
+  12000, -- Q2
+  11000, -- Q3
+  12000, -- Q4
+  45000, -- avg_consumption_3_years
+  42000, -- year1_consumption
+  46000, -- year2_consumption
+  47000, -- year3_consumption
+  50000 -- remaining_quantity
+);
+```
+
+### Integration with Purchase Request
+```sql
+-- When creating PR, check against budget plan
+DO $$
+DECLARE
+  v_check RECORD;
+BEGIN
+  -- Check drug in plan
+  SELECT * INTO v_check
+  FROM check_drug_in_budget_plan(
+    p_fiscal_year := 2025,
+    p_department_id := 2,
+    p_generic_id := 1,
+    p_requested_qty := 5000,
+    p_quarter := 1
+  );
+
+  IF NOT v_check.in_plan THEN
+    RAISE EXCEPTION 'Drug not in budget plan for 2025';
+  END IF;
+
+  IF v_check.over_plan THEN
+    RAISE WARNING 'Request exceeds quarterly plan: %', v_check.message;
+  END IF;
+
+  -- Create PR if passed checks
+  INSERT INTO purchase_requests (...) VALUES (...);
+END $$;
 ```
 
 ---
@@ -800,10 +1015,10 @@ Budget Utilization  | 60-80%    | 68%
 
 ### Database Components
 
-- [x] **32 Tables** - Complete schema
+- [x] **34 Tables** - Complete schema (added budget_plans + budget_plan_items)
 - [x] **11 Views** - Ministry + Operational reporting
-- [x] **10 Functions** - Budget + Inventory logic
-- [x] **Enums** - All status types defined
+- [x] **12 Functions** - Budget + Inventory logic (added check_drug_in_budget_plan + update_budget_plan_purchase)
+- [x] **Enums** - All status types defined (added BudgetPlanStatus)
 - [x] **Relationships** - Foreign keys properly set
 
 ---
