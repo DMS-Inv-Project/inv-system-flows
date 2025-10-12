@@ -131,7 +131,7 @@ PHASE 4: EXECUTION
 
 ## 📝 STEP 1: Analyze Historical Data
 
-### Query Historical Drug Usage
+### Option A: Query Historical Data (ระบบที่มีข้อมูลแล้ว)
 
 ```sql
 -- Get 3-year consumption history for planning
@@ -188,6 +188,131 @@ working_code | drug_name        | year1 | year2 | year3 | avg_3yr | current_stoc
 PAR0001      | Paracetamol 500mg| 95000 |105000 |110000 | 103333  | 15000
 AMX0001      | Amoxicillin 250mg| 45000 | 48000 | 52000 |  48333  |  8000
 OME0001      | Omeprazole 20mg  | 28000 | 30000 | 32000 |  30000  |  5000
+```
+
+---
+
+### Option B: Manual Entry (เริ่มระบบใหม่ - ไม่มีข้อมูล) ⭐ NEW
+
+**กรณีที่ 1: มีข้อมูลจากระบบเดิม**
+```
+ให้ user ป้อนข้อมูลจากระบบเก่า (เช่น Excel, ระบบ legacy) เข้าสู่ระบบ
+โดยป้อนข้อมูล year1_consumption, year2_consumption, year3_consumption
+```
+
+**กรณีที่ 2: ไม่มีข้อมูลเลย (โรงพยาบาลใหม่)**
+```
+ให้ user ประมาณการจากข้อมูลที่มี เช่น:
+- จำนวนผู้ป่วยต่อเดือน
+- ประมาณการจากโรงพยาบาลขนาดใกล้เคียง
+- คำแนะนำจากสมาคมวิชาชีพ
+- ค่าเฉลี่ยต่อเตียง (Per bed calculation)
+```
+
+### Manual Entry Table: historical_drug_data (Optional)
+
+```sql
+-- ตารางสำหรับเก็บข้อมูล historical ที่ป้อนเอง
+CREATE TABLE historical_drug_data (
+    id BIGSERIAL PRIMARY KEY,
+    generic_id BIGINT NOT NULL REFERENCES drug_generics(id),
+    data_year INT NOT NULL,
+    consumption_quantity DECIMAL(12,2) NOT NULL,
+    data_source VARCHAR(50) NOT NULL,  -- 'system', 'manual', 'legacy_import', 'estimated'
+    notes TEXT,
+    entered_by VARCHAR(100),
+    entered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    verified BOOLEAN DEFAULT false,
+    UNIQUE(generic_id, data_year)
+);
+
+COMMENT ON TABLE historical_drug_data IS 'เก็บข้อมูลการใช้ยาย้อนหลัง (รองรับการป้อนด้วยมือ)';
+```
+
+### Manual Entry - Insert Historical Data
+
+```sql
+-- ป้อนข้อมูล Paracetamol 3 ปี (จากระบบเดิมหรือประมาณการ)
+INSERT INTO historical_drug_data (
+    generic_id,
+    data_year,
+    consumption_quantity,
+    data_source,
+    notes,
+    entered_by,
+    verified
+) VALUES
+-- ปี 2022
+(1, 2022, 95000, 'legacy_import', 'นำเข้าจากระบบ INVS เดิม', 'Pharmacist', true),
+-- ปี 2023
+(1, 2023, 105000, 'legacy_import', 'นำเข้าจากระบบ INVS เดิม', 'Pharmacist', true),
+-- ปี 2024
+(1, 2024, 110000, 'legacy_import', 'นำเข้าจากระบบ INVS เดิม', 'Pharmacist', true),
+
+-- Amoxicillin (ประมาณการจากข้อมูลที่มี)
+(3, 2022, 45000, 'estimated', 'ประมาณการจากจำนวนผู้ป่วย OPD', 'Chief Pharmacist', true),
+(3, 2023, 48000, 'estimated', 'ประมาณการจากจำนวนผู้ป่วย OPD (+6.7%)', 'Chief Pharmacist', true),
+(3, 2024, 52000, 'estimated', 'ประมาณการจากจำนวนผู้ป่วย OPD (+8.3%)', 'Chief Pharmacist', true);
+```
+
+### Query with Manual Data Support
+
+```sql
+-- ดึงข้อมูล historical โดยรวมทั้งข้อมูลจากระบบและข้อมูลที่ป้อนเอง
+WITH historical_consumption AS (
+    -- Data from system (if available)
+    SELECT
+        dg.id as generic_id,
+        dg.working_code,
+        dg.drug_name,
+        EXTRACT(YEAR FROM it.created_at)::INT as data_year,
+        SUM(ABS(it.quantity)) as consumption,
+        'system'::VARCHAR as source
+    FROM drug_generics dg
+    LEFT JOIN drugs d ON dg.id = d.generic_id
+    LEFT JOIN inventory inv ON d.id = inv.drug_id
+    LEFT JOIN inventory_transactions it ON inv.id = it.inventory_id
+        AND it.transaction_type = 'ISSUE'
+        AND it.created_at >= '2022-01-01'
+    WHERE dg.is_active = true
+    GROUP BY dg.id, dg.working_code, dg.drug_name, EXTRACT(YEAR FROM it.created_at)
+
+    UNION ALL
+
+    -- Manual/imported historical data
+    SELECT
+        dg.id as generic_id,
+        dg.working_code,
+        dg.drug_name,
+        hd.data_year,
+        hd.consumption_quantity as consumption,
+        hd.data_source as source
+    FROM historical_drug_data hd
+    JOIN drug_generics dg ON hd.generic_id = dg.id
+    WHERE hd.verified = true
+)
+SELECT
+    generic_id,
+    working_code,
+    drug_name,
+    MAX(CASE WHEN data_year = 2022 THEN consumption ELSE 0 END) as year1_consumption,
+    MAX(CASE WHEN data_year = 2023 THEN consumption ELSE 0 END) as year2_consumption,
+    MAX(CASE WHEN data_year = 2024 THEN consumption ELSE 0 END) as year3_consumption,
+    ROUND(AVG(consumption), 2) as avg_consumption_3years,
+    STRING_AGG(DISTINCT source, ', ') as data_sources
+FROM historical_consumption
+GROUP BY generic_id, working_code, drug_name
+HAVING COUNT(DISTINCT data_year) >= 2  -- อย่างน้อย 2 ปี
+ORDER BY avg_consumption_3years DESC;
+```
+
+**Result with Mixed Sources:**
+```
+generic_id | working_code | drug_name        | year1 | year2 | year3 | avg_3yr | data_sources
+-----------+--------------+------------------+-------+-------+-------+---------+--------------------
+    1      | PAR0001      | Paracetamol 500mg| 95000 |105000 |110000 | 103333  | legacy_import
+    3      | AMX0001      | Amoxicillin 250mg| 45000 | 48000 | 52000 |  48333  | estimated
+    5      | OME0001      | Omeprazole 20mg  | 28000 | 30000 | 32000 |  30000  | system,manual
 ```
 
 ---
@@ -481,7 +606,120 @@ WHERE id = 1;
 
 ---
 
-## 🎯 UI MOCKUP: Add/Edit Drug Item
+## 🎯 UI MOCKUP: Manual Historical Data Entry ⭐ NEW
+
+```
+╔════════════════════════════════════════════════════════════════════╗
+║  Import Historical Drug Usage Data                            [X] ║
+╠════════════════════════════════════════════════════════════════════╣
+║                                                                    ║
+║  ⚠️  No historical data found in system                            ║
+║  Please enter historical consumption data to enable forecasting    ║
+║                                                                    ║
+║  Import Options:                                                   ║
+║  ┌──────────────────────────────────────────────────────────────┐ ║
+║  │ [ ] Upload CSV/Excel file                                    │ ║
+║  │     [Browse...] [Download Template]                          │ ║
+║  │                                                              │ ║
+║  │ [●] Enter manually (single drug)                            │ ║
+║  │                                                              │ ║
+║  │ [ ] Import from legacy database                             │ ║
+║  │     Connection String: [postgresql://...        ]           │ ║
+║  └──────────────────────────────────────────────────────────────┘ ║
+║                                                                    ║
+║  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ║
+║                                                                    ║
+║  Manual Entry Form                                                 ║
+║  ┌──────────────────────────────────────────────────────────────┐ ║
+║  │ Select Drug                                                  │ ║
+║  │ Generic Drug: [PAR0001 - Paracetamol 500mg Tablet      ▼]   │ ║
+║  │                                                              │ ║
+║  │ Historical Consumption (Annual)                              │ ║
+║  │                                                              │ ║
+║  │ Year 2022: [95000        ] tablets                          │ ║
+║  │ Year 2023: [105000       ] tablets  (+10.5% 📈)             │ ║
+║  │ Year 2024: [110000       ] tablets  (+4.8% 📈)              │ ║
+║  │                                                              │ ║
+║  │ ➡️ 3-Year Average: 103,333 tablets/year                     │ ║
+║  │ ➡️ Growth Trend: +7.6% per year                             │ ║
+║  │                                                              │ ║
+║  │ Data Source: [●] Legacy Import                              │ ║
+║  │              [ ] Manual Estimate                            │ ║
+║  │              [ ] From Similar Hospital                      │ ║
+║  │                                                              │ ║
+║  │ Notes: [นำเข้าจากระบบ INVS เดิม (Access Database)        ] │ ║
+║  │        [                                                   ] │ ║
+║  │                                                              │ ║
+║  │ Entered By: [Chief Pharmacist      ]                        │ ║
+║  │                                                              │ ║
+║  │ [✓] Verify data accuracy                                    │ ║
+║  └──────────────────────────────────────────────────────────────┘ ║
+║                                                                    ║
+║  [Cancel]  [💾 Save] [Save & Add Another]                         ║
+║                                                                    ║
+╚════════════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## 🎯 UI MOCKUP: CSV Import Template
+
+**Template File: historical_drug_import.csv**
+```csv
+working_code,drug_name,year_2022,year_2023,year_2024,data_source,notes
+PAR0001,Paracetamol 500mg,95000,105000,110000,legacy_import,From old INVS system
+AMX0001,Amoxicillin 250mg,45000,48000,52000,estimated,Estimated from OPD visits
+OME0001,Omeprazole 20mg,28000,30000,32000,legacy_import,From old INVS system
+IBU0001,Ibuprofen 400mg,35000,38000,42000,estimated,Estimated based on pain meds usage
+ASP0001,Aspirin 100mg,22000,25000,28000,legacy_import,From old INVS system
+```
+
+### CSV Import Interface
+
+```
+╔════════════════════════════════════════════════════════════════════╗
+║  Bulk Import Historical Data - Step 2: Review                [X] ║
+╠════════════════════════════════════════════════════════════════════╣
+║                                                                    ║
+║  📄 File: historical_drug_import.csv (5 drugs, 15 records)        ║
+║                                                                    ║
+║  Preview & Validation                                              ║
+║  ┌──────────────────────────────────────────────────────────────┐ ║
+║  │Drug         │2022  │2023  │2024  │Avg   │Growth│Source│Valid│ ║
+║  ├─────────────┼──────┼──────┼──────┼──────┼──────┼──────┼─────┤ ║
+║  │PAR0001      │95,000│105K  │110K  │103K  │+7.6% │legacy│✅   │ ║
+║  │Paracetamol  │      │      │      │      │      │import│     │ ║
+║  ├─────────────┼──────┼──────┼──────┼──────┼──────┼──────┼─────┤ ║
+║  │AMX0001      │45,000│48,000│52,000│48,333│+7.5% │estim │✅   │ ║
+║  │Amoxicillin  │      │      │      │      │      │ated  │     │ ║
+║  ├─────────────┼──────┼──────┼──────┼──────┼──────┼──────┼─────┤ ║
+║  │OME0001      │28,000│30,000│32,000│30,000│+6.9% │legacy│✅   │ ║
+║  │Omeprazole   │      │      │      │      │      │import│     │ ║
+║  ├─────────────┼──────┼──────┼──────┼──────┼──────┼──────┼─────┤ ║
+║  │IBU0001      │35,000│38,000│42,000│38,333│+9.5% │estim │⚠️  │ ║
+║  │Ibuprofen    │      │      │      │      │      │ated  │Note│ ║
+║  ├─────────────┼──────┼──────┼──────┼──────┼──────┼──────┼─────┤ ║
+║  │XYZ9999      │  N/A │  N/A │  N/A │  N/A │  N/A │  -   │❌  │ ║
+║  │Invalid Code │      │      │      │      │      │      │Err │ ║
+║  └─────────────┴──────┴──────┴──────┴──────┴──────┴──────┴─────┘ ║
+║                                                                    ║
+║  ✅ Validation Results:                                            ║
+║  • Valid records: 4 / 5                                           ║
+║  • Warnings: 1 (Ibuprofen: High growth rate >9%)                 ║
+║  • Errors: 1 (XYZ9999: Drug code not found in system)            ║
+║                                                                    ║
+║  ⚠️  Warnings can be imported with confirmation                   ║
+║  ❌ Errors must be fixed before import                             ║
+║                                                                    ║
+║  [📝 Edit CSV] [🔄 Reload] [✓ Import Valid Records (4)]          ║
+║  [Cancel]                                                          ║
+║                                                                    ║
+╚════════════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## 🎯 UI MOCKUP: Add/Edit Drug Item (With Historical Data)
 
 ```
 ╔════════════════════════════════════════════════════════════════════╗
@@ -492,11 +730,13 @@ WHERE id = 1;
 ║  ┌──────────────────────────────────────────────────────────────┐ ║
 ║  │ Generic Drug: [PAR0001 - Paracetamol 500mg Tablet      ▼]   │ ║
 ║  │                                                              │ ║
-║  │ 📊 Historical Data (3 years)                                │ ║
+║  │ 📊 Historical Data (3 years) - Source: legacy_import ✓      │ ║
 ║  │ ├─ 2022: 95,000 tablets                                    │ ║
 ║  │ ├─ 2023: 105,000 tablets (+10.5%)                          │ ║
 ║  │ ├─ 2024: 110,000 tablets (+4.8%)                           │ ║
 ║  │ └─ Average: 103,333 tablets/year                           │ ║
+║  │                                                              │ ║
+║  │ [🔄 Update Historical Data] [📝 Edit Manually]              │ ║
 ║  │                                                              │ ║
 ║  │ 📦 Current Stock: 15,000 tablets                           │ ║
 ║  │ 🔻 Min Level: 10,000 tablets                               │ ║
