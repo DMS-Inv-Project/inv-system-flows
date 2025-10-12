@@ -1,8 +1,8 @@
 # INVS Modern - Project Status
 ## สถานะโครงการ และจุดเริ่มต้นสำหรับ Session ใหม่
 
-**Last Updated**: 2025-01-11
-**Version**: 1.0.0
+**Last Updated**: 2025-01-12
+**Version**: 1.1.0
 **Status**: ✅ Production Ready (Development Phase)
 
 ---
@@ -15,10 +15,12 @@
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  ✅ Database Architecture: Simplified & Working        │
-│  ✅ PostgreSQL (Prisma): 31 tables, 11 views, 10 funcs│
+│  ✅ PostgreSQL (Prisma): 34 tables, 11 views, 12 funcs│
+│  ✅ Budget Planning: Drug-level planning ⭐ NEW        │
+│  ✅ Manual Data Entry: Historical import support ⭐    │
 │  ✅ MySQL Legacy: Ready for import (optional)          │
 │  ✅ Docker Setup: Tested & Verified                    │
-│  ✅ Documentation: Complete (8 comprehensive guides)   │
+│  ✅ Documentation: Complete (14 comprehensive guides)  │
 │  ✅ Seed Data: All master data ready                   │
 │  🚧 Backend API: Not started yet                       │
 │  🚧 Frontend: Not started yet                          │
@@ -35,11 +37,13 @@
 ### 1. Database Architecture ✅
 
 **PostgreSQL (Production) - Port 5434**
-- ✅ 31 tables (Prisma managed)
+- ✅ 34 tables (Prisma managed) ⭐ +2 budget planning tables
 - ✅ 11 views (Ministry reporting + operational)
-- ✅ 10 functions (Budget + inventory logic)
+- ✅ 12 functions (Budget + inventory logic) ⭐ +2 planning functions
 - ✅ Seed data loaded
 - ✅ Health checks working
+- ✅ Budget Planning: Drug-level planning with historical data ⭐ NEW
+- ✅ Manual Entry: Support for historical data import ⭐ NEW
 
 **MySQL Legacy (Reference) - Port 3307**
 - ✅ Container ready
@@ -51,8 +55,8 @@
 ```
 invs-modern/
 ├── prisma/
-│   ├── schema.prisma          ✅ 31 models defined
-│   ├── functions.sql          ✅ 10 business functions
+│   ├── schema.prisma          ✅ 34 models defined ⭐
+│   ├── functions.sql          ✅ 12 business functions ⭐
 │   ├── views.sql              ✅ 11 reporting views
 │   └── seed.ts               ✅ Master data seeding
 │
@@ -68,7 +72,9 @@ invs-modern/
 │   └── archive/               ✅ Legacy scripts archived
 │
 ├── docs/
-│   ├── flows/                 ✅ 4 detailed flow docs
+│   ├── flows/                 ✅ 9 detailed flow docs ⭐
+│   │   ├── FLOW_02B_Budget_Planning_with_Drugs.md ⭐ NEW
+│   │   └── [8 other flows]
 │   ├── MYSQL_IMPORT_GUIDE.md  ✅ Import instructions
 │   ├── LARGE_FILES_GUIDE.md   ✅ Large files management
 │   └── SCRIPT_CLEANUP_GUIDE.md✅ Scripts organization
@@ -77,7 +83,7 @@ invs-modern/
 ├── FINAL_SUMMARY.md           ✅ System summary
 ├── PROJECT_STATUS.md          ✅ This file
 ├── CLAUDE.md                  ✅ AI assistant context
-├── README.md                  ✅ Project overview
+├── README.md                  ✅ Project overview ⭐ Updated
 └── docker-compose.yml         ✅ 2 databases + UIs
 ```
 
@@ -90,36 +96,43 @@ invs-modern/
 
 **Flow Documentation:**
 1. ✅ `docs/flows/QUICK_START_GUIDE.md` - Quick start
-2. ✅ `docs/flows/DATA_FLOW_COMPLETE_GUIDE.md` - All flows
+2. ✅ `docs/flows/DATA_FLOW_COMPLETE_GUIDE.md` - All flows (updated)
 3. ✅ `docs/flows/FLOW_01_Master_Data_Setup.md` - Master data
 4. ✅ `docs/flows/FLOW_02_Budget_Management.md` - Budget system
-5. ✅ `docs/flows/FLOW_03_Procurement_Part1_PR.md` - Purchase requests
-6. ✅ `docs/flows/FLOW_08_Frontend_Purchase_Request.md` - Frontend guide
+5. ✅ `docs/flows/FLOW_02B_Budget_Planning_with_Drugs.md` - Drug planning ⭐ NEW
+6. ✅ `docs/flows/FLOW_03_Procurement_Part1_PR.md` - Purchase requests
+7. ✅ `docs/flows/FLOW_04_Inventory_Management.md` - Inventory & FIFO/FEFO
+8. ✅ `docs/flows/FLOW_05_Drug_Distribution.md` - Distribution
+9. ✅ `docs/flows/FLOW_06_TMT_Integration.md` - Thai Medical Terminology
+10. ✅ `docs/flows/FLOW_07_Ministry_Reporting.md` - Ministry reports
+11. ✅ `docs/flows/FLOW_08_Frontend_Purchase_Request.md` - Frontend guide
 
 **Technical Docs:**
 1. ✅ `docs/SCRIPT_CLEANUP_GUIDE.md` - Scripts organization
 2. ✅ `docs/LARGE_FILES_GUIDE.md` - Large files handling
-3. ✅ `prisma/schema.prisma` - Database schema (790 lines)
-4. ✅ `prisma/functions.sql` - Functions (473 lines)
+3. ✅ `prisma/schema.prisma` - Database schema (880+ lines) ⭐
+4. ✅ `prisma/functions.sql` - Functions (610+ lines) ⭐
 5. ✅ `prisma/views.sql` - Views (378 lines)
 
 ### 4. Testing & Verification ✅
 
-**Last Tested**: 2025-01-11
+**Last Tested**: 2025-01-12
 
 ```bash
 # Test Results (All Passed ✅)
 ✅ Docker containers: 4/4 running
 ✅ PostgreSQL health: Healthy
 ✅ MySQL health: Healthy
-✅ Tables created: 31/31
+✅ Tables created: 34/34 ⭐ +2 budget planning tables
 ✅ Views created: 11/11
-✅ Functions created: 10/10
+✅ Functions created: 12/12 ⭐ +2 planning functions
 ✅ Seed data: 6/6 entity types
 ✅ Application connection: Working
 ✅ Prisma queries: Working
 ✅ pgAdmin access: Working (admin@invs.com)
 ✅ phpMyAdmin access: Working
+✅ Budget Planning: Schema ready ⭐ NEW
+✅ Manual Entry: Documentation complete ⭐ NEW
 ```
 
 ---
@@ -279,7 +292,7 @@ npm run dev
 # PostgreSQL tables
 docker exec invs-modern-db psql -U invs_user -d invs_modern -c "\dt"
 
-# Should show 31 tables
+# Should show 34 tables (includes budget_plans, budget_plan_items)
 ```
 
 **Step 4: Review Documentation**
@@ -296,22 +309,22 @@ cat docs/flows/QUICK_START_GUIDE.md  # Quick start
 ## 📊 **Key Statistics**
 
 ### Database
-- **PostgreSQL Tables**: 31
+- **PostgreSQL Tables**: 34 ⭐ (+2 budget planning)
 - **Views**: 11 (5 ministry exports + 6 operational)
-- **Functions**: 10 (budget + inventory logic)
+- **Functions**: 12 ⭐ (+2 budget planning)
 - **Seed Records**: 29 records across 6 entities
 
 ### Code
 - **TypeScript Files**: 3 (index.ts, prisma.ts, seed.ts)
-- **Prisma Schema**: 790 lines
-- **SQL Functions**: 473 lines
+- **Prisma Schema**: 880+ lines ⭐ (+90 lines)
+- **SQL Functions**: 610+ lines ⭐ (+137 lines)
 - **SQL Views**: 378 lines
 - **Active Scripts**: 8 files
 
 ### Documentation
-- **Total Docs**: 13 markdown files
+- **Total Docs**: 14 markdown files ⭐ (+1)
 - **Setup Guides**: 3 files
-- **Flow Guides**: 4 detailed flows
+- **Flow Guides**: 9 detailed flows ⭐ (+1 FLOW_02B)
 - **Technical Docs**: 6 files
 
 ---
@@ -433,9 +446,9 @@ Password: invs123
 - [ ] phpMyAdmin accessible (port 8082)
 
 ### Database
-- [ ] Tables created (31 tables)
+- [ ] Tables created (34 tables) ⭐
 - [ ] Views created (11 views)
-- [ ] Functions created (10 functions)
+- [ ] Functions created (12 functions) ⭐
 - [ ] Seed data loaded (6 entity types, 29 records)
 
 ### Application
@@ -450,9 +463,10 @@ Password: invs123
 
 | Metric | Status | Details |
 |--------|--------|---------|
-| **Database Design** | ✅ Complete | 31 tables, normalized schema |
-| **Business Logic** | ✅ Complete | 10 functions, 11 views |
-| **Documentation** | ✅ Complete | 13 comprehensive guides |
+| **Database Design** | ✅ Complete | 34 tables, normalized schema ⭐ |
+| **Business Logic** | ✅ Complete | 12 functions, 11 views ⭐ |
+| **Budget Planning** | ✅ Complete | Drug-level planning ⭐ NEW |
+| **Documentation** | ✅ Complete | 14 comprehensive guides ⭐ |
 | **Docker Setup** | ✅ Complete | 2 databases + 2 UIs |
 | **Testing** | ✅ Complete | All components verified |
 | **Backend API** | 🚧 Not Started | Next priority |
@@ -524,8 +538,34 @@ Password: invs123
 
 ---
 
-**Last Verified**: 2025-01-11
+## 🆕 **Latest Updates (v1.1.0 - 2025-01-12)**
+
+### Added
+- ✅ **Budget Planning with Drug Details** (FLOW_02B)
+  - Drug-level budget planning matching legacy buyplan/buyplan_c functionality
+  - 3-year historical consumption analysis
+  - Quarterly breakdown (Q1-Q4)
+  - Purchase vs plan tracking
+  - 2 new tables: budget_plans, budget_plan_items
+  - 2 new functions: check_drug_in_budget_plan, update_budget_plan_purchase
+
+- ✅ **Manual Historical Data Entry**
+  - Support for new system deployments without historical data
+  - historical_drug_data table for manual/imported data
+  - CSV bulk import with validation
+  - Multiple data sources (system, manual, legacy_import, estimated)
+  - Complete UI mockups for data entry
+
+### Updated
+- ✅ README.md - Updated statistics (34 tables, 12 functions, 14 docs)
+- ✅ DATA_FLOW_COMPLETE_GUIDE.md - Added budget planning section
+- ✅ PROJECT_STATUS.md - Updated system status to v1.1.0
+
+---
+
+**Last Verified**: 2025-01-12
 **System Status**: ✅ Production Ready (Development Phase)
+**Version**: 1.1.0
 **Next Phase**: Backend API Development
 
 *Created with ❤️ for the INVS Modern Team*
