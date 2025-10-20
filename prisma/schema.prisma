@@ -31,9 +31,9 @@ model Department {
   id                BigInt             @id @default(autoincrement())
   deptCode          String             @unique @map("dept_code") @db.VarChar(10)
   deptName          String             @map("dept_name") @db.VarChar(100)
+  hisCode           String?            @map("his_code") @db.VarChar(20) // รหัสหน่วยงานใน HIS
   parentId          BigInt?            @map("parent_id")
   headPerson        String?            @map("head_person") @db.VarChar(50)
-  budgetCode        String?            @map("budget_code") @db.VarChar(10)
   isActive          Boolean            @default(true) @map("is_active")
   createdAt         DateTime           @default(now()) @map("created_at")
   budgetAllocations BudgetAllocation[]
@@ -45,20 +45,64 @@ model Department {
   tmtUsageStats     TmtUsageStats[]
   drugDistributions DrugDistribution[]
 
+  @@index([hisCode])
   @@map("departments")
 }
 
-model BudgetType {
-  id                BigInt             @id @default(autoincrement())
-  budgetCode        String             @unique @map("budget_code") @db.VarChar(10)
-  budgetName        String             @map("budget_name") @db.VarChar(100)
-  budgetDescription String?            @map("budget_description")
-  isActive          Boolean            @default(true) @map("is_active")
-  createdAt         DateTime           @default(now()) @map("created_at")
+// Budget Type - ประเภทงบประมาณ (เช่น งบเงินบำรุง, งบลงทุน)
+model BudgetTypeGroup {
+  id         BigInt       @id @default(autoincrement())
+  typeCode   String       @unique @map("type_code") @db.VarChar(10)
+  typeName   String       @map("type_name") @db.VarChar(100)
+  isActive   Boolean      @default(true) @map("is_active")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  budgets    Budget[]
+
+  @@map("budget_types")
+}
+
+// Budget Category - หมวดค่าใช้จ่าย
+model BudgetCategory {
+  id           BigInt       @id @default(autoincrement())
+  categoryCode String       @unique @map("category_code") @db.VarChar(10)
+  categoryName String       @map("category_name") @db.VarChar(100)
+  accCode      String?      @map("acc_code") @db.VarChar(20) // รหัสผังบัญชี
+  remark       String?      // หมายเหตุ
+  isActive     Boolean      @default(true) @map("is_active")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  budgets      Budget[]
+
+  @@map("budget_categories")
+}
+
+// Budget - งบประมาณ (เชื่อมโยง type และ category)
+model Budget {
+  id                BigInt            @id @default(autoincrement())
+  budgetCode        String            @unique @map("budget_code") @db.VarChar(10)
+  budgetType        String            @map("budget_type") @db.VarChar(10) // FK to budget_types.type_code
+  budgetCategory    String            @map("budget_category") @db.VarChar(10) // FK to budget_categories.category_code
+  budgetDescription String?           @map("budget_description")
+  isActive          Boolean           @default(true) @map("is_active")
+  createdAt         DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  typeGroup         BudgetTypeGroup   @relation(fields: [budgetType], references: [typeCode])
+  category          BudgetCategory    @relation(fields: [budgetCategory], references: [categoryCode])
   budgetAllocations BudgetAllocation[]
   purchaseOrders    PurchaseOrder[]
 
-  @@map("budget_types")
+  @@map("budgets")
+}
+
+// Bank - ธนาคาร
+model Bank {
+  id        BigInt    @id @default(autoincrement()) @map("bank_id")
+  bankName  String    @map("bank_name") @db.VarChar(100)
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  companies Company[]
+
+  @@map("bank")
 }
 
 model Company {
@@ -67,6 +111,12 @@ model Company {
   companyName         String          @map("company_name") @db.VarChar(100)
   companyType         CompanyType     @default(VENDOR) @map("company_type")
   taxId               String?         @map("tax_id") @db.VarChar(20)
+
+  // Bank Information
+  bankCode            String?         @map("bank_code") @db.VarChar(20) // เลขบัญชีธนาคาร
+  bankAccount         String?         @map("bank_account") @db.VarChar(100) // ชื่อบัญชีธนาคาร
+  bankId              BigInt?         @map("bank_id") // FK to bank
+
   address             String?
   phone               String?         @db.VarChar(20)
   email               String?         @db.VarChar(100)
@@ -77,6 +127,9 @@ model Company {
   tmtManufacturerCode String?         @map("tmt_manufacturer_code") @db.VarChar(20)
   fdaLicenseNumber    String?         @map("fda_license_number") @db.VarChar(20)
   gmpCertificate      String?         @map("gmp_certificate") @db.VarChar(30)
+
+  // Relations
+  bank                Bank?           @relation(fields: [bankId], references: [id])
   drugs               Drug[]
   purchaseOrders      PurchaseOrder[]
 
@@ -126,6 +179,7 @@ model Drug {
   standardCode       String?                         @map("standard_code") @db.VarChar(24)
   barcode            String?                         @db.VarChar(20)
   packSize           Int                             @default(1) @map("pack_size")
+  unitPrice          Decimal?                        @map("unit_price") @db.Decimal(10, 2) // ราคาขายต่อหน่วย
   unit               String                          @default("TAB") @db.VarChar(10)
   isActive           Boolean                         @default(true) @map("is_active")
   createdAt          DateTime                        @default(now()) @map("created_at")
@@ -217,7 +271,7 @@ model InventoryTransaction {
 model BudgetAllocation {
   id              BigInt              @id @default(autoincrement())
   fiscalYear      Int                 @map("fiscal_year")
-  budgetTypeId    BigInt              @map("budget_type_id")
+  budgetId        BigInt              @map("budget_id")
   departmentId    BigInt              @map("department_id")
   totalBudget     Decimal             @map("total_budget") @db.Decimal(15, 2)
   q1Budget        Decimal             @map("q1_budget") @db.Decimal(15, 2)
@@ -233,12 +287,12 @@ model BudgetAllocation {
   status          BudgetStatus        @default(ACTIVE)
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @default(now()) @updatedAt @map("updated_at")
-  budgetType      BudgetType          @relation(fields: [budgetTypeId], references: [id])
+  budget          Budget              @relation(fields: [budgetId], references: [id])
   department      Department          @relation(fields: [departmentId], references: [id])
   reservations    BudgetReservation[]
   budgetPlans     BudgetPlan[]
 
-  @@unique([fiscalYear, budgetTypeId, departmentId])
+  @@unique([fiscalYear, budgetId, departmentId])
   @@map("budget_allocations")
 }
 
@@ -382,7 +436,7 @@ model PurchaseOrder {
   poDate       DateTime            @map("po_date") @db.Date
   deliveryDate DateTime?           @map("delivery_date") @db.Date
   departmentId BigInt?             @map("department_id")
-  budgetTypeId BigInt?             @map("budget_type_id")
+  budgetId     BigInt?             @map("budget_id")
   status       PoStatus            @default(DRAFT)
   totalAmount  Decimal             @default(0) @map("total_amount") @db.Decimal(12, 2)
   totalItems   Int                 @default(0) @map("total_items")
@@ -393,7 +447,7 @@ model PurchaseOrder {
   updatedAt    DateTime            @default(now()) @updatedAt @map("updated_at")
   reservations BudgetReservation[]
   items        PurchaseOrderItem[]
-  budgetType   BudgetType?         @relation(fields: [budgetTypeId], references: [id])
+  budget       Budget?             @relation(fields: [budgetId], references: [id])
   department   Department?         @relation(fields: [departmentId], references: [id])
   vendor       Company             @relation(fields: [vendorId], references: [id])
   requests     PurchaseRequest[]
