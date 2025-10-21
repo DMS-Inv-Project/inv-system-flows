@@ -37,6 +37,9 @@ model Department {
   headPerson        String?            @map("head_person") @db.VarChar(50)
   isActive          Boolean            @default(true) @map("is_active")
   createdAt         DateTime           @default(now()) @map("created_at")
+
+  // Ministry Compliance Fields (v2.1.0 - DMSIC Standards)
+  consumptionGroup  DeptConsumptionGroup? @map("consumption_group") // กลุ่มหน่วยงานตามรูปแบบการใช้ยา (1-9)
   budgetAllocations BudgetAllocation[]
   budgetPlans       BudgetPlan[]
   parent            Department?        @relation("DepartmentHierarchy", fields: [parentId], references: [id])
@@ -243,6 +246,12 @@ model Drug {
   isActive           Boolean                         @default(true) @map("is_active")
   createdAt          DateTime                        @default(now()) @map("created_at")
   updatedAt          DateTime                        @default(now()) @updatedAt @map("updated_at")
+
+  // Ministry Compliance Fields (v2.1.0 - DMSIC Standards)
+  nlemStatus         NlemStatus?                     @map("nlem_status") // สถานะยาในบัญชียาหลักแห่งชาติ (E/N)
+  drugStatus         DrugStatus                      @default(ACTIVE) @map("drug_status") // สถานะการใช้งานยา (1-4)
+  statusChangedDate  DateTime?                       @map("status_changed_date") @db.Date // วันที่เปลี่ยนสถานะ
+  productCategory    ProductCategory?                @map("product_category") // ประเภทผลิตภัณฑ์ (1-5)
   tmtTpCode          String?                         @map("tmt_tp_code") @db.VarChar(10)
   tmtTpId            BigInt?                         @map("tmt_tp_id")
   tmtTpuCode         String?                         @map("tmt_tpu_code") @db.VarChar(10)
@@ -1228,4 +1237,43 @@ enum AttachmentType {
   INSPECTION_REPORT @map("inspection_report")
   DELIVERY_NOTE     @map("delivery_note")
   OTHER             @map("other")
+}
+
+// ==========================================
+// MINISTRY COMPLIANCE ENUMS (NEW - v2.1.0)
+// ตามมาตรฐานกระทรวงสาธารณสุข พ.ศ. 2568
+// ==========================================
+
+// NLEM Status - สถานะยาในบัญชียาหลักแห่งชาติ
+enum NlemStatus {
+  E @map("E") // Essential Drug - ยาในบัญชียาหลัก
+  N @map("N") // Non-Essential - ยานอกบัญชี
+}
+
+// Drug Status - สถานะการใช้งานยา (ตาม DRUGLIST ฟิลด์ STATUS)
+enum DrugStatus {
+  ACTIVE           @map("1") // ยังใช้งาน
+  DISCONTINUED     @map("2") // ตัดจากบัญชีแต่ยังมียาเหลือ
+  SPECIAL_CASE     @map("3") // ยาเฉพาะราย
+  REMOVED          @map("4") // ตัดออกและไม่มียาเหลือ
+}
+
+// Product Category - ประเภทผลิตภัณฑ์ (ตาม DRUGLIST ฟิลด์ PRODUCT_CAT)
+enum ProductCategory {
+  MODERN_REGISTERED @map("1") // ยาแผนปัจจุบันขึ้นทะเบียน อย.
+  MODERN_HOSPITAL   @map("2") // ยาแผนปัจจุบันผลิตโรงพยาบาล
+  HERBAL_REGISTERED @map("3") // ยาสมุนไพรขึ้นทะเบียน
+  HERBAL_HOSPITAL   @map("4") // ยาสมุนไพรผลิตโรงพยาบาล
+  OTHER             @map("5") // ยาอื่นๆ
+}
+
+// Department Consumption Group - กลุ่มหน่วยงานตามรูปแบบการใช้ยา (ตาม DISTRIBUTION ฟิลด์ DEPT_TYPE)
+enum DeptConsumptionGroup {
+  OPD_IPD_MIX       @map("1") // OPD + IPD mixed
+  OPD_MAINLY        @map("2") // OPD >70%
+  IPD_MAINLY        @map("3") // IPD >70%
+  OTHER_INTERNAL    @map("4") // OR, X-ray, ห้องปฏิบัติการ
+  PRIMARY_CARE      @map("5") // รพ.สต.
+  PC_TRANSFERRED    @map("6") // รพ.สต.ที่ถ่ายโอน
+  OTHER_EXTERNAL    @map("9") // อื่นๆ ภายนอก
 }
