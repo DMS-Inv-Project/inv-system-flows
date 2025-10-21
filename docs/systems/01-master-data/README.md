@@ -1,42 +1,42 @@
 # 📦 Master Data Management System
 
-**Priority**: ⭐⭐⭐ สูงสุด (ต้องทำก่อน)
+**Priority**: ⭐⭐⭐ High (Must implement first)
 **Tables**: 10 tables
-**Complexity**: ⭐⭐ ปานกลาง
+**Complexity**: ⭐⭐ Medium
 **Est. Time**: 1-2 weeks
 
 ---
 
 ## 📋 Overview
 
-ระบบ Master Data เป็นข้อมูลพื้นฐานที่ทุกระบบอื่นต้องใช้ ประกอบด้วย:
+Master Data is the foundation data that all other systems depend on. It includes:
 
-- 📍 **Locations** - สถานที่เก็บยา (คลัง, ห้องยา, หอผู้ป่วย)
-- 🏢 **Departments** - แผนกต่างๆ ในโรงพยาบาล
-- 🏭 **Companies** - บริษัทผู้ขาย/ผู้ผลิต
-- 💊 **Drug Generics** - ยา Generic (1,104 รายการ)
-- 💉 **Drugs** - ยา Trade (7,258 รายการ)
-- 🏦 **Banks** - ธนาคาร (สำหรับการเงิน)
-- 💰 **Budget Types** - ประเภทงบประมาณ
-- 📊 **Budget Categories** - หมวดค่าใช้จ่าย
-- 💼 **Budgets** - งบประมาณ (type + category)
-- 📄 **Ministry Reports** - รายงานกระทรวง
+- 📍 **Locations** - Storage locations (คลัง, ห้องยา, หอผู้ป่วย)
+- 🏢 **Departments** - Hospital departments (แผนกต่างๆ ในโรงพยาบาล)
+- 🏭 **Companies** - Vendors and manufacturers (บริษัทผู้ขาย/ผู้ผลิต)
+- 💊 **Drug Generics** - Generic drugs (1,104 records)
+- 💉 **Drugs** - Trade name drugs (7,258 records)
+- 🏦 **Banks** - Bank master data (for finance)
+- 💰 **Budget Types** - Budget type classification (ประเภทงบประมาณ)
+- 📊 **Budget Categories** - Expense categories (หมวดค่าใช้จ่าย)
+- 💼 **Budgets** - Budget allocations (type + category)
+- 📄 **Contracts** - Purchase contracts (สัญญาจัดซื้อ)
 
 ---
 
 ## 🗄️ Database Tables (10 tables)
 
-### 1. locations - สถานที่เก็บยา
+### 1. Locations - Storage Locations
 
 ```prisma
 model Location {
   id                BigInt       @id @default(autoincrement())
-  locationCode      String       @unique // รหัสสถานที่
-  locationName      String       // ชื่อสถานที่
+  locationCode      String       @unique // Location code (รหัสสถานที่)
+  locationName      String       // Location name (ชื่อสถานที่)
   locationType      LocationType // warehouse, pharmacy, ward, emergency
-  parentId          BigInt?      // สถานที่แม่ (hierarchy)
+  parentId          BigInt?      // Parent location for hierarchy (สถานที่แม่)
   address           String?
-  responsiblePerson String?      // ผู้รับผิดชอบ
+  responsiblePerson String?      // Person in charge (ผู้รับผิดชอบ)
   isActive          Boolean      @default(true)
   createdAt         DateTime     @default(now())
 
@@ -48,38 +48,39 @@ model Location {
 }
 
 enum LocationType {
-  WAREHOUSE      // คลังกลาง
-  PHARMACY       // ห้องยา
-  WARD           // หอผู้ป่วย
-  EMERGENCY      // ห้องฉุกเฉิน
-  LABORATORY     // ห้องปฏิบัติการ
-  OPERATING_ROOM // ห้องผ่าตัด
+  WAREHOUSE      // Main warehouse (คลังกลาง)
+  PHARMACY       // Pharmacy (ห้องยา)
+  WARD           // Ward storage (คลังหอผู้ป่วย)
+  EMERGENCY      // Emergency storage (ห้องฉุกเฉิน)
+  OR             // Operating room (ห้องผ่าตัด)
+  ICU            // ICU storage
+  GENERAL        // General storage
 }
 ```
 
 **Business Rules**:
-- รหัสสถานที่ต้อง unique
-- สามารถมี hierarchy (parent-child) ได้
-- ต้องมีอย่างน้อย 1 สถานที่ประเภท WAREHOUSE
-- ต้องมีอย่างน้อย 1 สถานที่ประเภท PHARMACY
+- Location code must be unique
+- Can have parent-child hierarchy
+- Must have at least 1 WAREHOUSE location
+- Must have at least 1 PHARMACY location
 
 ---
 
-### 2. departments - แผนกในโรงพยาบาล
+### 2. Departments - Hospital Departments
 
 ```prisma
 model Department {
   id                BigInt             @id @default(autoincrement())
-  deptCode          String             @unique // รหัสแผนก
-  deptName          String             // ชื่อแผนก
-  hisCode           String?            // รหัสแผนกใน HIS
-  parentId          BigInt?            // แผนกแม่ (hierarchy)
-  headPerson        String?            // หัวหน้าแผนก
+  deptCode          String             @unique // Department code (รหัสแผนก)
+  deptName          String             // Department name (ชื่อแผนก)
+  hisCode           String?            // HIS system code (รหัสใน HIS)
+  parentId          BigInt?            // Parent department for hierarchy (แผนกแม่)
+  headPerson        String?            // Department head (หัวหน้าแผนก)
   isActive          Boolean            @default(true)
   createdAt         DateTime           @default(now())
 
   // Ministry Compliance (NEW - v2.2.0)
-  consumptionGroup  DeptConsumptionGroup? // ประเภทการใช้ยา
+  consumptionGroup  DeptConsumptionGroup? // Drug usage pattern (ประเภทการใช้ยา)
 
   // Relations
   parent            Department?        @relation("DepartmentHierarchy")
@@ -89,115 +90,115 @@ model Department {
 }
 
 enum DeptConsumptionGroup {
-  OPD_IPD_MIX       // 1 = ผสม OPD + IPD
-  OPD_MAINLY        // 2 = OPD มากกว่า 70%
-  IPD_MAINLY        // 3 = IPD มากกว่า 70%
-  OTHER_INTERNAL    // 4 = OR, X-ray, Lab
-  PRIMARY_CARE      // 5 = รพ.สต.
-  PC_TRANSFERRED    // 6 = รพ.สต. ถ่ายโอน
-  OTHER_EXTERNAL    // 9 = อื่นๆ
+  OPD_IPD_MIX       // 1 - Mixed OPD + IPD (ผสม OPD + IPD)
+  OPD_MAINLY        // 2 - Mainly OPD >70% (OPD มากกว่า 70%)
+  IPD_MAINLY        // 3 - Mainly IPD >70% (IPD มากกว่า 70%)
+  OTHER_INTERNAL    // 4 - Other internal: OR, X-ray, Lab
+  PRIMARY_CARE      // 5 - Primary care unit (รพ.สต.)
+  PC_TRANSFERRED    // 6 - Transferred from primary care (รพ.สต. ถ่ายโอน)
+  OTHER_EXTERNAL    // 9 - Other external (อื่นๆ นอก รพ.)
 }
 ```
 
 **Business Rules**:
-- รหัสแผนกต้อง unique
-- สามารถมี hierarchy ได้
-- consumptionGroup สำคัญสำหรับรายงานกระทรวง
+- Department code must be unique
+- Can have hierarchy structure
+- `consumptionGroup` is critical for ministry reporting
 
 ---
 
-### 3. companies - บริษัทผู้ขาย/ผู้ผลิต
+### 3. Companies - Vendors and Manufacturers
 
 ```prisma
 model Company {
   id            BigInt      @id @default(autoincrement())
-  companyCode   String      @unique // รหัสบริษัท
-  companyName   String      // ชื่อบริษัท
+  companyCode   String      @unique // Company code (รหัสบริษัท)
+  companyName   String      // Company name (ชื่อบริษัท)
   companyType   CompanyType // vendor, manufacturer, both
-  taxId         String?     // เลขผู้เสียภาษี
+  taxId         String?     // Tax ID 13 digits (เลขผู้เสียภาษี 13 หลัก)
   address       String?
   phone         String?
   email         String?
-  contactPerson String?     // ผู้ติดต่อ
+  contactPerson String?     // Contact person (ผู้ติดต่อ)
   isActive      Boolean     @default(true)
   createdAt     DateTime    @default(now())
 
   // Relations
-  drugs         Drug[]          // ผู้ผลิต
-  purchaseOrders PurchaseOrder[] // ผู้ขาย
-  contracts     Contract[]      // สัญญา
+  drugs         Drug[]          // Drugs manufactured (ผู้ผลิต)
+  purchaseOrders PurchaseOrder[] // Purchase orders as vendor (ผู้ขาย)
+  contracts     Contract[]      // Contracts (สัญญา)
 }
 
 enum CompanyType {
-  VENDOR       // ผู้ขาย
-  MANUFACTURER // ผู้ผลิต
-  BOTH         // ทั้งสอง
+  VENDOR       // Vendor only (ผู้ขาย)
+  MANUFACTURER // Manufacturer only (ผู้ผลิต)
+  BOTH         // Both vendor and manufacturer
 }
 ```
 
 **Business Rules**:
-- รหัสบริษัทต้อง unique
-- ต้องระบุประเภท (vendor/manufacturer/both)
-- เลขผู้เสียภาษีควรเป็น 13 หลัก
+- Company code must be unique
+- Must specify type (vendor/manufacturer/both)
+- Tax ID should be 13 digits
 
 ---
 
-### 4. drug_generics - ยา Generic
+### 4. Drug Generics - Generic Drugs
 
 ```prisma
 model DrugGeneric {
   id              BigInt   @id @default(autoincrement())
-  genericCode     String   @unique // รหัสยา generic
-  genericName     String   // ชื่อสามัญ (generic name)
-  workingCode     String?  // รหัสทำงาน
-  dosageForm      String?  // รูปแบบยา (tab, cap, inj)
-  strength        String?  // ความแรง
-  unit            String?  // หน่วย
-  therapeuticClass String? // หมวดการรักษา
+  genericCode     String   @unique // Generic drug code (รหัสยา generic)
+  genericName     String   // Generic name (ชื่อสามัญ)
+  workingCode     String?  // Working code (รหัสทำงาน)
+  dosageForm      String?  // Dosage form: tab, cap, inj (รูปแบบยา)
+  strength        String?  // Strength (ความแรง)
+  unit            String?  // Unit (หน่วย)
+  therapeuticClass String? // Therapeutic class (หมวดการรักษา)
   isActive        Boolean  @default(true)
   createdAt       DateTime @default(now())
 
   // Relations
-  drugs           Drug[]   // ยา trade ที่เกี่ยวข้อง
+  drugs           Drug[]   // Trade name drugs (ยา trade)
 }
 ```
 
 **Business Rules**:
-- รหัสยา generic ต้อง unique
-- ใช้เป็นตัวกลางในการจัดกลุ่มยา trade
-- ใช้ในการวางแผนงบประมาณ
+- Generic code must be unique
+- Used to group trade drugs
+- Used for budget planning
 
 ---
 
-### 5. drugs - ยา Trade (ยี่ห้อต่างๆ)
+### 5. Drugs - Trade Name Drugs
 
 ```prisma
 model Drug {
   id                 BigInt   @id @default(autoincrement())
-  drugCode           String   @unique // รหัสยา trade
-  tradeName          String   // ชื่อการค้า
+  drugCode           String   @unique // Trade drug code (รหัสยา trade)
+  tradeName          String   // Trade name (ชื่อการค้า)
   genericId          BigInt?  // FK to drug_generics
   strength           String?
   dosageForm         String?
   manufacturerId     BigInt?  // FK to companies
   atcCode            String?  // ATC code
-  standardCode       String?  // รหัสมาตรฐาน 24 หลัก
+  standardCode       String?  // Standard 24-digit code (รหัสมาตรฐาน 24 หลัก)
   barcode            String?
-  packSize           Int      @default(1) // ขนาดบรรจุ
-  unitPrice          Decimal? // ราคาขายต่อหน่วย
+  packSize           Int      @default(1) // Pack size (ขนาดบรรจุ)
+  unitPrice          Decimal? // Unit price (ราคาต่อหน่วย)
   unit               String   @default("TAB")
   isActive           Boolean  @default(true)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  // Ministry Compliance Fields (v2.2.0)
-  nlemStatus         NlemStatus?      // E=Essential, N=Non-Essential
-  drugStatus         DrugStatus       @default(ACTIVE)
-  statusChangedDate  DateTime?        // วันที่เปลี่ยนสถานะ
-  productCategory    ProductCategory? // ประเภทผลิตภัณฑ์
+  // Ministry Compliance Fields (v2.2.0) ⭐
+  nlemStatus         NlemStatus?      // NLEM status (สถานะบัญชียาหลักแห่งชาติ)
+  drugStatus         DrugStatus       @default(ACTIVE) // Drug lifecycle status
+  statusChangedDate  DateTime?        // Status change date (วันที่เปลี่ยนสถานะ)
+  productCategory    ProductCategory? // Product type (ประเภทผลิตภัณฑ์)
 
   // TMT Integration
-  tmtTpuCode         String?  // รหัส TMT (TPU level)
+  tmtTpuCode         String?  // TMT code (TPU level)
   tmtTpuId           BigInt?
 
   // Relations
@@ -207,39 +208,42 @@ model Drug {
   drugLots           DrugLot[]
 }
 
+// NLEM Status - National List of Essential Medicines (บัญชียาหลักแห่งชาติ)
 enum NlemStatus {
-  E  // Essential Drug (ยาในบัญชียาหลัก)
-  N  // Non-Essential (ยานอกบัญชี)
+  E  // Essential Drug (ยาหลัก)
+  N  // Non-Essential (ยาเสริม)
 }
 
+// Drug Status - Lifecycle status (สถานะวงจรชีวิต)
 enum DrugStatus {
-  ACTIVE           // 1 = ยังใช้งาน
-  DISCONTINUED     // 2 = ตัดจากบัญชีแต่ยังมียาเหลือ
-  SPECIAL_CASE     // 3 = ยาเฉพาะราย
-  REMOVED          // 4 = ตัดออกและไม่มียาเหลือ
+  ACTIVE           // 1 - Active (ยังใช้งาน)
+  DISCONTINUED     // 2 - Discontinued but stock remains (ตัดจากบัญชีแต่ยังมียาเหลือ)
+  SPECIAL_CASE     // 3 - Special approval required (ยาเฉพาะราย)
+  REMOVED          // 4 - Removed completely (ตัดออกและไม่มียาเหลือ)
 }
 
+// Product Category - Product type (ประเภทผลิตภัณฑ์)
 enum ProductCategory {
-  MODERN_REGISTERED // 1 = ยาแผนปัจจุบันขึ้นทะเบียน อย.
-  MODERN_HOSPITAL   // 2 = ยาแผนปัจจุบันผลิตโรงพยาบาล
-  HERBAL_REGISTERED // 3 = ยาสมุนไพรขึ้นทะเบียน
-  HERBAL_HOSPITAL   // 4 = ยาสมุนไพรผลิตโรงพยาบาล
-  OTHER             // 5 = ยาอื่นๆ
+  MODERN_REGISTERED // 1 - Registered modern medicine (ยาแผนปัจจุบันขึ้นทะเบียน อย.)
+  MODERN_HOSPITAL   // 2 - Hospital-made modern medicine (ยาแผนปัจจุบันผลิตโรงพยาบาล)
+  HERBAL_REGISTERED // 3 - Registered herbal medicine (ยาสมุนไพรขึ้นทะเบียน)
+  HERBAL_HOSPITAL   // 4 - Hospital-made herbal medicine (ยาสมุนไพรผลิตโรงพยาบาล)
+  OTHER             // 5 - Other (ยาอื่นๆ)
 }
 ```
 
 **Business Rules**:
-- รหัสยาต้อง unique
-- ต้องเชื่อมกับ generic (แนะนำ)
-- ต้องเชื่อมกับ manufacturer
-- nlemStatus, drugStatus สำคัญสำหรับรายงานกระทรวง
-- packSize ต้องมากกว่า 0
+- Drug code must be unique
+- Should link to generic drug (recommended)
+- Must link to manufacturer
+- Ministry compliance fields (`nlemStatus`, `drugStatus`, `productCategory`) required for reporting
+- `packSize` must be > 0
 
 ---
 
 ### 6-10. Budget Related Tables
 
-(เนื่องจากเกี่ยวข้องกับงบประมาณ จะอธิบายใน `02-budget-management/README.md`)
+(Covered in `../02-budget-management/README.md`)
 
 ---
 
@@ -247,15 +251,15 @@ enum ProductCategory {
 
 ```mermaid
 graph TD
-    A[Start] --> B{ระบบใหม่?}
-    B -->|ใช่| C[สร้าง Master Data]
-    B -->|ไม่| D[นำเข้าจาก Legacy]
+    A[Start] --> B{New System?}
+    B -->|Yes| C[Create Master Data]
+    B -->|No| D[Import from Legacy]
 
-    C --> E[สร้าง Locations]
-    E --> F[สร้าง Departments]
-    F --> G[สร้าง Companies]
-    G --> H[สร้าง Drug Generics]
-    H --> I[สร้าง Drugs]
+    C --> E[Create Locations]
+    E --> F[Create Departments]
+    F --> G[Create Companies]
+    G --> H[Create Drug Generics]
+    H --> I[Create Drugs]
 
     D --> J[Import Locations]
     J --> K[Import Departments]
@@ -267,11 +271,11 @@ graph TD
     N --> O
 
     O --> P{Valid?}
-    P -->|ใช่| Q[Ready for Use]
-    P -->|ไม่| R[Fix Errors]
+    P -->|Yes| Q[Ready for Use]
+    P -->|No| R[Fix Errors]
     R --> O
 
-    Q --> S[ระบบอื่นๆ สามารถใช้งานได้]
+    Q --> S[Other Systems Can Use]
 ```
 
 ---
@@ -292,7 +296,7 @@ GET /api/master-data/locations/1
 POST /api/master-data/locations
 Body: {
   locationCode: "WH01",
-  locationName: "คลังกลาง",
+  locationName: "คลังกลาง",  // Thai location name
   locationType: "WAREHOUSE",
   responsiblePerson: "นายทดสอบ"
 }
@@ -314,8 +318,8 @@ GET /api/master-data/departments
 POST /api/master-data/departments
 Body: {
   deptCode: "PHARM",
-  deptName: "ห้องยา",
-  consumptionGroup: "OPD_IPD_MIX"
+  deptName: "ห้องยา",  // Thai department name
+  consumptionGroup: "OPD_IPD_MIX"  // For ministry reporting
 }
 ```
 
@@ -329,7 +333,7 @@ GET /api/master-data/companies
 POST /api/master-data/companies
 Body: {
   companyCode: "GPO",
-  companyName: "องค์การเภสัชกรรม",
+  companyName: "องค์การเภสัชกรรม",  // Thai company name
   companyType: "BOTH",
   taxId: "0994000158378"
 }
@@ -367,7 +371,7 @@ Body: {
   packSize: 100,
   unitPrice: 0.50,
   unit: "TAB",
-  nlemStatus: "E",
+  nlemStatus: "E",              // ⭐ Ministry compliance
   drugStatus: "ACTIVE",
   productCategory: "MODERN_REGISTERED"
 }
@@ -378,18 +382,18 @@ PUT /api/master-data/drugs/1/status
 Body: {
   drugStatus: "DISCONTINUED",
   statusChangedDate: "2025-01-21",
-  reason: "ยาเลิกผลิต"
+  reason: "ยาเลิกผลิต"  // Reason in Thai
 }
 ```
 
 ---
 
-## 💼 Business Logic
+## 💼 Business Logic Examples
 
 ### 1. Location Hierarchy
 
 ```typescript
-// Get location tree
+// Get location tree (ดึงโครงสร้างคลังแบบ hierarchy)
 async function getLocationTree(parentId?: number) {
   const locations = await prisma.location.findMany({
     where: { parentId: parentId || null },
@@ -404,7 +408,7 @@ async function getLocationTree(parentId?: number) {
 ### 2. Drug Search with Generic
 
 ```typescript
-// Search drugs by generic name
+// Search drugs by generic name (ค้นหายาจากชื่อสามัญ)
 async function searchDrugsByGeneric(genericName: string) {
   const drugs = await prisma.drug.findMany({
     where: {
@@ -425,10 +429,11 @@ async function searchDrugsByGeneric(genericName: string) {
 }
 ```
 
-### 3. Validate Drug Data (Ministry Compliance)
+### 3. Validate Drug Data for Ministry Reporting
 
 ```typescript
-// Validate drug for ministry reporting
+// Validate drug has all required fields for ministry reporting
+// (ตรวจสอบว่ายามีฟิลด์ครบสำหรับรายงานกระทรวง)
 function validateDrugForMinistry(drug: Drug): boolean {
   const required = [
     drug.nlemStatus,        // Must have NLEM status
@@ -450,7 +455,7 @@ function validateDrugForMinistry(drug: Drug): boolean {
 const location = await prisma.location.create({
   data: {
     locationCode: "WH01",
-    locationName: "คลังกลาง",
+    locationName: "คลังกลาง",  // Main warehouse
     locationType: "WAREHOUSE",
     responsiblePerson: "นายทดสอบ",
     isActive: true
@@ -484,6 +489,7 @@ const drugs = await prisma.drug.findMany({
 ### Search Companies by Type
 
 ```typescript
+// Get all vendors (ค้นหาบริษัทผู้ขายทั้งหมด)
 const vendors = await prisma.company.findMany({
   where: {
     OR: [
@@ -503,10 +509,10 @@ const vendors = await prisma.company.findMany({
 ## ✅ Development Checklist
 
 ### Phase 1: Setup (Day 1-2)
-- [ ] สร้าง API routes structure
+- [ ] Create API routes structure
 - [ ] Setup validation schemas (Zod)
-- [ ] สร้าง TypeScript types from Prisma
-- [ ] Setup error handling
+- [ ] Generate TypeScript types from Prisma
+- [ ] Setup error handling middleware
 
 ### Phase 2: Basic CRUD (Day 3-5)
 - [ ] Locations CRUD
@@ -537,31 +543,35 @@ const vendors = await prisma.company.findMany({
 
 ## 🎯 Important Notes
 
-### Ministry Compliance
-ต้องระบุฟิลด์เหล่านี้สำหรับยาทุกรายการ:
-- ✅ `nlemStatus` - E หรือ N
+### Ministry Compliance Requirements
+
+These fields are required for all drugs for ministry reporting:
+- ✅ `nlemStatus` - E (Essential) or N (Non-Essential)
 - ✅ `drugStatus` - ACTIVE, DISCONTINUED, SPECIAL_CASE, REMOVED
-- ✅ `productCategory` - 1-5
-- ✅ `statusChangedDate` - เมื่อเปลี่ยนสถานะ
+- ✅ `productCategory` - 1-5 categories
+- ✅ `statusChangedDate` - Track when status changes
 
-### Performance
-- สร้าง index สำหรับ `drugCode`, `genericCode`, `companyCode`
-- Cache ข้อมูล companies และ locations (เปลี่ยนไม่บ่อย)
-- ใช้ pagination สำหรับ drugs (มีหลายพันรายการ)
+### Performance Considerations
 
-### Security
-- Validate input ทุก endpoint
-- ป้องกัน SQL injection (Prisma ป้องกันอัตโนมัติ)
-- ใช้ soft delete (isActive = false) แทน hard delete
-- Log การเปลี่ยนแปลงข้อมูลสำคัญ
+- Create indexes on `drugCode`, `genericCode`, `companyCode`
+- Cache companies and locations data (changes infrequently)
+- Use pagination for drugs (thousands of records)
+
+### Security Best Practices
+
+- Validate input on all endpoints
+- Prevent SQL injection (Prisma handles automatically)
+- Use soft delete (`isActive = false`) instead of hard delete
+- Log important data changes for audit trail
 
 ---
 
 ## 📚 Related Documentation
 
-- [Budget Management →](../02-budget-management/README.md)
+- **Next Step**: [Budget Management →](../02-budget-management/README.md)
 - [Procurement System →](../03-procurement/README.md)
 - [Inventory System →](../04-inventory/README.md)
+- [Developer Handbook →](./DEVELOPER_HANDBOOK.md) - Complete implementation guide
 
 ---
 
