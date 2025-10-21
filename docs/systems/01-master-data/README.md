@@ -24,6 +24,120 @@ Master Data is the foundation data that all other systems depend on. It includes
 
 ---
 
+## 📐 Entity Relationships
+
+### Master Data Tables Structure (10 Tables + 1 Junction Table)
+
+**Mermaid ER Diagram:**
+
+```mermaid
+erDiagram
+    %% Independent Tables (No Foreign Keys)
+    Location {
+        bigint id PK
+        string locationCode UK
+        string locationName
+        enum locationType
+        bigint parentId "self-reference"
+    }
+
+    Department {
+        bigint id PK
+        string deptCode UK
+        string deptName
+        bigint parentId "self-reference"
+        enum consumptionGroup "Ministry compliance"
+    }
+
+    Bank {
+        bigint id PK
+        string bankName
+    }
+
+    BudgetTypeGroup {
+        bigint id PK
+        string typeCode UK
+        string typeName
+    }
+
+    BudgetCategory {
+        bigint id PK
+        string categoryCode UK
+        string categoryName
+    }
+
+    DrugGeneric {
+        bigint id PK
+        string workingCode UK
+        string drugName
+        string dosageForm
+    }
+
+    %% Tables with Foreign Keys
+    Company {
+        bigint id PK
+        string companyCode UK
+        string companyName
+        enum companyType
+        bigint bankId FK
+    }
+
+    Budget {
+        bigint id PK
+        string budgetCode UK
+        string budgetType FK
+        string budgetCategory FK
+    }
+
+    Drug {
+        bigint id PK
+        string drugCode UK
+        string tradeName
+        bigint genericId FK
+        bigint manufacturerId FK
+        enum nlemStatus "Ministry"
+        enum drugStatus "Ministry"
+        enum productCategory "Ministry"
+    }
+
+    Contract {
+        bigint id PK
+        string contractNumber UK
+        bigint vendorId FK
+        date startDate
+        date endDate
+        enum status
+    }
+
+    ContractItem {
+        bigint id PK
+        bigint contractId FK
+        bigint drugId FK
+        decimal unitPrice
+        decimal quantityContracted
+    }
+
+    %% Relationships
+    Bank ||--o{ Company : "has accounts"
+    BudgetTypeGroup ||--o{ Budget : "defines type"
+    BudgetCategory ||--o{ Budget : "defines category"
+    DrugGeneric ||--o{ Drug : "generic form"
+    Company ||--o{ Drug : "manufactures"
+    Company ||--o{ Contract : "vendor"
+    Contract ||--|{ ContractItem : "contains"
+    Drug ||--o{ ContractItem : "listed in"
+```
+
+**Key Relationships:**
+- **Budget** = BudgetTypeGroup + BudgetCategory (combines type and category)
+- **Drug** → DrugGeneric (many-to-one: multiple trade drugs per generic)
+- **Drug** → Company (many-to-one: manufacturer relationship)
+- **Contract** → Company (many-to-one: vendor relationship)
+- **ContractItem** → Contract + Drug (junction table: many-to-many between contracts and drugs)
+- **Company** → Bank (many-to-one: optional bank account)
+
+---
+
 ## 🗄️ Database Tables (10 tables)
 
 ### 1. Locations - Storage Locations

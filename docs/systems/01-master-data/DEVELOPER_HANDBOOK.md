@@ -69,45 +69,162 @@ npm run db:studio
 
 ### Master Data Tables (10 Tables)
 
+**ASCII Diagram:**
+
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│              Master Data System Architecture                    │
-└─────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────┐
+│              Master Data System Architecture (10 Tables)           │
+│                     Foreign Key Relationships                      │
+└────────────────────────────────────────────────────────────────────┘
 
-                    ┌──────────────┐
-                    │   Company    │───────┐
-                    │  (บริษัท/    │       │
-                    │   ผู้ผลิต)   │       │
-                    └──────┬───────┘       │
-                           │               │
-                     manufactures          │
-                           ↓               │
-    ┌──────────┐    ┌──────────┐    ┌─────▼──────┐
-    │ Location │    │   Drug   │    │  Contract  │
-    │ (คลัง/   │◄───│ (ยา)     │◄───│  (สัญญา)   │
-    │  ห้องยา) │    └────┬─────┘    └────────────┘
-    └──────────┘         │
-                         │ belongs_to
-                    ┌────▼─────┐
-                    │  Drug    │
-                    │ Generic  │
-                    │(ยาสามัญ)│
-                    └──────────┘
+INDEPENDENT TABLES (No FK):
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│  Location    │  │  Department  │  │ DrugGeneric  │  │     Bank     │
+│  (คลัง/      │  │  (แผนก)      │  │ (ยาสามัญ)    │  │  (ธนาคาร)    │
+│   ห้องยา)    │  │              │  │              │  │              │
+└──────────────┘  └──────────────┘  └──────────────┘  └──────┬───────┘
+                                                              │
+BUDGET HIERARCHY:                                             │
+┌──────────────┐  ┌──────────────┐                           │ bankId
+│ BudgetType   │  │ BudgetCat    │                           │
+│ Group        │  │ egory        │                           ▼
+│(งบบำรุง/     │  │(หมวดค่าใช้จ่าย)│               ┌──────────────┐
+│ งบลงทุน)     │  │              │               │   Company    │
+└──────┬───────┘  └──────┬───────┘               │  (บริษัท/    │◄─┐
+       │                 │                       │   ผู้ผลิต/   │  │
+       │ budgetType      │ budgetCategory        │   ผู้ขาย)    │  │
+       │                 │                       └──────┬───────┘  │
+       └────────┬────────┘                              │          │
+                ▼                                       │          │
+         ┌──────────────┐                               │          │
+         │    Budget    │                               │          │
+         │  (งบประมาณ)  │                      manufacturer vendor │
+         └──────────────┘                      Id           Id    │
+                                                      │            │
+DRUG HIERARCHY:                                       ▼            │
+┌──────────────┐                              ┌──────────────┐    │
+│ DrugGeneric  │                              │     Drug     │    │
+│  (ยาสามัญ)   │                              │  (ชื่อการค้า) │    │
+└──────┬───────┘                              └──────┬───────┘    │
+       │ genericId                                   │            │
+       └────────────────────────────────────────────►│            │
+                                                     │            │
+CONTRACT SYSTEM:                                     │ drugId     │
+┌──────────────┐                                     │            │
+│   Contract   │                                     ▼            │
+│   (สัญญา)    │◄────────────────────────────────────┘            │
+│              │                                                  │
+└──────┬───────┘                                                  │
+       │                                                          │
+       │ vendorId                                                 │
+       └──────────────────────────────────────────────────────────┘
+       │
+       │ contractId
+       ▼
+┌──────────────┐         drugId
+│ ContractItem │───────────────►Drug
+│(รายการยาใน   │
+│  สัญญา)      │
+└──────────────┘
+```
 
-    ┌──────────────┐     ┌──────────────┐
-    │  Department  │     │    Budget    │
-    │  (แผนก)      │────▶│ Allocation   │
-    └──────────────┘     │(จัดสรรงบ)    │
-                         └──────────────┘
-                              ▲
-                              │
-                         ┌────┴─────────┐
-                         │              │
-                  ┌──────┴──────┐ ┌─────┴──────┐
-                  │Budget Type  │ │  Budget    │
-                  │ (ประเภทงบ)  │ │ Category   │
-                  └─────────────┘ │(หมวดงบ)   │
-                                  └────────────┘
+**Mermaid ER Diagram:**
+
+```mermaid
+erDiagram
+    %% Independent Tables (No FK)
+    Location {
+        bigint id PK
+        string locationCode UK
+        string locationName
+        enum locationType
+        bigint parentId "self-reference"
+    }
+
+    Department {
+        bigint id PK
+        string deptCode UK
+        string deptName
+        bigint parentId "self-reference"
+        enum consumptionGroup "Ministry field"
+    }
+
+    Bank {
+        bigint id PK
+        string bankName
+    }
+
+    BudgetTypeGroup {
+        bigint id PK
+        string typeCode UK
+        string typeName
+    }
+
+    BudgetCategory {
+        bigint id PK
+        string categoryCode UK
+        string categoryName
+    }
+
+    DrugGeneric {
+        bigint id PK
+        string workingCode UK
+        string drugName
+        string dosageForm
+    }
+
+    %% Tables with FK
+    Company {
+        bigint id PK
+        string companyCode UK
+        string companyName
+        enum companyType
+        bigint bankId FK
+    }
+
+    Budget {
+        bigint id PK
+        string budgetCode UK
+        string budgetType FK
+        string budgetCategory FK
+    }
+
+    Drug {
+        bigint id PK
+        string drugCode UK
+        string tradeName
+        bigint genericId FK
+        bigint manufacturerId FK
+        enum nlemStatus "Ministry"
+        enum drugStatus "Ministry"
+        enum productCategory "Ministry"
+    }
+
+    Contract {
+        bigint id PK
+        string contractNumber UK
+        bigint vendorId FK
+        enum contractType
+        enum status
+    }
+
+    ContractItem {
+        bigint id PK
+        bigint contractId FK
+        bigint drugId FK
+        decimal unitPrice
+        decimal quantityContracted
+    }
+
+    %% Relationships
+    Bank ||--o{ Company : "has accounts"
+    BudgetTypeGroup ||--o{ Budget : "categorizes"
+    BudgetCategory ||--o{ Budget : "categorizes"
+    DrugGeneric ||--o{ Drug : "defines"
+    Company ||--o{ Drug : "manufactures"
+    Company ||--o{ Contract : "vendor"
+    Contract ||--|{ ContractItem : "contains"
+    Drug ||--o{ ContractItem : "listed in"
 ```
 
 ### Table Purposes
