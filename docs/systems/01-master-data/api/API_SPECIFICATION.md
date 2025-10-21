@@ -9,15 +9,100 @@
 
 ## Table of Contents
 
-1. [Authentication](#authentication)
-2. [Common Patterns](#common-patterns)
-3. [Locations API](#locations-api)
-4. [Departments API](#departments-api)
-5. [Companies API](#companies-api)
-6. [Drug Generics API](#drug-generics-api)
-7. [Drugs API](#drugs-api)
-8. [Budget Management API](#budget-management-api)
-9. [Error Responses](#error-responses)
+1. [API Architecture](#api-architecture)
+2. [Authentication](#authentication)
+3. [Common Patterns](#common-patterns)
+4. [Locations API](#locations-api)
+5. [Departments API](#departments-api)
+6. [Companies API](#companies-api)
+7. [Drug Generics API](#drug-generics-api)
+8. [Drugs API](#drugs-api)
+9. [Budget Management API](#budget-management-api)
+10. [Error Responses](#error-responses)
+
+---
+
+## API Architecture
+
+### Design Pattern: Grouped Namespace
+
+This API uses a **grouped namespace pattern** with module-based prefixes to organize endpoints logically and support scalability.
+
+**Why Grouped Pattern?**
+
+✅ **Clear Organization** - Easy to identify which module an endpoint belongs to
+✅ **Namespace Separation** - Prevents endpoint conflicts between modules
+✅ **Authorization Control** - Easier to apply permissions by module (e.g., all `/api/master-data/*` requires specific roles)
+✅ **Scalability** - Adding new modules doesn't conflict with existing endpoints
+✅ **Documentation** - Logical grouping makes API documentation clearer
+
+### System-Wide API Structure
+
+The INVS system uses the following module-based API paths:
+
+| Module | Base Path | Purpose | Examples |
+|--------|-----------|---------|----------|
+| **Master Data** | `/api/master-data` | Core master data (ข้อมูลหลัก) | `/api/master-data/drugs`<br>`/api/master-data/companies` |
+| **Budget** | `/api/budget` | Budget management (งบประมาณ) | `/api/budget/allocations`<br>`/api/budget/reservations` |
+| **Procurement** | `/api/procurement` | Purchase requests & orders (จัดซื้อ) | `/api/procurement/purchase-requests`<br>`/api/procurement/purchase-orders` |
+| **Inventory** | `/api/inventory` | Stock & lot management (คลังยา) | `/api/inventory/stock`<br>`/api/inventory/lots` |
+| **Distribution** | `/api/distribution` | Drug distribution (จ่ายยา) | `/api/distribution/requests`<br>`/api/distribution/dispense` |
+| **Reporting** | `/api/reporting` | Reports & analytics (รายงาน) | `/api/reporting/ministry-exports`<br>`/api/reporting/usage-stats` |
+| **Auth** | `/api/auth` | Authentication (ระบบยืนยันตัวตน) | `/api/auth/login`<br>`/api/auth/logout` |
+
+### Cross-Module Operation Example
+
+Example workflow showing how modules work together:
+
+```
+1. Create Purchase Request (Procurement)
+   POST /api/procurement/purchase-requests
+   {
+     "departmentId": 5,
+     "budgetId": 10,
+     "items": [
+       { "drugId": 100, "quantity": 1000 }
+     ]
+   }
+
+2. Check Budget Availability (Budget Module)
+   → Internal call to /api/budget/check-availability
+   → Validates budget has sufficient funds
+
+3. Reserve Budget (Budget Module)
+   → Internal call to /api/budget/reservations
+   → Temporarily holds budget amount
+
+4. Approve & Create PO (Procurement)
+   PATCH /api/procurement/purchase-requests/123/approve
+   → Creates Purchase Order
+
+5. Receive Goods (Inventory)
+   POST /api/inventory/receipts
+   → Updates inventory levels
+   → Commits budget reservation
+
+6. Update Stock (Inventory)
+   → Inventory updated automatically
+   GET /api/inventory/stock?drugId=100
+```
+
+### URL Versioning Strategy
+
+Currently using **implicit v1** (no version in URL). When v2 is needed:
+
+```
+Current:  /api/master-data/drugs
+Future:   /api/v2/master-data/drugs  (when breaking changes needed)
+```
+
+### Alternative Patterns Considered
+
+| Pattern | Example | Why Not Used |
+|---------|---------|--------------|
+| **Flat/Short** | `/api/drugs` | ❌ Risk of endpoint conflicts in large system |
+| **Hybrid** | `/api/drugs` + `/api/master/bulk` | ❌ Inconsistent pattern, hard to document |
+| **Versioned Only** | `/api/v1/drugs` | ❌ Not needed yet, adds unnecessary length |
 
 ---
 

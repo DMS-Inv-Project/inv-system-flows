@@ -394,6 +394,47 @@ graph TD
 
 ---
 
+## 🏗️ API Architecture
+
+### Design Pattern
+
+This system uses a **grouped namespace pattern** for API organization:
+
+**Base Path**: `/api/master-data`
+
+**Why this pattern?**
+- ✅ Clear module separation (ระบบแยกชัดเจนตาม module)
+- ✅ Scalable for large systems (รองรับระบบขนาดใหญ่)
+- ✅ Easy authorization control (จัดการสิทธิ์ง่าย)
+- ✅ Prevents endpoint conflicts (ป้องกัน path ซ้ำกัน)
+
+### System-Wide API Paths
+
+| Module | Base Path | Purpose |
+|--------|-----------|---------|
+| **Master Data** | `/api/master-data` | Core master data (ข้อมูลหลัก) |
+| **Budget** | `/api/budget` | Budget management (งบประมาณ) |
+| **Procurement** | `/api/procurement` | Purchase requests & orders (จัดซื้อ) |
+| **Inventory** | `/api/inventory` | Stock & lot management (คลังยา) |
+| **Distribution** | `/api/distribution` | Drug distribution (จ่ายยา) |
+| **Reporting** | `/api/reporting` | Reports & analytics (รายงาน) |
+| **Auth** | `/api/auth` | Authentication (ยืนยันตัวตน) |
+
+**Example Master Data Endpoints:**
+```
+GET  /api/master-data/locations
+GET  /api/master-data/departments
+GET  /api/master-data/companies
+GET  /api/master-data/drug-generics
+GET  /api/master-data/drugs
+POST /api/master-data/drugs
+PUT  /api/master-data/drugs/:id
+```
+
+For complete API specification, see [API Documentation →](./api/API_SPECIFICATION.md)
+
+---
+
 ## 🔌 API Endpoints (Suggested)
 
 ### Locations
