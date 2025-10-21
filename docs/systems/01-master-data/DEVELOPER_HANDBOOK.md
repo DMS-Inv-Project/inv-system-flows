@@ -69,66 +69,7 @@ npm run db:studio
 
 ### Master Data Tables (10 Tables)
 
-**ASCII Diagram:**
-
-```
-┌────────────────────────────────────────────────────────────────────┐
-│              Master Data System Architecture (10 Tables)           │
-│                     Foreign Key Relationships                      │
-└────────────────────────────────────────────────────────────────────┘
-
-INDEPENDENT TABLES (No FK):
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│  Location    │  │  Department  │  │ DrugGeneric  │  │     Bank     │
-│  (คลัง/      │  │  (แผนก)      │  │ (ยาสามัญ)    │  │  (ธนาคาร)    │
-│   ห้องยา)    │  │              │  │              │  │              │
-└──────────────┘  └──────────────┘  └──────────────┘  └──────┬───────┘
-                                                              │
-BUDGET HIERARCHY:                                             │
-┌──────────────┐  ┌──────────────┐                           │ bankId
-│ BudgetType   │  │ BudgetCat    │                           │
-│ Group        │  │ egory        │                           ▼
-│(งบบำรุง/     │  │(หมวดค่าใช้จ่าย)│               ┌──────────────┐
-│ งบลงทุน)     │  │              │               │   Company    │
-└──────┬───────┘  └──────┬───────┘               │  (บริษัท/    │◄─┐
-       │                 │                       │   ผู้ผลิต/   │  │
-       │ budgetType      │ budgetCategory        │   ผู้ขาย)    │  │
-       │                 │                       └──────┬───────┘  │
-       └────────┬────────┘                              │          │
-                ▼                                       │          │
-         ┌──────────────┐                               │          │
-         │    Budget    │                               │          │
-         │  (งบประมาณ)  │                      manufacturer vendor │
-         └──────────────┘                      Id           Id    │
-                                                      │            │
-DRUG HIERARCHY:                                       ▼            │
-┌──────────────┐                              ┌──────────────┐    │
-│ DrugGeneric  │                              │     Drug     │    │
-│  (ยาสามัญ)   │                              │  (ชื่อการค้า) │    │
-└──────┬───────┘                              └──────┬───────┘    │
-       │ genericId                                   │            │
-       └────────────────────────────────────────────►│            │
-                                                     │            │
-CONTRACT SYSTEM:                                     │ drugId     │
-┌──────────────┐                                     │            │
-│   Contract   │                                     ▼            │
-│   (สัญญา)    │◄────────────────────────────────────┘            │
-│              │                                                  │
-└──────┬───────┘                                                  │
-       │                                                          │
-       │ vendorId                                                 │
-       └──────────────────────────────────────────────────────────┘
-       │
-       │ contractId
-       ▼
-┌──────────────┐         drugId
-│ ContractItem │───────────────►Drug
-│(รายการยาใน   │
-│  สัญญา)      │
-└──────────────┘
-```
-
-**Mermaid ER Diagram:**
+**Entity Relationship Diagram:**
 
 ```mermaid
 erDiagram
@@ -226,6 +167,25 @@ erDiagram
     Contract ||--|{ ContractItem : "contains"
     Drug ||--o{ ContractItem : "listed in"
 ```
+
+**Foreign Key Relationships Summary:**
+
+| # | From Table | Field | References | Type |
+|---|------------|-------|------------|------|
+| 1 | Budget | budgetType | BudgetTypeGroup.typeCode | Required |
+| 2 | Budget | budgetCategory | BudgetCategory.categoryCode | Required |
+| 3 | Company | bankId | Bank.id | Optional |
+| 4 | Drug | genericId | DrugGeneric.id | Optional |
+| 5 | Drug | manufacturerId | Company.id | Optional |
+| 6 | Contract | vendorId | Company.id | Required |
+| 7 | ContractItem | contractId | Contract.id | Required |
+| 8 | ContractItem | drugId | Drug.id | Required |
+
+**Independent Tables (No FK):** Location, Department, BudgetTypeGroup, BudgetCategory, DrugGeneric, Bank
+
+**Total:** 10 Master Data Tables + 1 Junction Table (ContractItem)
+
+---
 
 ### Table Purposes
 
