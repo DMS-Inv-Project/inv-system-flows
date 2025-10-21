@@ -23,6 +23,7 @@ model Location {
   children                Location[]         @relation("LocationHierarchy")
   distributionsFrom       DrugDistribution[] @relation("DistributionFromLocation")
   distributionsTo         DrugDistribution[] @relation("DistributionToLocation")
+  drugReturnItems         DrugReturnItem[]
 
   @@map("locations")
 }
@@ -44,6 +45,7 @@ model Department {
   purchaseRequests  PurchaseRequest[]
   tmtUsageStats     TmtUsageStats[]
   drugDistributions DrugDistribution[]
+  drugReturns       DrugReturn[]
 
   @@index([hisCode])
   @@map("departments")
@@ -132,8 +134,65 @@ model Company {
   bank                Bank?           @relation(fields: [bankId], references: [id])
   drugs               Drug[]
   purchaseOrders      PurchaseOrder[]
+  contracts           Contract[]
 
   @@map("companies")
+}
+
+// ==========================================
+// CONTRACT SYSTEM (NEW)
+// ==========================================
+
+model Contract {
+  id                BigInt         @id @default(autoincrement())
+  contractNumber    String         @unique @map("contract_number") @db.VarChar(20)
+  contractType      ContractType   @map("contract_type")
+  vendorId          BigInt         @map("vendor_id")
+  startDate         DateTime       @map("start_date") @db.Date
+  endDate           DateTime       @map("end_date") @db.Date
+  totalValue        Decimal        @map("total_value") @db.Decimal(15, 2)
+  remainingValue    Decimal        @map("remaining_value") @db.Decimal(15, 2)
+  fiscalYear        String         @map("fiscal_year") @db.VarChar(4)
+  status            ContractStatus @default(ACTIVE)
+  contractDocument  String?        @map("contract_document") @db.VarChar(255) // Path to PDF/file
+  approvedBy        String?        @map("approved_by") @db.VarChar(50)
+  approvalDate      DateTime?      @map("approval_date") @db.Date
+  // Project Reference Codes
+  committeeNumber   String?        @map("committee_number") @db.VarChar(20)
+  committeeName     String?        @map("committee_name") @db.VarChar(60)
+  committeeDate     DateTime?      @map("committee_date") @db.Date
+  egpNumber         String?        @map("egp_number") @db.VarChar(30) // e-GP reference number
+  projectNumber     String?        @map("project_number") @db.VarChar(30) // Project code
+  gfNumber          String?        @map("gf_number") @db.VarChar(10) // GF code
+  notes             String?        @db.Text
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at")
+
+  vendor            Company        @relation(fields: [vendorId], references: [id])
+  items             ContractItem[]
+  purchaseOrders    PurchaseOrder[]
+
+  @@map("contracts")
+}
+
+model ContractItem {
+  id                  BigInt   @id @default(autoincrement())
+  contractId          BigInt   @map("contract_id")
+  drugId              BigInt   @map("drug_id")
+  unitPrice           Decimal  @map("unit_price") @db.Decimal(10, 2)
+  quantityContracted  Decimal  @map("quantity_contracted") @db.Decimal(10, 2)
+  quantityRemaining   Decimal  @map("quantity_remaining") @db.Decimal(10, 2)
+  minOrderQuantity    Decimal? @map("min_order_quantity") @db.Decimal(10, 2)
+  maxOrderQuantity    Decimal? @map("max_order_quantity") @db.Decimal(10, 2)
+  notes               String?  @db.Text
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at")
+
+  contract            Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  drug                Drug     @relation(fields: [drugId], references: [id])
+
+  @@unique([contractId, drugId])
+  @@map("contract_items")
 }
 
 model DrugGeneric {
@@ -210,6 +269,8 @@ model Drug {
   receiptItems          ReceiptItem[]
   tmtMappings           TmtMapping[]
   drugDistributionItems DrugDistributionItem[]
+  contractItems         ContractItem[]
+  drugReturnItems       DrugReturnItem[]
 
   @@map("drugs")
 }
@@ -430,28 +491,40 @@ model PurchaseRequestItem {
 }
 
 model PurchaseOrder {
-  id           BigInt              @id @default(autoincrement())
-  poNumber     String              @unique @map("po_number") @db.VarChar(20)
-  vendorId     BigInt              @map("vendor_id")
-  poDate       DateTime            @map("po_date") @db.Date
-  deliveryDate DateTime?           @map("delivery_date") @db.Date
-  departmentId BigInt?             @map("department_id")
-  budgetId     BigInt?             @map("budget_id")
-  status       PoStatus            @default(DRAFT)
-  totalAmount  Decimal             @default(0) @map("total_amount") @db.Decimal(12, 2)
-  totalItems   Int                 @default(0) @map("total_items")
-  notes        String?
-  createdBy    BigInt              @map("created_by")
-  approvedBy   BigInt?             @map("approved_by")
-  createdAt    DateTime            @default(now()) @map("created_at")
-  updatedAt    DateTime            @default(now()) @updatedAt @map("updated_at")
-  reservations BudgetReservation[]
-  items        PurchaseOrderItem[]
-  budget       Budget?             @relation(fields: [budgetId], references: [id])
-  department   Department?         @relation(fields: [departmentId], references: [id])
-  vendor       Company             @relation(fields: [vendorId], references: [id])
-  requests     PurchaseRequest[]
-  receipts     Receipt[]
+  id                BigInt              @id @default(autoincrement())
+  poNumber          String              @unique @map("po_number") @db.VarChar(20)
+  vendorId          BigInt              @map("vendor_id")
+  poDate            DateTime            @map("po_date") @db.Date
+  deliveryDate      DateTime?           @map("delivery_date") @db.Date
+  departmentId      BigInt?             @map("department_id")
+  budgetId          BigInt?             @map("budget_id")
+  contractId        BigInt?             @map("contract_id") // NEW: Link to contract
+  status            PoStatus            @default(DRAFT)
+  totalAmount       Decimal             @default(0) @map("total_amount") @db.Decimal(12, 2)
+  totalItems        Int                 @default(0) @map("total_items")
+  sentToVendorDate  DateTime?           @map("sent_to_vendor_date") @db.Date // NEW
+  printedDate       DateTime?           @map("printed_date") @db.Date // NEW
+  confirmedBy       BigInt?             @map("confirmed_by") // NEW
+  confirmedDate     DateTime?           @map("confirmed_date") @db.Date // NEW
+  // Project Reference Codes
+  egpNumber         String?             @map("egp_number") @db.VarChar(30) // e-GP reference
+  projectNumber     String?             @map("project_number") @db.VarChar(30) // Project code
+  gfNumber          String?             @map("gf_number") @db.VarChar(10) // GF code
+  notes             String?
+  createdBy         BigInt              @map("created_by")
+  approvedBy        BigInt?             @map("approved_by")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at")
+  reservations      BudgetReservation[]
+  items             PurchaseOrderItem[]
+  budget            Budget?             @relation(fields: [budgetId], references: [id])
+  department        Department?         @relation(fields: [departmentId], references: [id])
+  vendor            Company             @relation(fields: [vendorId], references: [id])
+  contract          Contract?           @relation(fields: [contractId], references: [id]) // NEW
+  requests          PurchaseRequest[]
+  receipts          Receipt[]
+  approvalDocuments ApprovalDocument[] // NEW
+  paymentDocuments  PaymentDocument[] // NEW
 
   @@map("purchase_orders")
 }
@@ -472,39 +545,143 @@ model PurchaseOrderItem {
 }
 
 model Receipt {
-  id            BigInt        @id @default(autoincrement())
-  receiptNumber String        @unique @map("receipt_number") @db.VarChar(20)
-  poId          BigInt        @map("po_id")
-  receiptDate   DateTime      @map("receipt_date") @db.Date
-  deliveryNote  String?       @map("delivery_note") @db.VarChar(50)
-  status        ReceiptStatus @default(DRAFT)
-  totalItems    Int           @default(0) @map("total_items")
-  totalAmount   Decimal       @default(0) @map("total_amount") @db.Decimal(12, 2)
-  receivedBy    BigInt        @map("received_by")
-  verifiedBy    BigInt?       @map("verified_by")
-  notes         String?
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
-  drugLots      DrugLot[]
-  items         ReceiptItem[]
-  purchaseOrder PurchaseOrder @relation(fields: [poId], references: [id])
+  id               BigInt             @id @default(autoincrement())
+  receiptNumber    String             @unique @map("receipt_number") @db.VarChar(20)
+  poId             BigInt             @map("po_id")
+  receiptDate      DateTime           @map("receipt_date") @db.Date
+  deliveryNote     String?            @map("delivery_note") @db.VarChar(50)
+  invoiceNumber    String?            @map("invoice_number") @db.VarChar(50) // NEW
+  invoiceDate      DateTime?          @map("invoice_date") @db.Date // NEW
+  billingDate      DateTime?          @map("billing_date") @db.Date // Date submitted to finance for payment
+  status           ReceiptStatus      @default(DRAFT)
+  totalItems       Int                @default(0) @map("total_items")
+  totalAmount      Decimal            @default(0) @map("total_amount") @db.Decimal(12, 2)
+  receivedBy       BigInt             @map("received_by")
+  receivedDate     DateTime?          @map("received_date") @db.Date // NEW
+  receiveTime      String?            @map("receive_time") @db.VarChar(5) // HH:MM format
+  verifiedBy       BigInt?            @map("verified_by")
+  verifiedDate     DateTime?          @map("verified_date") @db.Date // NEW
+  postedDate       DateTime?          @map("posted_date") @db.Date // NEW
+  notes            String?
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @default(now()) @updatedAt @map("updated_at")
+  drugLots         DrugLot[]
+  items            ReceiptItem[]
+  purchaseOrder    PurchaseOrder      @relation(fields: [poId], references: [id])
+  inspectors       ReceiptInspector[] // NEW: Multi-inspector support
+  paymentDocuments PaymentDocument[] // NEW
 
   @@map("receipts")
 }
 
 model ReceiptItem {
-  id               BigInt    @id @default(autoincrement())
-  receiptId        BigInt    @map("receipt_id")
-  drugId           BigInt    @map("drug_id")
-  quantityReceived Decimal   @map("quantity_received") @db.Decimal(10, 2)
-  unitCost         Decimal   @map("unit_cost") @db.Decimal(10, 2)
-  lotNumber        String?   @map("lot_number") @db.VarChar(20)
-  expiryDate       DateTime? @map("expiry_date") @db.Date
-  notes            String?
-  drug             Drug      @relation(fields: [drugId], references: [id])
-  receipt          Receipt   @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  id                BigInt             @id @default(autoincrement())
+  receiptId         BigInt             @map("receipt_id")
+  drugId            BigInt             @map("drug_id")
+  quantityReceived  Decimal            @map("quantity_received") @db.Decimal(10, 2)
+  remainingQuantity Decimal?           @map("remaining_quantity") @db.Decimal(10, 2) // For emergency dispensing
+  unitCost          Decimal            @map("unit_cost") @db.Decimal(10, 2)
+  lotNumber         String?            @map("lot_number") @db.VarChar(20)
+  expiryDate        DateTime?          @map("expiry_date") @db.Date
+  itemType          PurchaseItemType?  @map("item_type") // Type of purchase (normal, urgent, replacement, emergency)
+  notes             String?
+  drug              Drug               @relation(fields: [drugId], references: [id])
+  receipt           Receipt            @relation(fields: [receiptId], references: [id], onDelete: Cascade)
 
   @@map("receipt_items")
+}
+
+// ==========================================
+// INSPECTION COMMITTEE (NEW)
+// ==========================================
+
+model ReceiptInspector {
+  id                BigInt        @id @default(autoincrement())
+  receiptId         BigInt        @map("receipt_id")
+  inspectorName     String        @map("inspector_name") @db.VarChar(100)
+  inspectorPosition String?       @map("inspector_position") @db.VarChar(100)
+  inspectorRole     InspectorRole @map("inspector_role")
+  signedDate        DateTime?     @map("signed_date") @db.Date
+  signaturePath     String?       @map("signature_path") @db.VarChar(255) // Path to signature image
+  notes             String?       @db.Text
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  receipt           Receipt       @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@map("receipt_inspectors")
+}
+
+// ==========================================
+// APPROVAL DOCUMENTS (NEW)
+// ==========================================
+
+model ApprovalDocument {
+  id                BigInt         @id @default(autoincrement())
+  approvalDocNumber String         @unique @map("approval_doc_number") @db.VarChar(20)
+  poId              BigInt         @map("po_id")
+  approvalType      ApprovalType   @default(NORMAL) @map("approval_type")
+  requestedBy       String         @map("requested_by") @db.VarChar(50)
+  requestedDate     DateTime       @map("requested_date") @db.Date
+  approvedBy        String?        @map("approved_by") @db.VarChar(50)
+  approvalDate      DateTime?      @map("approval_date") @db.Date
+  rejectedBy        String?        @map("rejected_by") @db.VarChar(50)
+  rejectedDate      DateTime?      @map("rejected_date") @db.Date
+  rejectionReason   String?        @map("rejection_reason") @db.Text
+  status            ApprovalStatus @default(PENDING)
+  documentPath      String?        @map("document_path") @db.VarChar(255) // Path to approval document
+  notes             String?        @db.Text
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at")
+
+  purchaseOrder     PurchaseOrder  @relation(fields: [poId], references: [id])
+
+  @@map("approval_documents")
+}
+
+// ==========================================
+// PAYMENT TRACKING (NEW)
+// ==========================================
+
+model PaymentDocument {
+  id                      BigInt              @id @default(autoincrement())
+  paymentDocNumber        String              @unique @map("payment_doc_number") @db.VarChar(20)
+  receiptId               BigInt              @map("receipt_id")
+  poId                    BigInt              @map("po_id")
+  submittedToFinanceBy    String?             @map("submitted_to_finance_by") @db.VarChar(50)
+  submittedToFinanceDate  DateTime?           @map("submitted_to_finance_date") @db.Date
+  approvedByFinance       String?             @map("approved_by_finance") @db.VarChar(50)
+  approvedByFinanceDate   DateTime?           @map("approved_by_finance_date") @db.Date
+  paidDate                DateTime?           @map("paid_date") @db.Date
+  paidAmount              Decimal?            @map("paid_amount") @db.Decimal(15, 2)
+  paymentMethod           String?             @map("payment_method") @db.VarChar(50) // e.g., "TRANSFER", "CHEQUE"
+  referenceNumber         String?             @map("reference_number") @db.VarChar(50) // Cheque/Transfer reference
+  paymentStatus           PaymentStatus       @default(PENDING) @map("payment_status")
+  notes                   String?             @db.Text
+  createdAt               DateTime            @default(now()) @map("created_at")
+  updatedAt               DateTime            @default(now()) @updatedAt @map("updated_at")
+
+  receipt                 Receipt             @relation(fields: [receiptId], references: [id])
+  purchaseOrder           PurchaseOrder       @relation(fields: [poId], references: [id])
+  attachments             PaymentAttachment[]
+
+  @@map("payment_documents")
+}
+
+model PaymentAttachment {
+  id                BigInt           @id @default(autoincrement())
+  paymentDocId      BigInt           @map("payment_doc_id")
+  attachmentType    AttachmentType   @map("attachment_type")
+  fileName          String           @map("file_name") @db.VarChar(255)
+  filePath          String           @map("file_path") @db.VarChar(500)
+  fileSize          Int?             @map("file_size") // in bytes
+  uploadedBy        String           @map("uploaded_by") @db.VarChar(50)
+  uploadedAt        DateTime         @default(now()) @map("uploaded_at")
+  notes             String?          @db.Text
+
+  paymentDocument   PaymentDocument  @relation(fields: [paymentDocId], references: [id], onDelete: Cascade)
+
+  @@map("payment_attachments")
 }
 
 model TmtConcept {
@@ -802,6 +979,55 @@ model DrugDistributionItem {
   @@map("drug_distribution_items")
 }
 
+// ==========================================
+// DRUG RETURN SYSTEM (NEW)
+// ==========================================
+
+model DrugReturn {
+  id              BigInt           @id @default(autoincrement())
+  returnNumber    String           @unique @map("return_number") @db.VarChar(20)
+  departmentId    BigInt           @map("department_id")
+  returnDate      DateTime         @map("return_date") @db.Date
+  returnReason    String           @map("return_reason") @db.VarChar(100)
+  actionTaken     String?          @map("action_taken") @db.VarChar(100)
+  referenceNumber String?          @map("reference_number") @db.VarChar(50)
+  status          ReturnStatus     @default(DRAFT)
+  totalItems      Int              @default(0) @map("total_items")
+  totalAmount     Decimal          @default(0) @map("total_amount") @db.Decimal(12, 2)
+  receivedBy      String           @map("received_by") @db.VarChar(50)
+  verifiedBy      String?          @map("verified_by") @db.VarChar(50)
+  verifiedDate    DateTime?        @map("verified_date") @db.Date
+  postedDate      DateTime?        @map("posted_date") @db.Date
+  notes           String?          @db.Text
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at")
+  department      Department       @relation(fields: [departmentId], references: [id])
+  items           DrugReturnItem[]
+
+  @@map("drug_returns")
+}
+
+model DrugReturnItem {
+  id              BigInt     @id @default(autoincrement())
+  returnId        BigInt     @map("return_id")
+  drugId          BigInt     @map("drug_id")
+  totalQuantity   Decimal    @map("total_quantity") @db.Decimal(10, 2)
+  goodQuantity    Decimal    @map("good_quantity") @db.Decimal(10, 2)
+  damagedQuantity Decimal    @map("damaged_quantity") @db.Decimal(10, 2)
+  lotNumber       String     @map("lot_number") @db.VarChar(20)
+  expiryDate      DateTime   @map("expiry_date") @db.Date
+  returnType      ReturnType @map("return_type")
+  locationId      BigInt?    @map("location_id")
+  unitCost        Decimal?   @map("unit_cost") @db.Decimal(10, 2)
+  notes           String?    @db.Text
+  createdAt       DateTime   @default(now()) @map("created_at")
+  drugReturn      DrugReturn @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  drug            Drug       @relation(fields: [drugId], references: [id])
+  location        Location?  @relation(fields: [locationId], references: [id])
+
+  @@map("drug_return_items")
+}
+
 enum LocationType {
   WAREHOUSE      @map("warehouse")
   PHARMACY       @map("pharmacy")
@@ -867,10 +1093,24 @@ enum PoStatus {
 }
 
 enum ReceiptStatus {
-  DRAFT    @map("draft")
-  RECEIVED @map("received")
-  VERIFIED @map("verified")
-  POSTED   @map("posted")
+  DRAFT                @map("draft")
+  RECEIVED             @map("received")
+  PENDING_VERIFICATION @map("pending_verification")
+  VERIFIED             @map("verified")
+  POSTED               @map("posted")
+}
+
+enum ReturnStatus {
+  DRAFT     @map("draft")
+  SUBMITTED @map("submitted")
+  VERIFIED  @map("verified")
+  POSTED    @map("posted")
+  CANCELLED @map("cancelled")
+}
+
+enum ReturnType {
+  PURCHASED @map("purchased")
+  FREE      @map("free")
 }
 
 enum TmtLevel {
@@ -927,4 +1167,65 @@ enum BudgetPlanStatus {
   REJECTED @map("rejected")
   ACTIVE   @map("active")
   CLOSED   @map("closed")
+}
+
+// ==========================================
+// PROCUREMENT SYSTEM ENUMS (NEW)
+// ==========================================
+
+enum ContractType {
+  E_BIDDING       @map("e_bidding")
+  PRICE_AGREEMENT @map("price_agreement")
+  QUOTATION       @map("quotation")
+  SPECIAL         @map("special")
+}
+
+enum ContractStatus {
+  DRAFT     @map("draft")
+  ACTIVE    @map("active")
+  EXPIRED   @map("expired")
+  CANCELLED @map("cancelled")
+}
+
+enum InspectorRole {
+  CHAIRMAN  @map("chairman")
+  MEMBER    @map("member")
+  SECRETARY @map("secretary")
+}
+
+enum ApprovalType {
+  NORMAL  @map("normal")
+  URGENT  @map("urgent")
+  SPECIAL @map("special")
+}
+
+enum ApprovalStatus {
+  PENDING   @map("pending")
+  APPROVED  @map("approved")
+  REJECTED  @map("rejected")
+  CANCELLED @map("cancelled")
+}
+
+enum PaymentStatus {
+  PENDING   @map("pending")
+  SUBMITTED @map("submitted")
+  APPROVED  @map("approved")
+  PAID      @map("paid")
+  CANCELLED @map("cancelled")
+}
+
+enum PurchaseItemType {
+  NORMAL      @map("normal")
+  URGENT      @map("urgent")
+  REPLACEMENT @map("replacement")
+  EMERGENCY   @map("emergency")
+}
+
+enum AttachmentType {
+  PURCHASE_ORDER    @map("purchase_order")
+  RECEIPT           @map("receipt")
+  INVOICE           @map("invoice")
+  INSPECTION_REPORT @map("inspection_report")
+  DELIVERY_NOTE     @map("delivery_note")
+  OTHER             @map("other")
 }
