@@ -190,17 +190,6 @@ Ministry Compliance:
 
 ---
 
-## 📁 Archive
-
-**Old documentation** (analysis & design) moved to:
-- `docs/_archive/` - Previous analysis documents
-- `docs/_archive/flows/` - Old flow documentation
-- `docs/_archive/project-tracking/` - Project tracking files
-
-These are kept for reference but not actively maintained.
-
----
-
 ## 🎓 Learning Path
 
 ### Week 1: Understanding the System
@@ -230,15 +219,15 @@ These are kept for reference but not actively maintained.
 - [x] END_TO_END_WORKFLOWS.md - 3 major workflows with examples
 
 **Per-System Documentation:**
-- [x] Master Data - README updated to new format
-- [ ] Budget Management - (existing README OK)
-- [ ] Procurement - (existing README OK)
-- [ ] Inventory - (existing README OK)
-- [ ] Distribution - (existing README OK)
-- [ ] Drug Return - (existing README OK)
-- [ ] TMT Integration - (existing README OK)
-- [ ] HPP System - (existing README OK)
-- [ ] HIS Integration - (existing README OK)
+- [x] Master Data - Clean template complete
+- [x] Budget Management - Clean template complete
+- [ ] Procurement - Pending
+- [ ] Inventory - Pending
+- [ ] Distribution - Pending
+- [ ] Drug Return - Pending
+- [ ] TMT Integration - Pending
+- [ ] HPP System - Pending
+- [ ] HIS Integration - Pending
 
 **API Documentation:**
 - [ ] Will be auto-generated from AegisX when backend is implemented
