@@ -29,7 +29,7 @@ npm run dev
 - **Project Type**: 📋 Database Schema + Documentation ONLY
 - **Status**: ✅ Schema Complete (Drug Master Imported) 🔓
 - **Version**: 2.4.0 (Updated 2025-01-22)
-- **Database**: 44 tables, 11 views, 12 functions, 22 enums ⭐
+- **Database**: 52 tables, 11 views, 12 functions, 22 enums ⭐
 - **Data Migrated**: 3,152 records (Phase 1-4) 🔓 ⭐ NEW
 - **Drug Catalog**: 1,109 generics + 1,169 trade drugs 🔓 ⭐ NEW
 - **Ministry Compliance**: 100% COMPLETE (79/79 fields) 🎉
@@ -75,7 +75,7 @@ npm run dev
 - **ORM**: Prisma with full type safety
 - **Primary Language**: TypeScript (for migration scripts only)
 - **Version**: 2.4.0
-- **Status**: ✅ Schema Complete (44 tables, 3,152 records migrated) 🔓
+- **Status**: ✅ Schema Complete (52 tables, 3,152 records migrated) 🔓
 
 ---
 
@@ -84,7 +84,7 @@ npm run dev
 ### ✅ What's Complete (This Repo)
 
 **Database Infrastructure:**
-- ✅ PostgreSQL (Production) - 44 tables, 22 enums ⭐
+- ✅ PostgreSQL (Production) - 52 tables, 22 enums ⭐
 - ✅ MySQL (Legacy Reference) - Container ready, data migrated
 - ✅ Database Functions - 12 business logic functions
 - ✅ Database Views - 11 reporting views
@@ -193,7 +193,7 @@ npm start
 - Database: invs_modern
 - Username: invs_user
 - Password: invs123
-- **Status**: ✅ Active, 36 tables, 11 views, 12 functions, 22 enums ⭐
+- **Status**: ✅ Active, 52 tables, 11 views, 12 functions, 22 enums ⭐
 
 ### MySQL Original Database (Legacy Reference)
 - Host: localhost
@@ -229,7 +229,7 @@ npm start
 │   MySQL (Legacy)     │       │ PostgreSQL (Modern)  │
 │   Port: 3307         │       │  Port: 5434          │
 │   invs_banpong       │◄─────►│  invs_modern         │
-│   133 tables         │Compare│  36 tables ⭐        │
+│   133 tables         │Compare│  52 tables ⭐        │
 │   📖 Reference Only  │       │  📝 Production       │
 │                      │       │  22 enums ⭐         │
 │                      │       │  100% Ministry ✅    │
@@ -357,7 +357,7 @@ Draft PR → Submit → Budget Check → Approve → Create PO → Send → Rece
 ### Core Database Files (Schema ONLY)
 - `src/index.ts` - Database connection test script
 - `src/lib/prisma.ts` - Prisma client configuration with global instance pattern
-- `prisma/schema.prisma` - Complete database schema (44 tables, 22 enums, 950+ lines) ⭐
+- `prisma/schema.prisma` - Complete database schema (52 tables, 22 enums, 950+ lines) ⭐
 - `prisma/functions.sql` - Business logic functions (12 functions, 610+ lines) ⭐
 - `prisma/views.sql` - Reporting views (11 views, 378 lines)
 - `prisma/seed.ts` - Master data seeding script

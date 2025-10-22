@@ -15,7 +15,7 @@
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
 │  🎊 Database Schema: 95% COMPLETE (44/48 tables) 🎊    │
-│  ✅ PostgreSQL: 44 tables, 11 views, 12 funcs, 22 enums│
+│  ✅ PostgreSQL: 52 tables, 11 views, 12 funcs, 22 enums│
 │  🎉 Ministry Compliance: 100% COMPLETE 🎉              │
 │  ✅ 5 Export Files: All Fields Supported (79/79)       │
 │  ✅ Phase 4 Migration: COMPLETE (3,006 drug records) ⭐│
@@ -48,7 +48,7 @@
 ### 1. Database Architecture ✅
 
 **PostgreSQL (Production) - Port 5434**
-- ✅ 44 tables (Prisma managed) ⭐ +8 tables from Phase 1-3 migration
+- ✅ 52 tables (Prisma managed) ⭐ +16 tables from Phase 1-3 migration
 - ✅ 11 views (Ministry reporting + operational)
 - ✅ 12 functions (Budget + inventory logic)
 - ✅ Seed data loaded
@@ -134,7 +134,7 @@ invs-modern/
 ✅ Docker containers: 4/4 running
 ✅ PostgreSQL health: Healthy
 ✅ MySQL health: Healthy
-✅ Tables created: 44/44 ⭐ +8 from Phase 1-3 migration
+✅ Tables created: 44/44 ⭐ +16 from Phase 1-3 migration
 ✅ Views created: 11/11
 ✅ Functions created: 12/12
 ✅ Seed data: 6/6 entity types
@@ -219,7 +219,7 @@ Total: 27 documentation files
 **Features**:
 - ✅ **8 System Modules** documented with complete breakdown
 - ✅ **Priority Indicators** (⭐⭐⭐ High, ⭐⭐ Medium, ⭐ Low)
-- ✅ **Schema Definitions** for all 44 tables
+- ✅ **Schema Definitions** for all 52 tables
 - ✅ **Flow Diagrams** using Mermaid syntax
 - ✅ **API Specifications** with endpoints and examples
 - ✅ **Business Logic** documentation
@@ -457,7 +457,7 @@ cat docs/flows/QUICK_START_GUIDE.md  # Quick start
     │  invs_banpong        │       │  invs_modern         │
     │  Port: 3307          │◄─────►│  Port: 5434          │
     │                      │Compare│                      │
-    │  133 tables          │       │  44 tables ⭐        │
+    │  133 tables          │       │  52 tables ⭐        │
     │  Legacy structure    │       │  Prisma ORM          │
     │  Full historical data│       │  Clean design        │
     │  UTF8MB4             │       │  Type-safe           │
@@ -557,7 +557,7 @@ Password: invs123
 - [ ] phpMyAdmin accessible (port 8082)
 
 ### Database
-- [ ] Tables created (44 tables) ⭐ NEW
+- [ ] Tables created (52 tables) ⭐ NEW
 - [ ] Views created (11 views)
 - [ ] Functions created (12 functions)
 - [ ] Seed data loaded (6 entity types, 29 records)
@@ -676,7 +676,7 @@ Password: invs123
 - ✅ **Phase 2** (2 tables + UOM): drug_components, drug_focus_lists, tmt_units populated (85+736 records)
 - ✅ **Phase 3** (2 tables): distribution_types, purchase_order_reasons (4 records)
 - ✅ **Phase 4** (drug master): drug_generics, drugs, drug_components unlocked (3,006 records) 🔓
-- ✅ **Total**: +8 tables, **3,152 records** migrated, core functionality unlocked!
+- ✅ **Total**: +16 tables, **3,152 records** migrated, core functionality unlocked!
 
 ### Key Changes (v2.4.0) ⭐ NEW
 - ✅ **Drug Master Data Import**
@@ -754,7 +754,7 @@ Password: invs123
 - ✅ **Developer Documentation** ⭐ NEW
   - Created `docs/systems/` with 27 documentation files
   - 8 system modules documented (Master Data, Budget, Procurement, Inventory, Drug Return, TMT, HPP, HIS)
-  - Complete schema definitions for all 44 tables
+  - Complete schema definitions for all 52 tables
   - Flow diagrams using Mermaid syntax
   - API specifications with endpoints
   - Business logic documentation

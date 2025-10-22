@@ -18,7 +18,7 @@ Modern Hospital Inventory Management System built with PostgreSQL, Prisma, and T
 ## 📊 Current Project Status
 
 ```
-✅ Database: Complete (44 tables, 11 views, 12 functions, 22 enums) ⭐ +8 tables
+✅ Database: Complete (52 tables, 11 views, 12 functions, 22 enums) ⭐ +16 tables
 ✅ Data Migrated: 3,152 records (Phase 1-4) 🔓 ⭐ NEW
 ✅ Drug Master: 1,109 generics + 1,169 trade drugs 🔓 ⭐ NEW
 ✅ Drug Components: 736 records (allergy checking) 🔓 ⭐ NEW
@@ -115,7 +115,7 @@ npm run db:studio
 10. **[DATA_FLOW_COMPLETE_GUIDE.md](docs/flows/DATA_FLOW_COMPLETE_GUIDE.md)** - All flows summary
 
 ### Technical Documentation
-- **[prisma/schema.prisma](prisma/schema.prisma)** - Database schema (44 tables, 22 enums) ⭐ **+8 tables**
+- **[prisma/schema.prisma](prisma/schema.prisma)** - Database schema (52 tables, 22 enums) ⭐ **+16 tables**
 - **[prisma/functions.sql](prisma/functions.sql)** - Business logic functions (12)
 - **[prisma/views.sql](prisma/views.sql)** - Reporting views (11)
 - **[MYSQL_IMPORT_GUIDE.md](docs/MYSQL_IMPORT_GUIDE.md)** - Import legacy database
@@ -140,7 +140,7 @@ npm run db:studio
 │   MySQL (Legacy)     │       │ PostgreSQL (Modern)  │
 │   Port: 3307         │       │  Port: 5434          │
 │   invs_banpong       │◄─────►│  invs_modern         │
-│   133 tables         │Migrate│  44 tables ⭐ +8     │
+│   133 tables         │Migrate│  52 tables ⭐ +16    │
 │   📖 Reference Only  │       │  📝 Production       │
 │                      │       │  22 enums            │
 │                      │       │  3,152 records 🔓   │

@@ -18,7 +18,7 @@ INVS Modern เป็นระบบบริหารคลังยาโร�
   │  MySQL (invs_banpong)  │        │ PostgreSQL (invs_modern│
   │  Port: 3307            │        │ Port: 5434             │
   │  ─────────────────     │        │  ────────────────────  │
-  │  133 tables (Legacy)   │        │  44 tables (Modern) ⭐ │
+  │  133 tables (Legacy)   │        │  52 tables (Modern) ⭐ │
   │  Full historical data  │        │  3,152 records 🔓     │
   │  Reference only ⚠️     │───────▶│  Production use ✅    │
   │  phpMyAdmin :8082      │        │  pgAdmin :8081         │
@@ -258,7 +258,7 @@ npm run db:studio
 3. ✅ **Migrations** - Version-controlled schema changes
 4. ✅ **Performance** - Better query optimization
 5. ✅ **Features** - Advanced PostgreSQL features (JSONB, Arrays, etc.)
-6. ✅ **Cleaner** - 44 tables vs 133 tables (67% reduction)
+6. ✅ **Cleaner** - 52 tables vs 133 tables (61% reduction)
 7. ✅ **Maintainable** - Clear relationships and structure
 
 ---

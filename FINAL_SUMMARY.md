@@ -22,7 +22,7 @@
     │  invs_banpong        │              │  invs_modern         │
     │  Port: 3307          │◄──Migrate──►│  Port: 5434          │
     │                      │              │                      │
-    │  133 tables          │              │  44 tables ⭐ +8     │
+    │  133 tables          │              │  52 tables ⭐ +16    │
     │  Legacy structure    │              │  Prisma ORM          │
     │  Full historical data│              │  Clean design        │
     │  UTF8MB4             │              │  Type-safe           │
@@ -178,7 +178,7 @@ Others (11 tables):
 ```
 invs-modern/
 ├── prisma/
-│   ├── schema.prisma          # 44 tables, 950+ lines ⭐ +8 tables
+│   ├── schema.prisma          # 52 tables, 1,050+ lines ⭐ +16 tables
 │   ├── functions.sql          # 12 functions, 610+ lines
 │   ├── views.sql              # 11 views, 378 lines
 │   ├── seed.ts                # Seed data
@@ -417,8 +417,8 @@ node scripts/integration/validate-migration.js
 - [x] Health checks added
 
 ### Database
-- [x] 32 tables (Prisma schema)
-- [x] 10 functions created
+- [x] 52 tables (Prisma schema) ⭐ Updated
+- [x] 12 functions created
 - [x] 11 views created
 - [x] Seed data ready
 - [x] TMT concepts imported

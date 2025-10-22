@@ -78,7 +78,7 @@ graph TD
 - **TMT Integration** (3 tables): Thai Medical Terminology mapping
 - **HPP System** (1 table): Hospital Pharmaceutical Preparation
 
-**Total:** 44 tables
+**Total:** 52 tables
 
 ---
 
@@ -1487,12 +1487,12 @@ const getDrugById = async (id: number) => {
 | **Phase 4** | 0 (drug master data to existing tables) | 3,006 | ✅ Complete | 2025-01-22 |
 
 **Total Migrated:** 3,893 records (excluding TMT concepts)
-**Total Tables:** 44 tables (36 → 44 post-migration)
+**Total Tables:** 52 tables (36 → 44 post-migration)
 
 ### 8.2 Migration Process
 
 **Source:** MySQL database `invs_banpong` (133 tables)
-**Target:** PostgreSQL database `invs_modern` (44 tables)
+**Target:** PostgreSQL database `invs_modern` (52 tables)
 **Method:** TypeScript migration scripts using Prisma
 
 **Migration Scripts:**
@@ -1920,7 +1920,7 @@ docker-compose restart
 | 1.0.0 | 2025-01-01 | Project Team | Initial database design |
 | 2.0.0 | 2025-01-10 | Project Team | Post-migration update (32 tables) |
 | 2.2.0 | 2025-01-20 | Project Team | Ministry compliance (100%) |
-| 2.4.0 | 2025-01-22 | Claude Code | Complete ERD + Phase 1-4 (44 tables) |
+| 2.4.0 | 2025-01-22 | Claude Code | Complete ERD + Phase 1-4 (52 tables) |
 
 ---
 

@@ -13,11 +13,12 @@
 ## 📊 Database Statistics
 
 ```yaml
-Total Tables: 44
+Total Tables: 52 ⭐ (+16 from base 36)
 Total Enums: 22
 Total Views: 11
 Total Functions: 12
 Ministry Compliance: ✅ 100% (79/79 fields)
+Data Migrated: 3,152 records (Phase 1-4)
 ```
 
 ---
@@ -40,15 +41,15 @@ Ministry Compliance: ✅ 100% (79/79 fields)
 
 | System | Tables | Description |
 |--------|--------|-------------|
-| 🏢 **Master Data** | 9 | locations, departments, budget_types, budget_categories, budgets, bank, companies, drug_generics, drugs |
+| 🏢 **Master Data** | **12** ⭐ | locations, departments, budget_types, budget_categories, budgets, bank, companies, drug_generics, drugs, drug_pack_ratios, drug_components, drug_focus_lists |
 | 💰 **Budget Management** | 4 | budget_allocations, budget_plans, budget_plan_items, budget_reservations |
-| 🛒 **Procurement** | 12 | contracts, contract_items, purchase_requests, purchase_request_items, purchase_orders, purchase_order_items, receipts, receipt_items, receipt_inspectors, approval_documents, payment_documents, payment_attachments |
+| 🛒 **Procurement** | **15** ⭐ | contracts, contract_items, purchase_requests, purchase_request_items, purchase_orders, purchase_order_items, receipts, receipt_items, receipt_inspectors, approval_documents, payment_documents, payment_attachments, purchase_methods, purchase_types, purchase_order_reasons |
 | 📦 **Inventory** | 3 | inventory, drug_lots, inventory_transactions |
-| 🏥 **Distribution** | 2 | drug_distributions, drug_distribution_items |
-| 🔄 **Drug Return** | 2 | drug_returns, drug_return_items |
+| 🏥 **Distribution** | **3** ⭐ | drug_distributions, drug_distribution_items, distribution_types |
+| 🔄 **Drug Return** | **3** ⭐ | drug_returns, drug_return_items, return_reasons |
 | 🔗 **TMT Integration** | 10 | tmt_concepts, tmt_relationships, tmt_mappings, tmt_attributes, tmt_manufacturers, tmt_dosage_forms, tmt_units, his_drug_master, tmt_usage_stats, ministry_reports |
 | 🏥 **HPP System** | 2 | hospital_pharmaceutical_products, hpp_formulations |
-| **TOTAL** | **44** | |
+| **TOTAL** | **52** ⭐ | **+16 tables from base 36** |
 
 ---
 
