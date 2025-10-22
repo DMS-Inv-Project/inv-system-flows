@@ -960,6 +960,7 @@ model DrugDistribution {
   fromLocationId     BigInt                 @map("from_location_id")
   toLocationId       BigInt?                @map("to_location_id")
   requestingDeptId   BigInt?                @map("requesting_dept_id")
+  distributionTypeId BigInt?                @map("distribution_type_id") // Phase 3: ประเภทการจ่าย (ยืม/คืน)
   purpose            String?                @db.Text
   requestedBy        String                 @map("requested_by") @db.VarChar(50)
   approvedBy         String?                @map("approved_by") @db.VarChar(50)
@@ -975,6 +976,7 @@ model DrugDistribution {
   fromLocation       Location               @relation("DistributionFromLocation", fields: [fromLocationId], references: [id])
   toLocation         Location?              @relation("DistributionToLocation", fields: [toLocationId], references: [id])
   requestingDept     Department?            @relation(fields: [requestingDeptId], references: [id])
+  distributionType   DistributionType?      @relation(fields: [distributionTypeId], references: [id]) // Phase 3
   items              DrugDistributionItem[]
 
   @@map("drug_distributions")
@@ -1389,6 +1391,39 @@ model DrugFocusList {
   @@index([drugId])
   @@index([listType])
   @@map("drug_focus_lists")
+}
+
+// ========================================
+// DISTRIBUTION & PROCUREMENT SUPPORT (Phase 3 - v2.3.0)
+// Optional tables for enhanced tracking
+// ========================================
+
+// Distribution Type - ประเภทการจ่ายยา (dist_type)
+// แยกระหว่างการจ่ายถาวร vs ยืม-คืน
+model DistributionType {
+  id                BigInt              @id @default(autoincrement())
+  code              Int                 @unique
+  name              String              @db.VarChar(60)
+  isHidden          Boolean             @default(false) @map("is_hidden")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at")
+
+  drugDistributions DrugDistribution[]
+
+  @@map("distribution_types")
+}
+
+// Purchase Order Reason - เหตุผลการยกเลิก/แก้ไข PO (po_reason)
+// Audit trail สำหรับการเปลี่ยนแปลง PO
+model PurchaseOrderReason {
+  id          BigInt   @id @default(autoincrement())
+  code        Int      @unique
+  reason      String   @db.VarChar(60)
+  isHidden    Boolean  @default(false) @map("is_hidden")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("purchase_order_reasons")
 }
 
 // ==========================================
