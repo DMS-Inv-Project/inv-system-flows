@@ -67,7 +67,7 @@ npm run db:studio
 
 ## 📊 System Overview
 
-### Master Data Tables (10 Tables)
+### Master Data Tables (11 Tables)
 
 **Entity Relationship Diagram:**
 

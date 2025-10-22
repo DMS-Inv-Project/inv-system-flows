@@ -1,7 +1,7 @@
 # 📦 Master Data Management System
 
 **Priority**: ⭐⭐⭐ High (Must implement first)
-**Tables**: 10 tables
+**Tables**: 11 tables
 **Complexity**: ⭐⭐ Medium
 **Est. Time**: 1-2 weeks
 
@@ -26,7 +26,7 @@ Master Data is the foundation data that all other systems depend on. It includes
 
 ## 📐 Entity Relationships
 
-### Master Data Tables Structure (10 Tables + 1 Junction Table)
+### Master Data Tables Structure (11 Tables)
 
 **Mermaid ER Diagram:**
 
@@ -138,7 +138,7 @@ erDiagram
 
 ---
 
-## 🗄️ Database Tables (10 tables)
+## 🗄️ Database Tables (11 tables)
 
 ### 1. Locations - Storage Locations
 
@@ -261,26 +261,40 @@ enum CompanyType {
 
 ```prisma
 model DrugGeneric {
-  id              BigInt   @id @default(autoincrement())
-  genericCode     String   @unique // Generic drug code (รหัสยา generic)
-  genericName     String   // Generic name (ชื่อสามัญ)
-  workingCode     String?  // Working code (รหัสทำงาน)
-  dosageForm      String?  // Dosage form: tab, cap, inj (รูปแบบยา)
-  strength        String?  // Strength (ความแรง)
-  unit            String?  // Unit (หน่วย)
-  therapeuticClass String? // Therapeutic class (หมวดการรักษา)
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
+  id                BigInt   @id @default(autoincrement())
+  workingCode       String   @unique // Working code 7 chars (รหัสทำงาน)
+  drugName          String   // Generic drug name (ชื่อยาสามัญ)
+  dosageForm        String   // Dosage form: TAB, CAP, INJ (รูปแบบยา)
+  saleUnit          String   // Sale unit (หน่วยขาย)
+  composition       String?  // Composition (ส่วนประกอบ)
+  strength          Decimal? // Strength value (ความแรง)
+  strengthUnit      String?  // Strength unit: mg, g, ml (หน่วยความแรง)
+  standardUnit      String?  // Standard unit (หน่วยมาตรฐาน)
+  therapeuticGroup  String?  // Therapeutic group (หมวดการรักษา)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  // TMT Fields (Thai Medical Terminology)
+  tmtVtmCode        String?  // VTM code
+  tmtVtmId          BigInt?
+  tmtGpCode         String?  // GP code
+  tmtGpId           BigInt?
+  tmtGpfCode        String?  // GP-F code
+  tmtGpfId          BigInt?
 
   // Relations
-  drugs           Drug[]   // Trade name drugs (ยา trade)
+  drugs                Drug[]   // Trade name drugs (ยา trade)
+  purchaseRequestItems PurchaseRequestItem[]
+  budgetPlanItems      BudgetPlanItem[]
+  tmtMappings          TmtMapping[]
 }
 ```
 
 **Business Rules**:
-- Generic code must be unique
+- `workingCode` must be unique (7 characters)
 - Used to group trade drugs
-- Used for budget planning
+- Used for budget planning at generic level
+- Recommended format: First 3 letters + 4 digits (e.g., PAR0001, IBU0001)
 
 ---
 
@@ -355,9 +369,173 @@ enum ProductCategory {
 
 ---
 
-### 6-10. Budget Related Tables
+### 6. Bank - Banks
 
-(Covered in `../02-budget-management/README.md`)
+```prisma
+model Bank {
+  id        BigInt   @id @default(autoincrement())
+  bankName  String   // Bank name (ชื่อธนาคาร)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  // Relations
+  companies Company[] // Companies with bank accounts
+}
+```
+
+**Business Rules**:
+- Bank name required
+- Used for company bank account information
+- Standard Thai banks (กรุงเทพ, กสิกรไทย, ไทยพาณิชย์, etc.)
+
+---
+
+### 7. Budget Types - Budget Type Groups
+
+```prisma
+model BudgetTypeGroup {
+  id        BigInt   @id @default(autoincrement())
+  typeCode  String   @unique // Type code (รหัสประเภทงบ)
+  typeName  String   // Type name (ชื่อประเภทงบ)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  // Relations
+  budgets   Budget[] // Budgets using this type
+}
+```
+
+**Common Budget Types**:
+- `OP001` - Operational Drugs (งบดำเนินงาน - ยา)
+- `OP002` - Operational Equipment (งบดำเนินงาน - เครื่องมือแพทย์)
+- `INV001` - Investment Equipment (งบลงทุน - เครื่องมือ)
+- `EM001` - Emergency Fund (งบฉุกเฉิน)
+
+---
+
+### 8. Budget Categories - Expense Categories
+
+```prisma
+model BudgetCategory {
+  id           BigInt   @id @default(autoincrement())
+  categoryCode String   @unique // Category code (รหัสหมวดงบ)
+  categoryName String   // Category name (ชื่อหมวดงบ)
+  accCode      String?  // Accounting code (รหัสผังบัญชี)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  // Relations
+  budgets      Budget[] // Budgets in this category
+}
+```
+
+**Common Categories**:
+- `CAT01` - Drug expenses (ค่ายา)
+- `CAT02` - Medical supplies (ค่าเวชภัณฑ์)
+- `CAT03` - Equipment (ค่าครุภัณฑ์)
+
+---
+
+### 9. Budgets - Budget Combinations
+
+```prisma
+model Budget {
+  id               BigInt   @id @default(autoincrement())
+  budgetCode       String   @unique // Budget code (รหัสงบประมาณ)
+  budgetType       String   // FK to budget_types.typeCode
+  budgetCategory   String   // FK to budget_categories.categoryCode
+  budgetDescription String?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+
+  // Relations
+  typeGroup        BudgetTypeGroup  @relation
+  category         BudgetCategory   @relation
+  budgetAllocations BudgetAllocation[] // Used in budget management
+}
+```
+
+**Business Rules**:
+- Budget = Type + Category combination
+- Example: `OP001-CAT01` = Operational Drug Budget
+- Unique combination of type and category
+
+---
+
+### 10. Contracts - Purchase Contracts
+
+```prisma
+model Contract {
+  id              BigInt      @id @default(autoincrement())
+  contractNumber  String      @unique // Contract number (เลขที่สัญญา)
+  contractType    ContractType
+  vendorId        BigInt      // FK to companies
+  startDate       Date        // Contract start date
+  endDate         Date        // Contract end date
+  totalValue      Decimal     // Total contract value (มูลค่ารวม)
+  remainingValue  Decimal     // Remaining value (มูลค่าคงเหลือ)
+  fiscalYear      String      // Fiscal year (ปีงบประมาณ พ.ศ.)
+  status          ContractStatus @default(ACTIVE)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  vendor          Company     @relation
+  items           ContractItem[]
+  purchaseOrders  PurchaseOrder[]
+}
+
+enum ContractType {
+  E_BIDDING        // e-Bidding (ประกวดราคาอิเล็กทรอนิกส์)
+  PRICE_AGREEMENT  // Price agreement (ตกลงราคา)
+  QUOTATION        // Direct quotation (เฉพาะเจาะจง)
+  SPECIAL          // Special (พิเศษ)
+}
+
+enum ContractStatus {
+  DRAFT      // Draft (ร่าง)
+  ACTIVE     // Active (ใช้งาน)
+  EXPIRED    // Expired (หมดอายุ)
+  CANCELLED  // Cancelled (ยกเลิก)
+}
+```
+
+**Business Rules**:
+- Contract number must be unique
+- Start date must be < end date
+- Remaining value tracked when POs created
+- Recommended format: `CNT-{YEAR}-{NUMBER}`
+
+---
+
+### 11. Contract Items - Contract Line Items
+
+```prisma
+model ContractItem {
+  id                  BigInt   @id @default(autoincrement())
+  contractId          BigInt   // FK to contracts
+  drugId              BigInt   // FK to drugs
+  unitPrice           Decimal  // Contract price per unit
+  quantityContracted  Decimal  // Total quantity in contract
+  quantityRemaining   Decimal  // Remaining quantity
+  minOrderQuantity    Decimal?
+  maxOrderQuantity    Decimal?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  contract            Contract @relation
+  drug                Drug     @relation
+
+  @@unique([contractId, drugId]) // One drug per contract
+}
+```
+
+**Business Rules**:
+- Each drug can appear only once per contract
+- Same drug CAN appear in different contracts (different vendors)
+- Contract price can differ from drug's regular unit price
+- Quantity remaining tracked when PO items created
 
 ---
 
