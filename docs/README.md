@@ -225,7 +225,7 @@ Ministry Compliance:
 - [x] Inventory - Clean template complete
 - [x] Distribution - Clean template complete
 - [x] Drug Return - Clean template complete
-- [ ] TMT Integration - Pending
+- [x] TMT Integration - Clean template complete
 - [ ] HPP System - Pending
 - [ ] HIS Integration - Pending
 
