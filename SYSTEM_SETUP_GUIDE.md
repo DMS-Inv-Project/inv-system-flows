@@ -18,8 +18,8 @@ INVS Modern เป็นระบบบริหารคลังยาโร�
   │  MySQL (invs_banpong)  │        │ PostgreSQL (invs_modern│
   │  Port: 3307            │        │ Port: 5434             │
   │  ─────────────────     │        │  ────────────────────  │
-  │  133 tables (Legacy)   │        │  32 tables (Modern)    │
-  │  Full historical data  │        │  Prisma ORM managed    │
+  │  133 tables (Legacy)   │        │  44 tables (Modern) ⭐ │
+  │  Full historical data  │        │  3,152 records 🔓     │
   │  Reference only ⚠️     │───────▶│  Production use ✅    │
   │  phpMyAdmin :8082      │        │  pgAdmin :8081         │
   └────────────────────────┘        └────────────────────────┘
@@ -128,25 +128,27 @@ npm run db:studio
 | **Database** | invs_modern |
 | **User** | invs_user |
 | **Password** | invs123 |
-| **Tables** | 32 (Prisma managed) |
+| **Tables** | 44 (Prisma managed) ⭐ |
 | **Access** | pgAdmin (http://localhost:8081) |
 
 **Key Features:**
 - ✅ Prisma ORM managed
 - ✅ Type-safe queries
 - ✅ Automatic migrations
-- ✅ 32 optimized tables
-- ✅ Budget management
+- ✅ 44 optimized tables (+8 from Phase 1-3) ⭐
+- ✅ Budget management with drug-level planning
 - ✅ TMT integration
-- ✅ Ministry compliance
+- ✅ Ministry compliance (100%)
+- ✅ Drug master data (3,152 records) 🔓
 
 **Tables Overview:**
-- 6 Master Data tables
-- 2 Budget tables
-- 5 Procurement tables
+- 10 Master Data tables (+4 from Phase 1)
+- 4 Budget tables (+2 planning tables)
+- 6 Procurement tables
 - 3 Inventory tables
-- 2 Distribution tables
-- 3 TMT tables
+- 4 Distribution tables (+2 from Phase 3)
+- 2 Drug Information tables (Phase 2)
+- 4 TMT tables (+1 from Phase 2)
 - 11 others
 
 ### MySQL (Reference) - Port 3307
@@ -256,7 +258,7 @@ npm run db:studio
 3. ✅ **Migrations** - Version-controlled schema changes
 4. ✅ **Performance** - Better query optimization
 5. ✅ **Features** - Advanced PostgreSQL features (JSONB, Arrays, etc.)
-6. ✅ **Cleaner** - 32 tables vs 133 tables (75% reduction)
+6. ✅ **Cleaner** - 44 tables vs 133 tables (67% reduction)
 7. ✅ **Maintainable** - Clear relationships and structure
 
 ---
@@ -520,8 +522,8 @@ After setup:
 
 ---
 
-**Status**: Production Ready ✅
-**Version**: 1.0.0
-**Last Updated**: 2025-01-11
+**Status**: Production Ready ✅ (Schema Complete + Drug Master Imported 🔓)
+**Version**: 2.4.0
+**Last Updated**: 2025-01-22
 
 *Maintained with ❤️ by the INVS Modern Team*
