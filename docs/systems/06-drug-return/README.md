@@ -78,6 +78,99 @@ Master Data → Drug Return
 
 ---
 
+## 📊 Main Workflow: Return and Restock Drugs
+
+**Workflow:** Department returns drugs → Pharmacist verifies and separates → Good drugs restocked
+
+```mermaid
+sequenceDiagram
+    actor Dept as Department Staff
+    participant UI as Frontend
+    participant API as Backend API
+    participant DB as Database
+    participant Inv as Inventory System
+
+    Note over Dept,Inv: 1. Create Return Request
+
+    Dept->>UI: Create return request
+    UI->>API: POST /api/returns
+    API->>DB: SELECT return_reasons (19 reasons)
+    DB-->>API: Return reasons list
+    API-->>UI: Show return form with reasons
+
+    Dept->>UI: Fill form (drug, lot, qty, reason)
+    UI->>API: POST /api/returns (data)
+    API->>DB: Validate lot number exists
+    DB-->>API: Lot valid
+    API->>DB: Create return (DRAFT)
+    API->>DB: Create return_items
+    DB-->>API: Return created (RET-2025-001)
+    API-->>UI: Success
+    UI-->>Dept: Return created - pending verification
+
+    Note over Dept,Inv: 2. Submit for Verification
+
+    Dept->>UI: Submit return
+    UI->>API: POST /api/returns/{id}/submit
+    API->>DB: Update status → SUBMITTED
+    DB-->>API: Submitted
+    API-->>UI: Success
+    UI-->>Dept: Submitted - waiting pharmacist
+
+    Note over Dept,Inv: 3. Pharmacist Verifies & Separates
+
+    Dept->>UI: Pharmacist opens return
+    UI->>API: GET /api/returns/{id}
+    API->>DB: SELECT return with items
+    DB-->>API: Return data
+    API-->>UI: Show return details
+
+    Dept->>UI: Verify drugs physically
+    Note over UI: Pharmacist inspects each item:<br/>- Check lot number matches<br/>- Check expiry date<br/>- Check packaging condition
+
+    Dept->>UI: Enter good_qty and damaged_qty
+    Note over UI: Example:<br/>Total: 100 tablets<br/>Good: 80 (restock)<br/>Damaged: 20 (quarantine)
+
+    UI->>API: POST /api/returns/{id}/verify
+    API->>DB: Update items (good_qty, damaged_qty)
+    API->>DB: Update status → VERIFIED
+    DB-->>API: Verified
+    API-->>UI: Success
+    UI-->>Dept: Verified - ready to post
+
+    Note over Dept,Inv: 4. Post to Inventory (Restock Good Drugs)
+
+    Dept->>UI: Post to inventory
+    UI->>API: POST /api/returns/{id}/post
+
+    loop For each item with good_qty > 0
+        API->>DB: Update drug_lots.quantity_on_hand (+good_qty)
+        API->>DB: Update inventory.quantity_on_hand (+good_qty)
+        API->>DB: Create RETURN transaction
+    end
+
+    loop For each item with damaged_qty > 0
+        API->>DB: Move to quarantine location
+        API->>DB: Flag for disposal
+    end
+
+    API->>DB: Update status → POSTED
+    DB-->>API: Posting complete
+    API-->>UI: Success with restock summary
+    UI-->>Dept: Posted - good drugs restocked
+
+    Note over Dept,Inv: Result: 80 tablets restocked, 20 quarantined
+```
+
+**Key Points:**
+1. **Return Reasons** - 19 standardized reasons (Clinical, Operational, Quality)
+2. **Good/Damaged Separation** - Pharmacist verifies and splits quantity
+3. **Good Drugs Restocked** - Automatically added back to inventory
+4. **Damaged Drugs Quarantined** - Moved to quarantine location for disposal
+5. **Audit Trail** - RETURN transaction logged with reason and quantities
+
+---
+
 ## 🎯 Key Features
 
 ### ✅ Good/Damaged Separation

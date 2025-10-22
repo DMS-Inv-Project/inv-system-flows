@@ -41,6 +41,86 @@ Distribution System จัดการการเบิกจ่ายยาใ
 
 ---
 
+## 📊 Main Workflow: Request and Dispense Drugs
+
+**Workflow:** Department requests drugs → Pharmacy dispenses with FIFO/FEFO → Inventory updated
+
+```mermaid
+sequenceDiagram
+    actor Dept as Department Staff
+    participant UI as Frontend
+    participant API as Backend API
+    participant DB as Database
+    participant Inv as Inventory System
+
+    Note over Dept,Inv: 1. Create Distribution Request
+
+    Dept->>UI: Create distribution request
+    UI->>API: POST /api/distributions
+    API->>DB: Check stock availability
+    DB-->>API: Available stock: 1,000 tablets
+
+    alt Stock Available
+        API->>DB: Create distribution (PENDING)
+        API->>Inv: Call get_fifo_lots() to preview lots
+        Inv-->>API: Lot#2024-001 (800), Lot#2024-002 (200)
+        API-->>UI: Distribution created (DIST-2025-001)
+        UI-->>Dept: Show distribution with lot preview
+    else Stock Insufficient
+        API-->>UI: Error: Insufficient stock
+        UI-->>Dept: Cannot create - out of stock
+    end
+
+    Note over Dept,Inv: 2. Supervisor Approves
+
+    Dept->>UI: Submit for approval
+    UI->>API: POST /api/distributions/{id}/approve
+    API->>DB: Re-check stock (prevent overselling)
+    DB-->>API: Stock OK
+    API->>DB: Update status → APPROVED
+    DB-->>API: Distribution approved
+    API-->>UI: Approval success
+    UI-->>Dept: Approved - ready for dispensing
+
+    Note over Dept,Inv: 3. Pharmacist Dispenses (FIFO/FEFO)
+
+    Dept->>UI: Request dispensing
+    UI->>API: POST /api/distributions/{id}/dispense
+    API->>Inv: get_fifo_lots(drug, location, qty)
+    Inv-->>API: FIFO lots: [Lot#2024-001, Lot#2024-002]
+
+    loop For each lot
+        API->>DB: Deduct from drug_lots
+        API->>DB: Update inventory.quantity_on_hand
+        API->>DB: Create ISSUE transaction
+    end
+
+    API->>DB: Update status → DISPENSED
+    DB-->>API: Dispensing complete
+    API-->>UI: Success with lot details
+    UI-->>Dept: Dispensed - ready for pickup
+
+    Note over Dept,Inv: 4. Department Receives
+
+    Dept->>UI: Confirm receipt
+    UI->>API: POST /api/distributions/{id}/complete
+    API->>DB: Update status → COMPLETED
+    DB-->>API: Distribution completed
+    API-->>UI: Success
+    UI-->>Dept: Completed - drugs received
+
+    Note over Dept,Inv: Result: Drugs dispensed with full traceability
+```
+
+**Key Points:**
+1. **Stock Validation** - Checked before creation and before approval
+2. **FIFO/FEFO** - Automatic lot selection using `get_fifo_lots()` function
+3. **Atomic Updates** - All inventory changes in single transaction
+4. **Audit Trail** - ISSUE transaction logged with lot numbers
+5. **Department Receipt** - Complete workflow with confirmation
+
+---
+
 ## 🔗 System Dependencies
 
 ### Distribution ให้ข้อมูลแก่:
