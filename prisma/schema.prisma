@@ -134,10 +134,12 @@ model Company {
   gmpCertificate      String?         @map("gmp_certificate") @db.VarChar(30)
 
   // Relations
-  bank                Bank?           @relation(fields: [bankId], references: [id])
-  drugs               Drug[]
-  purchaseOrders      PurchaseOrder[]
-  contracts           Contract[]
+  bank                      Bank?           @relation(fields: [bankId], references: [id])
+  drugs                     Drug[]
+  purchaseOrders            PurchaseOrder[]
+  contracts                 Contract[]
+  packRatiosAsVendor        DrugPackRatio[] @relation("PackRatioVendor") // Phase 1
+  packRatiosAsManufacturer  DrugPackRatio[] @relation("PackRatioManufacturer") // Phase 1
 
   @@map("companies")
 }
@@ -280,6 +282,7 @@ model Drug {
   drugDistributionItems DrugDistributionItem[]
   contractItems         ContractItem[]
   drugReturnItems       DrugReturnItem[]
+  packRatios            DrugPackRatio[] // Phase 1: Pack conversion and pricing
 
   @@map("drugs")
 }
@@ -507,14 +510,17 @@ model PurchaseOrder {
   deliveryDate      DateTime?           @map("delivery_date") @db.Date
   departmentId      BigInt?             @map("department_id")
   budgetId          BigInt?             @map("budget_id")
-  contractId        BigInt?             @map("contract_id") // NEW: Link to contract
+  contractId        BigInt?             @map("contract_id") // Link to contract
+  // Phase 1: Procurement method and type (v2.3.0)
+  purchaseMethodId  BigInt?             @map("purchase_method_id") // วิธีการจัดซื้อ
+  purchaseTypeId    BigInt?             @map("purchase_type_id") // ประเภทการซื้อ
   status            PoStatus            @default(DRAFT)
   totalAmount       Decimal             @default(0) @map("total_amount") @db.Decimal(12, 2)
   totalItems        Int                 @default(0) @map("total_items")
-  sentToVendorDate  DateTime?           @map("sent_to_vendor_date") @db.Date // NEW
-  printedDate       DateTime?           @map("printed_date") @db.Date // NEW
-  confirmedBy       BigInt?             @map("confirmed_by") // NEW
-  confirmedDate     DateTime?           @map("confirmed_date") @db.Date // NEW
+  sentToVendorDate  DateTime?           @map("sent_to_vendor_date") @db.Date
+  printedDate       DateTime?           @map("printed_date") @db.Date
+  confirmedBy       BigInt?             @map("confirmed_by")
+  confirmedDate     DateTime?           @map("confirmed_date") @db.Date
   // Project Reference Codes
   egpNumber         String?             @map("egp_number") @db.VarChar(30) // e-GP reference
   projectNumber     String?             @map("project_number") @db.VarChar(30) // Project code
@@ -529,11 +535,13 @@ model PurchaseOrder {
   budget            Budget?             @relation(fields: [budgetId], references: [id])
   department        Department?         @relation(fields: [departmentId], references: [id])
   vendor            Company             @relation(fields: [vendorId], references: [id])
-  contract          Contract?           @relation(fields: [contractId], references: [id]) // NEW
+  contract          Contract?           @relation(fields: [contractId], references: [id])
+  purchaseMethod    PurchaseMethod?     @relation(fields: [purchaseMethodId], references: [id]) // Phase 1
+  purchaseType      PurchaseType?       @relation(fields: [purchaseTypeId], references: [id]) // Phase 1
   requests          PurchaseRequest[]
   receipts          Receipt[]
-  approvalDocuments ApprovalDocument[] // NEW
-  paymentDocuments  PaymentDocument[] // NEW
+  approvalDocuments ApprovalDocument[]
+  paymentDocuments  PaymentDocument[]
 
   @@map("purchase_orders")
 }
@@ -997,7 +1005,9 @@ model DrugReturn {
   returnNumber    String           @unique @map("return_number") @db.VarChar(20)
   departmentId    BigInt           @map("department_id")
   returnDate      DateTime         @map("return_date") @db.Date
-  returnReason    String           @map("return_reason") @db.VarChar(100)
+  // Phase 1: Changed to FK (v2.3.0)
+  returnReasonId  BigInt?          @map("return_reason_id") // FK to return_reasons
+  returnReasonText String?         @map("return_reason_text") @db.VarChar(100) // Legacy/free text fallback
   actionTaken     String?          @map("action_taken") @db.VarChar(100)
   referenceNumber String?          @map("reference_number") @db.VarChar(50)
   status          ReturnStatus     @default(DRAFT)
@@ -1011,6 +1021,7 @@ model DrugReturn {
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at")
   department      Department       @relation(fields: [departmentId], references: [id])
+  returnReason    ReturnReason?    @relation(fields: [returnReasonId], references: [id]) // Phase 1
   items           DrugReturnItem[]
 
   @@map("drug_returns")
@@ -1237,6 +1248,95 @@ enum AttachmentType {
   INSPECTION_REPORT @map("inspection_report")
   DELIVERY_NOTE     @map("delivery_note")
   OTHER             @map("other")
+}
+
+// ========================================
+// PROCUREMENT MASTER DATA (Phase 1 - v2.3.0)
+// จากการวิเคราะห์ Missing Tables
+// ========================================
+
+// Purchase Method - วิธีการจัดซื้อตามระเบียบพัสดุ (buymethod)
+model PurchaseMethod {
+  id             BigInt          @id @default(autoincrement())
+  code           Int             @unique // 1-100
+  name           String          @db.VarChar(50)
+  minAmount      Decimal?        @map("min_amount") @db.Decimal(12, 2)
+  maxAmount      Decimal?        @map("max_amount") @db.Decimal(12, 2)
+  dealDays       Int?            @map("deal_days") // Processing time in days
+  authoritySigner String?        @map("authority_signer") @db.VarChar(30)
+  stdCode        String?         @map("std_code") @db.VarChar(6)
+  reportForms    String?         @map("report_forms") @db.VarChar(60) // Semicolon-separated
+  isHidden       Boolean         @default(false) @map("is_hidden")
+  isDefault      Boolean         @default(false) @map("is_default")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  purchaseOrders PurchaseOrder[]
+
+  @@map("purchase_methods")
+}
+
+// Purchase Type - ประเภทการซื้อ (buycommon)
+// ซื้อเอง, ซื้อร่วม, VMI, บริจาค, ยาผลิตโรงพยาบาล, etc.
+model PurchaseType {
+  id             BigInt          @id @default(autoincrement())
+  code           Int             @unique // 0-100
+  name           String          @db.VarChar(50)
+  authoritySigner String?        @map("authority_signer") @db.VarChar(30)
+  stdCode        String?         @map("std_code") @db.VarChar(6)
+  dealDays       Int?            @map("deal_days")
+  isHidden       Boolean         @default(false) @map("is_hidden")
+  isDefault      Boolean         @default(false) @map("is_default")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  purchaseOrders PurchaseOrder[]
+
+  @@map("purchase_types")
+}
+
+// Drug Pack Ratio - อัตราส่วนหีบห่อและราคาตาม vendor (pack_ratio)
+// 1 box = 100 tablets, vendor-specific pricing
+model DrugPackRatio {
+  id                BigInt    @id @default(autoincrement())
+  drugId            BigInt    @map("drug_id")
+  vendorId          BigInt?   @map("vendor_id")
+  manufacturerId    BigInt?   @map("manufacturer_id")
+  packRatio         Decimal   @default(1) @map("pack_ratio") @db.Decimal(10, 2) // 1 box = 100 tablets
+  buyUnitCost       Decimal?  @map("buy_unit_cost") @db.Decimal(10, 2)
+  saleUnitPrice     Decimal?  @map("sale_unit_price") @db.Decimal(10, 2)
+  packUnitId        Int?      @map("pack_unit_id") // Unit type for pack
+  subpackUnitId     Int?      @map("subpack_unit_id") // Unit type for subpack
+  barcode           String?   @db.VarChar(14)
+  lastPurchaseDate  DateTime? @map("last_purchase_date") @db.Date
+  isHidden          Boolean   @default(false) @map("is_hidden")
+  packCode          String?   @map("pack_code") @db.VarChar(18)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  drug              Drug      @relation(fields: [drugId], references: [id], onDelete: Cascade)
+  vendor            Company?  @relation("PackRatioVendor", fields: [vendorId], references: [id])
+  manufacturer      Company?  @relation("PackRatioManufacturer", fields: [manufacturerId], references: [id])
+
+  @@index([drugId])
+  @@index([vendorId])
+  @@map("drug_pack_ratios")
+}
+
+// Return Reason - เหตุผลการคืนยา (rtn_reason)
+// 19 เหตุผลมาตรฐาน: ADR, treatment change, dispensing error, expired, etc.
+model ReturnReason {
+  id             BigInt       @id @default(autoincrement())
+  code           Int          @unique
+  reason         String       @db.VarChar(100)
+  category       String?      @db.VarChar(30) // clinical, operational, quality
+  isHidden       Boolean      @default(false) @map("is_hidden")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at")
+
+  drugReturns    DrugReturn[]
+
+  @@map("return_reasons")
 }
 
 // ==========================================
