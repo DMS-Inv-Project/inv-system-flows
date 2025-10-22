@@ -110,6 +110,54 @@ TMT Integration → HPP
 
 ---
 
+## 🔄 Main Workflow: Create Hospital Formula Product
+
+**ภาพรวม workflow หลักของระบบ - การสร้างยาสูตรโรงพยาบาล (Type F)**
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant UI as Frontend
+    participant API as HPP API
+    participant DB as Database
+
+    %% Create HPP Product
+    User->>UI: Click "Create Hospital Formula"
+    UI->>API: GET /api/drugs?is_active=true
+    API->>DB: SELECT * FROM drugs
+    DB-->>API: Base drugs for formulation
+    API-->>UI: Drugs list
+    UI-->>User: Show formula form
+
+    %% Fill product details
+    User->>UI: Fill product details
+    Note over User: Product Name: Metoclopramide Oral Solution<br/>Base: Metoclopramide 10mg<br/>HPP Type: F (Formula)<br/>Strength: 5mg/5mL
+
+    User->>UI: Add formulation components
+    Note over User: - Metoclopramide 10mg: 50 tabs<br/>- Purified Water: 100mL<br/>- Simple Syrup: 50mL
+
+    User->>UI: Submit
+    UI->>API: POST /api/hpp/products
+
+    %% Create HPP record
+    API->>DB: INSERT INTO hospital_pharmaceutical_products<br/>(product_name, hpp_type: F, base_drug_id)
+    DB-->>API: HPP product created (hpp_id: 789)
+
+    %% Create formulation
+    API->>DB: INSERT INTO hpp_formulations<br/>Multiple records for each component
+    Note over DB: Component 1: Metoclopramide<br/>Component 2: Purified Water<br/>Component 3: Simple Syrup
+
+    DB-->>API: Formulation created
+    API-->>UI: ✅ HPP created
+    UI-->>User: ✅ Product ID: HPP-789<br/>Ready for production
+
+    Note over User,DB: HPP products can be used in<br/>Inventory, Distribution & Ministry Reports
+```
+
+**สำหรับ workflow ละเอียดเพิ่มเติม**: ดู [WORKFLOWS.md](WORKFLOWS.md)
+
+---
+
 ## 📂 Documentation Files
 
 | File | Description |

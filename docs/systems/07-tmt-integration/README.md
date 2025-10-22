@@ -101,6 +101,54 @@ Ministry → TMT Integration
 
 ---
 
+## 🔄 Main Workflow: Map Drug to TMT Concept
+
+**ภาพรวม workflow หลักของระบบ - การ map ยาไปยัง TMT concept**
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant UI as Frontend
+    participant API as TMT API
+    participant DB as Database
+
+    %% Search for unmapped drugs
+    User->>UI: Open "TMT Mapping" page
+    UI->>API: GET /api/drugs?tmt_mapped=false
+    API->>DB: SELECT * FROM drugs<br/>LEFT JOIN tmt_mappings<br/>WHERE tmt_code IS NULL
+    DB-->>API: Unmapped drugs (e.g., 150 drugs)
+    API-->>UI: Unmapped drugs list
+    UI-->>User: Show list with mapping status
+
+    %% Search TMT for a drug
+    User->>UI: Click "Map" on Paracetamol 500mg
+    UI->>UI: Show TMT search dialog
+    User->>UI: Search TMT: "Paracetamol 500"
+
+    UI->>API: GET /api/tmt/search?q=Paracetamol+500
+    API->>DB: SELECT * FROM tmt_concepts<br/>WHERE term_thai ILIKE '%Paracetamol%'<br/>AND level = 'GP'
+    DB-->>API: TMT matches (25,991 concepts searched)
+    API-->>UI: Suggested matches with confidence
+
+    %% Map drug to TMT
+    User->>UI: Select TMT: "10028536 - PARACETAMOL 500 MG"
+    UI->>API: POST /api/tmt/map
+    Note over API: {<br/>  drug_id: 123,<br/>  tmt_code: "10028536",<br/>  mapped_by: "user123"<br/>}
+
+    API->>DB: INSERT INTO tmt_mappings<br/>(drug_id, tmt_code, confidence: 100)
+    DB-->>API: Mapping created
+    API->>DB: UPDATE drugs SET tmt_code = '10028536'
+    DB-->>API: Drug updated
+    API-->>UI: ✅ Mapping saved
+    UI-->>User: ✅ Mapped (149 remaining)
+
+    Note over User,DB: Target: >= 95% drugs mapped<br/>for Ministry compliance
+```
+
+**สำหรับ workflow ละเอียดเพิ่มเติม**: ดู [WORKFLOWS.md](WORKFLOWS.md)
+
+---
+
 ## 📂 Documentation Files
 
 | File | Description |

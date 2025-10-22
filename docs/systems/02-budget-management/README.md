@@ -55,6 +55,51 @@ Master Data → Budget Management
 
 ---
 
+## 🔄 Main Workflow: Budget Check & Reservation
+
+**ภาพรวม workflow หลักของระบบ - การตรวจสอบและจองงบประมาณเมื่อสร้าง PR**
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant ProcAPI as Procurement API
+    participant BudgetAPI as Budget API
+    participant DB as Database
+
+    %% Create PR and check budget
+    User->>ProcAPI: Submit PR for approval
+    ProcAPI->>BudgetAPI: POST /api/budget/check-availability
+    Note over BudgetAPI: Parameters: fiscal_year, budget_type_id,<br/>department_id, amount, quarter
+
+    BudgetAPI->>DB: SELECT * FROM budget_allocations<br/>WHERE conditions...
+    DB-->>BudgetAPI: Budget record
+
+    BudgetAPI->>BudgetAPI: Calculate:<br/>- allocated_amount<br/>- spent_amount<br/>- reserved_amount<br/>- available = allocated - spent - reserved
+
+    alt Budget Available
+        BudgetAPI-->>ProcAPI: ✅ Budget OK (available: 50,000)
+
+        ProcAPI->>BudgetAPI: POST /api/budget/reserve
+        Note over BudgetAPI: Reserve budget for PR
+
+        BudgetAPI->>DB: INSERT INTO budget_reservations<br/>pr_id, amount, expires_at
+        DB-->>BudgetAPI: Reservation created
+        BudgetAPI-->>ProcAPI: ✅ Reserved (reservation_id: 123)
+
+        ProcAPI-->>User: ✅ PR submitted successfully
+
+    else Budget Insufficient
+        BudgetAPI-->>ProcAPI: ❌ Insufficient budget<br/>(needed: 100,000, available: 50,000)
+        ProcAPI-->>User: ❌ Cannot submit: Budget exceeded
+    end
+
+    Note over DB: Reservation auto-expires after 30 days<br/>if PR not approved/rejected
+```
+
+**สำหรับ workflow ละเอียดเพิ่มเติม**: ดู [WORKFLOWS.md](WORKFLOWS.md)
+
+---
+
 ## 🎯 Key Features
 
 ### ✅ Quarterly Budget Control

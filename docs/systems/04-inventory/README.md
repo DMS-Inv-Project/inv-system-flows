@@ -73,6 +73,53 @@ Drug Return → Inventory
 
 ---
 
+## 🔄 Main Workflow: Receive Goods & Update Inventory
+
+**ภาพรวม workflow หลักของระบบ - การรับยาเข้าคลังและอัพเดท stock แบบ FIFO**
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant UI as Frontend
+    participant InvAPI as Inventory API
+    participant DB as Database
+
+    %% Receive goods
+    User->>UI: Scan barcode / Enter lot details
+    Note over User: Lot#: ABC123<br/>Expiry: 2026-12-31<br/>Qty: 1,000
+
+    User->>UI: Submit receipt
+    UI->>InvAPI: POST /api/receipts/{id}/post
+    InvAPI->>DB: BEGIN TRANSACTION
+
+    %% Create lot record
+    InvAPI->>DB: INSERT INTO drug_lots<br/>(drug_id, location_id, lot_number,<br/>expiry_date, quantity_received)
+    DB-->>InvAPI: Lot created (lot_id: 456)
+
+    %% Update inventory
+    InvAPI->>DB: SELECT * FROM inventory<br/>WHERE drug_id AND location_id
+
+    alt Inventory exists
+        InvAPI->>DB: UPDATE inventory SET<br/>quantity_on_hand += 1000,<br/>average_cost = recalculate()
+    else First time
+        InvAPI->>DB: INSERT INTO inventory<br/>(drug_id, location_id, quantity_on_hand)
+    end
+    DB-->>InvAPI: Inventory updated
+
+    %% Create transaction log
+    InvAPI->>DB: INSERT INTO inventory_transactions<br/>(drug_id, location_id, type: RECEIVE,<br/>quantity: +1000, lot_id: 456, reference: receipt_id)
+    DB-->>InvAPI: Transaction logged
+
+    InvAPI->>DB: COMMIT
+    DB-->>InvAPI: Success
+    InvAPI-->>UI: ✅ Inventory updated
+    UI-->>User: Stock: 5,000 → 6,000 (+1,000)
+```
+
+**สำหรับ workflow ละเอียดเพิ่มเติม**: ดู [WORKFLOWS.md](WORKFLOWS.md)
+
+---
+
 ## 🎯 Key Features
 
 ### ✅ Real-time Stock Tracking
