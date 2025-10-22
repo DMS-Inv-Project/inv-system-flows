@@ -2,9 +2,9 @@
 
 **Hospital Drug Inventory Management System**
 
-**Version:** 2.2.0
+**Version:** 2.4.0
 **Last Updated:** 2025-01-22
-**Status:** ✅ Production Ready (100% Ministry Compliance)
+**Status:** ✅ Production Ready (100% Ministry Compliance + Drug Master Imported 🔓)
 
 ---
 

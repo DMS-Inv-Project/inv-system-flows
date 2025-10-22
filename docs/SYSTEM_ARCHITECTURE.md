@@ -2,9 +2,10 @@
 
 **ภาพรวมระบบงานคลังยาโรงพยาบาล (Hospital Drug Inventory Management System)**
 
-**Version:** 2.2.0
+**Version:** 2.4.0
 **Last Updated:** 2025-01-22
 **Database:** PostgreSQL 15 (44 tables, 22 enums, 11 views, 12 functions)
+**Data Status:** 3,152 records migrated (Phase 1-4) 🔓
 **Ministry Compliance:** ✅ 100% (79/79 fields) 🎉
 
 ---
