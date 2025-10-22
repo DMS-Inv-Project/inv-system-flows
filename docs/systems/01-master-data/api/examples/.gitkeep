@@ -1,0 +1,14 @@
+# Code Examples
+
+This folder will contain copy-paste ready code examples for Master Data APIs.
+
+## Planned Files
+
+- `javascript.md` - Fetch API & Axios examples
+- `typescript.md` - TypeScript + React Query patterns
+- `python.md` - Python requests library
+- `curl.md` - cURL commands
+
+## Status
+
+🚧 **Pending** - Will be created after AegisX API implementation is complete.
