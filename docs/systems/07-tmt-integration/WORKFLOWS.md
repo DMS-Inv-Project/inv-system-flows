@@ -641,3 +641,52 @@ async function generateComplianceReport(period: string) {
 
 **Built with ❤️ for INVS Modern Team**
 **Last Updated:** 2025-01-22 | **Version:** 2.2.0
+
+---
+
+## 🔄 Sequence Diagram: TMT Mapping Process
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant UI as Frontend
+    participant API as TMT API
+    participant AI as AI Service
+    participant DB as Database
+
+    User->>UI: Open TMT mapping for drug
+    UI->>API: GET /api/drugs/:id
+    API->>DB: SELECT * FROM drugs WHERE id=:id
+    DB-->>API: Drug details
+    API-->>UI: Drug data
+    
+    UI->>API: GET /api/tmt/suggest-mappings?drugId=:id
+    API->>AI: Search similar TMT concepts
+    AI-->>API: Suggested matches with confidence scores
+    
+    API->>DB: SELECT * FROM tmt_concepts WHERE ...
+    DB-->>API: TMT concepts list
+    API-->>UI: Suggestions + search results
+    UI-->>User: Show TMT matches
+
+    User->>UI: Select TMT concept & verify
+    UI->>API: POST /api/tmt/mappings
+    
+    API->>DB: Check existing mapping
+    DB-->>API: No mapping exists
+    
+    API->>DB: INSERT INTO tmt_mappings (drug_id, tmt_concept_id, is_verified=true)
+    DB-->>API: Mapping created
+    
+    API->>DB: UPDATE tmt_usage_stats
+    DB-->>API: Stats updated
+    
+    API-->>UI: Mapping saved
+    UI-->>User: Show success
+    
+    UI->>API: GET /api/tmt/compliance
+    API->>DB: Calculate compliance rate
+    DB-->>API: Compliance: 96.5%
+    API-->>UI: Compliance data
+    UI-->>User: Show updated compliance
+```

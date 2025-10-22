@@ -666,3 +666,51 @@ async function reportDistributionDiscrepancy(
 
 **Built with ❤️ for INVS Modern Team**
 **Last Updated:** 2025-01-22 | **Version:** 2.2.0
+
+---
+
+## 🔄 Sequence Diagram: Drug Distribution
+
+```mermaid
+sequenceDiagram
+    actor Ward as Ward Staff
+    actor Pharm as Pharmacist
+    participant UI as Frontend
+    participant API as Distribution API
+    participant DB as Database
+
+    Ward->>UI: Create distribution request
+    UI->>API: POST /api/distributions
+    API->>DB: INSERT INTO drug_distributions
+    DB-->>API: Distribution created (DIST-2025-089)
+    API-->>UI: Request created
+    UI-->>Ward: Show confirmation
+
+    Pharm->>UI: View pending distributions
+    UI->>API: GET /api/distributions/pending
+    API->>DB: SELECT * FROM drug_distributions WHERE status='PENDING'
+    DB-->>API: Pending distributions
+    API-->>UI: Distribution list
+    
+    Pharm->>UI: Process distribution
+    UI->>API: GET /api/inventory/lots-fefo
+    API->>DB: get_fefo_lots()
+    DB-->>API: Lots in FEFO order
+    API-->>UI: Pick list
+    UI-->>Pharm: Show pick list
+
+    Pharm->>UI: Complete distribution
+    UI->>API: POST /api/distributions/:id/complete
+    
+    API->>DB: UPDATE drug_distributions SET status='COMPLETED'
+    DB-->>API: Distribution updated
+    
+    API->>DB: INSERT INTO inventory_transactions (ISSUE from pharmacy)
+    DB-->>API: Transaction recorded
+    
+    API->>DB: UPDATE inventory (deduct from pharmacy, add to ward)
+    DB-->>API: Inventory updated
+    
+    API-->>UI: Distribution completed
+    UI-->>Pharm: Show success
+```

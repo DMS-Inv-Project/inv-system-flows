@@ -1269,3 +1269,46 @@ SELECT update_budget_plan_purchase(
 - [../../END_TO_END_WORKFLOWS.md](../../END_TO_END_WORKFLOWS.md) - Cross-system workflows
 
 **Last Updated:** 2025-01-22 | **Version:** 2.2.0
+
+---
+
+## 🔄 Sequence Diagram: Budget Allocation
+
+```mermaid
+sequenceDiagram
+    actor FM as Finance Manager
+    participant UI as Frontend
+    participant API as Budget API
+    participant DB as Database
+
+    FM->>UI: Open Budget Allocation page
+    UI->>API: GET /api/budget/types
+    API->>DB: SELECT * FROM budget_types
+    DB-->>API: Budget types list
+    API-->>UI: Budget types data
+    
+    UI->>API: GET /api/departments
+    API->>DB: SELECT * FROM departments
+    DB-->>API: Departments list
+    API-->>UI: Departments data
+    UI-->>FM: Show allocation form
+
+    FM->>UI: Fill form (dept, budget type, total, Q1-Q4)
+    UI->>UI: Validate quarterly sum = total
+    UI->>API: POST /api/budget/allocations
+    
+    API->>DB: Check duplicate allocation
+    DB-->>API: No duplicate found
+    
+    API->>DB: INSERT INTO budget_allocations
+    DB-->>API: Allocation created (id=456)
+    
+    API-->>UI: Success response
+    UI-->>FM: Show success message
+    
+    UI->>API: GET /api/budget/allocations?year=2025
+    API->>DB: SELECT * FROM budget_status_current
+    DB-->>API: Budget status data
+    API-->>UI: Updated allocations
+    UI-->>FM: Show updated dashboard
+```

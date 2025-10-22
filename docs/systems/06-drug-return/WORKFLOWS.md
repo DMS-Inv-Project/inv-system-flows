@@ -743,3 +743,48 @@ async function completeDisposal(
 
 **Built with ❤️ for INVS Modern Team**
 **Last Updated:** 2025-01-22 | **Version:** 2.2.0
+
+---
+
+## 🔄 Sequence Diagram: Drug Return Process
+
+```mermaid
+sequenceDiagram
+    actor Ward as Ward Staff
+    actor Pharm as Pharmacist
+    participant UI as Frontend
+    participant API as Drug Return API
+    participant DB as Database
+
+    Ward->>UI: Create return request
+    UI->>API: POST /api/drug-returns
+    API->>DB: INSERT INTO drug_returns
+    DB-->>API: Return created (RET-2025-045)
+    API-->>UI: Return request created
+    UI-->>Ward: Show confirmation
+
+    Pharm->>UI: View pending returns
+    UI->>API: GET /api/drug-returns/pending
+    API->>DB: SELECT * FROM drug_returns WHERE status='PENDING'
+    DB-->>API: Pending returns list
+    API-->>UI: Returns data
+    UI-->>Pharm: Show returns list
+
+    Pharm->>UI: Inspect & accept return
+    UI->>API: POST /api/drug-returns/:id/accept
+    
+    API->>DB: UPDATE drug_returns SET status='ACCEPTED'
+    DB-->>API: Return updated
+    
+    API->>DB: INSERT INTO inventory_transactions (RETURN)
+    DB-->>API: Transaction recorded
+    
+    API->>DB: UPDATE inventory (add back to pharmacy)
+    DB-->>API: Inventory updated
+    
+    API->>DB: UPDATE drug_lots (add quantity back)
+    DB-->>API: Lot updated
+    
+    API-->>UI: Return accepted
+    UI-->>Pharm: Show success
+```

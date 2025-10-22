@@ -952,3 +952,40 @@ New Avg Cost = (Old Qty × Old Cost + New Qty × New Cost) / Total Qty
 
 **Built with ❤️ for INVS Modern Team**
 **Last Updated:** 2025-01-22 | **Version:** 2.2.0
+
+---
+
+## 🔄 Sequence Diagram: Stock Adjustment
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant UI as Frontend
+    participant API as Inventory API
+    participant DB as Database
+
+    User->>UI: Open stock adjustment
+    UI->>API: GET /api/inventory/:drugId/lots
+    API->>DB: SELECT * FROM drug_lots WHERE drug_id=:drugId
+    DB-->>API: Lot list (FEFO order)
+    API-->>UI: Lots data
+    UI-->>User: Show current stock & lots
+
+    User->>UI: Enter adjustment (qty, reason, lot)
+    UI->>API: POST /api/inventory/adjust
+    
+    API->>DB: Check lot availability
+    DB-->>API: Lot exists with sufficient qty
+    
+    API->>DB: INSERT INTO inventory_transactions
+    DB-->>API: Transaction recorded
+    
+    API->>DB: UPDATE drug_lots SET quantity = quantity - :qty
+    DB-->>API: Lot updated
+    
+    API->>DB: UPDATE inventory SET quantity_on_hand = ...
+    DB-->>API: Inventory updated
+    
+    API-->>UI: Adjustment successful
+    UI-->>User: Show updated stock
+```

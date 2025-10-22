@@ -1214,3 +1214,67 @@ GET    /api/procurement/payment/:id/attachments // List attachments
 - [../../END_TO_END_WORKFLOWS.md](../../END_TO_END_WORKFLOWS.md) - Cross-system workflows
 
 **Last Updated:** 2025-01-22 | **Version:** 2.2.0
+
+---
+
+## 🔄 Sequence Diagram: Purchase Request → PO → Receipt
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant UI as Frontend
+    participant API as Procurement API
+    participant BudgetAPI as Budget API
+    participant DB as Database
+
+    %% Create PR
+    User->>UI: Create Purchase Request
+    UI->>API: GET /api/generics
+    API->>DB: SELECT * FROM drug_generics
+    DB-->>API: Generics list
+    API-->>UI: Generics data
+    
+    User->>UI: Add items & submit PR
+    UI->>BudgetAPI: POST /budget/check-availability
+    BudgetAPI->>DB: check_budget_availability()
+    DB-->>BudgetAPI: Budget available ✓
+    BudgetAPI-->>UI: Budget check passed
+    
+    UI->>API: POST /api/purchase-requests
+    API->>DB: INSERT INTO purchase_requests
+    DB-->>API: PR created (PR-2025-125)
+    API->>BudgetAPI: POST /budget/reserve
+    BudgetAPI->>DB: reserve_budget()
+    DB-->>BudgetAPI: Budget reserved
+    API-->>UI: PR created successfully
+    UI-->>User: Show success
+
+    %% Approve PR
+    User->>UI: Approve PR
+    UI->>API: POST /api/purchase-requests/:id/approve
+    API->>DB: UPDATE purchase_requests SET status='APPROVED'
+    DB-->>API: PR approved
+    API-->>UI: Approval successful
+    
+    %% Create PO
+    User->>UI: Create PO from PR
+    UI->>API: POST /api/purchase-orders
+    API->>DB: INSERT INTO purchase_orders
+    DB-->>API: PO created (PO-2025-046)
+    API->>BudgetAPI: POST /budget/commit
+    BudgetAPI->>DB: commit_budget()
+    DB-->>BudgetAPI: Budget committed
+    API-->>UI: PO created
+    
+    %% Goods Receipt
+    User->>UI: Record receipt
+    UI->>API: POST /api/receipts
+    API->>DB: INSERT INTO receipts
+    DB-->>API: Receipt created
+    API->>DB: INSERT INTO drug_lots (lot, expiry)
+    DB-->>API: Lots created
+    API->>DB: update_inventory_from_receipt()
+    DB-->>API: Inventory updated
+    API-->>UI: Receipt posted
+    UI-->>User: Receipt complete
+```

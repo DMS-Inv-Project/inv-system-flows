@@ -72,6 +72,50 @@ flowchart TD
 
 ---
 
+### 🔄 Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant UI as Frontend
+    participant API as Backend API
+    participant DB as Database
+
+    %% Create Drug Flow
+    User->>UI: Click "Add New Drug"
+    UI->>API: GET /api/generics (load options)
+    API->>DB: SELECT * FROM drug_generics
+    DB-->>API: Return generics list
+    API-->>UI: Generics data
+    UI->>API: GET /api/companies (load manufacturers)
+    API->>DB: SELECT * FROM companies WHERE is_manufacturer=true
+    DB-->>API: Return manufacturers list
+    API-->>UI: Manufacturers data
+    UI-->>User: Show empty form with dropdowns
+
+    User->>UI: Fill form & submit
+    UI->>UI: Validate input (client-side)
+    UI->>API: POST /api/master-data/drugs
+    API->>API: Validate data (server-side)
+    API->>DB: Check drug_code uniqueness
+    DB-->>API: No duplicate found
+    API->>DB: Verify generic_id exists
+    DB-->>API: Generic exists
+    API->>DB: Verify manufacturer_id exists
+    DB-->>API: Manufacturer exists
+    API->>DB: INSERT INTO drugs (...)
+    DB-->>API: Drug created (id=123)
+    API-->>UI: Success response
+    UI-->>User: Show success message
+    UI->>API: GET /api/master-data/drugs (refresh list)
+    API->>DB: SELECT * FROM drugs
+    DB-->>API: Return drugs list
+    API-->>UI: Updated drugs data
+    UI-->>User: Show updated drug list
+```
+
+---
+
 ### 📝 Step-by-Step: Create New Drug
 
 #### Step 1: Open Create Form

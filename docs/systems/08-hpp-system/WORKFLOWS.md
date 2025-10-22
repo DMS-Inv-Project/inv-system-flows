@@ -1108,3 +1108,48 @@ Response: { success: boolean }
 
 **Built with ❤️ for INVS Modern Team**
 **Last Updated:** 2025-01-22 | **Version:** 2.2.0
+
+---
+
+## 🔄 Sequence Diagram: Create Hospital Formula (HPP-F)
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant UI as Frontend
+    participant API as HPP API
+    participant DB as Database
+
+    User->>UI: Create Hospital Formula
+    UI->>API: GET /api/generics
+    API->>DB: SELECT * FROM drug_generics
+    DB-->>API: Generics list
+    API-->>UI: Generics data
+    
+    User->>UI: Fill basic info & add components
+    UI->>UI: Validate total ratio = 1.0
+    UI->>UI: Validate at least 1 ACTIVE component
+    
+    UI->>API: POST /api/hpp/formula
+    Note over API: Transaction starts
+    
+    API->>DB: INSERT INTO hospital_pharmaceutical_products
+    DB-->>API: HPP created (HPP-F-001)
+    
+    API->>DB: INSERT INTO hpp_formulations (multiple components)
+    DB-->>API: Components added
+    
+    API->>DB: Validate formulation rules
+    DB-->>API: Validation passed
+    Note over API: Transaction commits
+    
+    API-->>UI: Formula created successfully
+    UI-->>User: Show success & formula card
+    
+    User->>UI: Request formula card preview
+    UI->>API: GET /api/hpp/:id/formula-card
+    API->>DB: SELECT hpp WITH formulations
+    DB-->>API: Complete formula data
+    API-->>UI: Formula card PDF
+    UI-->>User: Display/print formula card
+```
