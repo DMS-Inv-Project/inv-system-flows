@@ -3,7 +3,7 @@
 **System:** Inventory Management
 **Tables:** 3 tables
 **Functions:** 3 functions
-**Version:** 2.2.0
+**Version:** 2.4.0
 **Last Updated:** 2025-01-22
 
 ---
@@ -615,4 +615,4 @@ New Average Cost = (Old Quantity × Old Cost + Received Quantity × New Cost)
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.2.0
+**Last Updated:** 2025-01-22 | **Version:** 2.4.0

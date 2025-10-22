@@ -2,7 +2,7 @@
 
 **System:** Procurement Management
 **Tables:** 12 tables
-**Version:** 2.2.0
+**Version:** 2.4.0
 **Last Updated:** 2025-01-22
 
 ---
@@ -925,4 +925,4 @@ ORDER BY r.receipt_date DESC;
 - [WORKFLOWS.md](WORKFLOWS.md) - Business workflows
 - [../../DATABASE_STRUCTURE.md](../../DATABASE_STRUCTURE.md) - Complete 44-table schema
 
-**Last Updated:** 2025-01-22 | **Version:** 2.2.0
+**Last Updated:** 2025-01-22 | **Version:** 2.4.0

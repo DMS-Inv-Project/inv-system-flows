@@ -2,7 +2,7 @@
 
 **System:** Inventory Management
 **Workflows:** 5 major processes
-**Version:** 2.2.0
+**Version:** 2.4.0
 **Last Updated:** 2025-01-22
 
 ---
@@ -951,7 +951,7 @@ New Avg Cost = (Old Qty × Old Cost + New Qty × New Cost) / Total Qty
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.2.0
+**Last Updated:** 2025-01-22 | **Version:** 2.4.0
 
 ---
 

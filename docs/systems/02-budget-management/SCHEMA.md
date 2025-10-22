@@ -2,7 +2,7 @@
 
 **System:** Budget Management
 **Tables:** 4 tables
-**Version:** 2.2.0
+**Version:** 2.4.0
 **Last Updated:** 2025-01-22
 
 ---
@@ -586,4 +586,4 @@ update_budget_plan_purchase(
 - [WORKFLOWS.md](WORKFLOWS.md) - Business workflows
 - [../../DATABASE_STRUCTURE.md](../../DATABASE_STRUCTURE.md) - Complete 44-table schema
 
-**Last Updated:** 2025-01-22 | **Version:** 2.2.0
+**Last Updated:** 2025-01-22 | **Version:** 2.4.0

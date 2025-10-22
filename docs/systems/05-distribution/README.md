@@ -469,4 +469,4 @@ console.log('Top drug usage:', usageReport);
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.2.0
+**Last Updated:** 2025-01-22 | **Version:** 2.4.0

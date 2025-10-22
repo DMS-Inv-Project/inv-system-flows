@@ -3,7 +3,7 @@
 **System:** Thai Medical Terminology (TMT) Integration
 **Tables:** 10 tables
 **TMT Concepts:** 25,991 concepts loaded
-**Version:** 2.2.0
+**Version:** 2.4.0
 **Last Updated:** 2025-01-22
 
 ---
@@ -631,4 +631,4 @@ async function generateComplianceReport(period: string) {
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.2.0
+**Last Updated:** 2025-01-22 | **Version:** 2.4.0

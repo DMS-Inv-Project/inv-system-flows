@@ -2,7 +2,7 @@
 
 **System:** Master Data Management
 **Tables:** 9 tables
-**Version:** 2.2.0
+**Version:** 2.4.0
 **Last Updated:** 2025-01-22
 
 ---
@@ -590,4 +590,4 @@ ORDER BY bt.type_code, bc.category_code;
 - [WORKFLOWS.md](WORKFLOWS.md) - Business workflows
 - [../../DATABASE_STRUCTURE.md](../../DATABASE_STRUCTURE.md) - Complete 44-table schema
 
-**Last Updated:** 2025-01-22 | **Version:** 2.2.0
+**Last Updated:** 2025-01-22 | **Version:** 2.4.0
