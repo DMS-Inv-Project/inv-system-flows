@@ -222,7 +222,7 @@ Ministry Compliance:
 - [x] Master Data - Clean template complete
 - [x] Budget Management - Clean template complete
 - [x] Procurement - Clean template complete
-- [ ] Inventory - Pending
+- [x] Inventory - Clean template complete
 - [ ] Distribution - Pending
 - [ ] Drug Return - Pending
 - [ ] TMT Integration - Pending
