@@ -3,9 +3,10 @@
 **Complete procurement cycle from contract to receipt**
 
 **Priority:** ⭐⭐⭐ สูง
-**Tables:** 12 tables
+**Tables:** 15 tables (12 core + 3 procurement methods) ⭐
 **Status:** ✅ Production Ready
 **Workflows:** 4 major processes
+**Data:** 57 records migrated (Phase 1) ⭐
 
 ---
 
@@ -13,7 +14,7 @@
 
 Procurement System จัดการวงจรการจัดซื้อแบบครบวงจร:
 
-### 4 โมดูลหลัก
+### 6 โมดูลหลัก
 
 1. **📄 Contracts & Pricing** (2 tables)
    - `contracts` - สัญญาจัดซื้อกับ vendor
@@ -40,6 +41,11 @@ Procurement System จัดการวงจรการจัดซื้อ�
    - `approval_documents` - เอกสารอนุมัติ PO
    - `payment_documents` - เอกสารการจ่ายเงิน
    - `payment_attachments` - เอกสารแนบการจ่ายเงิน
+
+6. **🏷️ Procurement Master Data** (3 tables) ⭐ NEW (Phase 1)
+   - `purchase_methods` - วิธีการจัดซื้อ (18 records: e-bidding, สอบราคา, etc.) ⭐
+   - `purchase_types` - ประเภทการซื้อ (20 records: ซื้อเอง, ซื้อร่วม, VMI, etc.) ⭐
+   - `purchase_order_reasons` - เหตุผลการแก้ไข/ยกเลิก PO (2 records) ⭐ Phase 3
 
 ---
 
@@ -69,6 +75,63 @@ Budget Management → Procurement
     ├─ budget_reservations (reserve for PR)
     └─ budget_plans (validate against plan)
 ```
+
+---
+
+## 🔄 Main Workflow: Create Purchase Request → PO
+
+**ภาพรวม workflow หลักของระบบ - การสร้างใบขอซื้อและอนุมัติเป็นใบสั่งซื้อ**
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant UI as Frontend
+    participant ProcAPI as Procurement API
+    participant BudgetAPI as Budget API
+    participant DB as Database
+
+    %% Create PR
+    User->>UI: Click "Create PR"
+    UI->>ProcAPI: GET /api/drugs?is_active=true
+    ProcAPI->>DB: SELECT * FROM drugs
+    DB-->>ProcAPI: Return drugs (1,169 items)
+    ProcAPI-->>UI: Drugs catalog
+    UI-->>User: Show PR form
+
+    User->>UI: Select drugs & quantities, submit
+    UI->>ProcAPI: POST /api/purchase-requests
+    ProcAPI->>DB: INSERT purchase_request (DRAFT)
+    DB-->>ProcAPI: PR created
+    ProcAPI-->>UI: PR number
+    UI-->>User: Show PR#{number}
+
+    %% Submit for approval
+    User->>UI: Click "Submit for Approval"
+    UI->>ProcAPI: PUT /api/purchase-requests/{id}/submit
+    ProcAPI->>BudgetAPI: Check budget availability
+    BudgetAPI-->>ProcAPI: Budget OK
+    ProcAPI->>BudgetAPI: Reserve budget
+    BudgetAPI-->>ProcAPI: Reserved
+    ProcAPI->>DB: UPDATE status = SUBMITTED
+    DB-->>ProcAPI: Updated
+    ProcAPI-->>UI: Submitted
+    UI-->>User: PR submitted for approval
+
+    %% Approve PR & Create PO
+    Note over User: Director approves
+    User->>UI: Click "Approve PR"
+    UI->>ProcAPI: PUT /api/purchase-requests/{id}/approve
+    ProcAPI->>DB: UPDATE status = APPROVED
+    ProcAPI->>ProcAPI: Auto-create PO from approved PR
+    ProcAPI->>BudgetAPI: Commit budget (from reservation)
+    BudgetAPI-->>ProcAPI: Committed
+    ProcAPI->>DB: INSERT purchase_order
+    DB-->>ProcAPI: PO created
+    ProcAPI-->>UI: PO number
+    UI-->>User: PO#{number} created
+```
+
+**สำหรับ workflow ละเอียดเพิ่มเติม**: ดู [WORKFLOWS.md](WORKFLOWS.md)
 
 ---
 

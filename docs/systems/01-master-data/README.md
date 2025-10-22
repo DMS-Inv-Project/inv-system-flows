@@ -3,9 +3,10 @@
 **Foundation data for all systems**
 
 **Priority:** ⭐⭐⭐ สูงสุด
-**Tables:** 9 tables
+**Tables:** 12 tables (9 core + 3 drug info support) ⭐
 **Status:** ✅ Production Ready
 **Ministry Compliance:** ✅ 100%
+**Data:** 3,152 records migrated (Phase 1-4) 🔓
 
 ---
 
@@ -13,7 +14,7 @@
 
 Master Data System เป็นระบบจัดการข้อมูลพื้นฐานที่ระบบอื่นๆ ทั้งหมดต้องใช้:
 
-### 3 กลุ่มข้อมูลหลัก
+### 4 กลุ่มข้อมูลหลัก
 
 1. **🏥 Organization Data** (3 tables)
    - `locations` - สถานที่จัดเก็บยา (warehouse, pharmacy, ward, emergency)
@@ -26,9 +27,14 @@ Master Data System เป็นระบบจัดการข้อมูล�
    - `budgets` - งบประมาณ (combination of type + category)
 
 3. **💊 Drug & Company Data** (3 tables)
-   - `drug_generics` - ยาสามัญ (generic catalog with working codes)
-   - `drugs` - ยาการค้า (trade drugs with ministry compliance fields) ⭐
+   - `drug_generics` - ยาสามัญ (1,109 records) 🔓
+   - `drugs` - ยาการค้า (1,169 records with ministry compliance) 🔓
    - `companies` - ผู้ผลิต/จำหน่าย (vendors & manufacturers)
+
+4. **🧪 Drug Information Support** (3 tables) ⭐ NEW (Phase 1-2)
+   - `drug_components` - ส่วนประกอบยา/API (736 records for allergy checking) 🔓 ⭐ Phase 2
+   - `drug_focus_lists` - รายการยาพิเศษ/ควบคุม (92 pending) ⭐ Phase 2
+   - `drug_pack_ratios` - อัตราส่วนหีบห่อตาม vendor (1,641 pending) ⭐ Phase 1
 
 ---
 
@@ -47,6 +53,47 @@ Master Data
 ```
 
 **Reverse Dependency:** ⚠️ ไม่มีระบบอื่นที่ Master Data ต้องพึ่งพา
+
+---
+
+## 🔄 Main Workflow: Add New Drug
+
+**ภาพรวม workflow หลักของระบบ - การเพิ่มยาใหม่เข้าระบบ**
+
+```mermaid
+sequenceDiagram
+    actor User as Pharmacist
+    participant UI as Frontend
+    participant API as Backend API
+    participant DB as Database
+
+    %% Load prerequisites
+    User->>UI: Click "Add New Drug"
+    UI->>API: GET /api/generics (load options)
+    API->>DB: SELECT * FROM drug_generics
+    DB-->>API: Return generics list (1,109 items)
+    API-->>UI: Generics data
+
+    UI->>API: GET /api/companies?type=manufacturer
+    API->>DB: SELECT * FROM companies WHERE is_manufacturer=true
+    DB-->>API: Return manufacturers
+    API-->>UI: Manufacturers data
+    UI-->>User: Show form with dropdowns
+
+    %% Create new drug
+    User->>UI: Fill form & submit
+    UI->>UI: Validate input (client-side)
+    UI->>API: POST /api/master-data/drugs
+    API->>API: Validate data (server-side)
+    API->>DB: Check drug_code uniqueness
+    DB-->>API: Code available
+    API->>DB: INSERT INTO drugs
+    DB-->>API: Drug created (ID)
+    API-->>UI: Success response
+    UI-->>User: Show success message + drug details
+```
+
+**สำหรับ workflow ละเอียดเพิ่มเติม**: ดู [WORKFLOWS.md](WORKFLOWS.md)
 
 ---
 

@@ -3,9 +3,10 @@
 **Department drug returns with good/damaged separation**
 
 **Priority:** ⭐⭐ ปานกลาง
-**Tables:** 2 tables
+**Tables:** 3 tables (2 core + 1 return reasons) ⭐
 **Status:** ✅ Production Ready
 **Workflows:** 4 major processes
+**Data:** 19 return reasons (Phase 1) ⭐
 
 ---
 
@@ -17,7 +18,7 @@ Drug Return System จัดการการรับคืนยาจาก�
 
 1. **📝 Return Request** (drug_returns)
    - Departments return unused, excess, or expired drugs
-   - Return reasons documented (excess, expired, wrong drug, etc.)
+   - Return reasons documented (19 standard reasons)
    - Status tracking: DRAFT → SUBMITTED → VERIFIED → POSTED
    - Complete audit trail
 
@@ -28,13 +29,20 @@ Drug Return System จัดการการรับคืนยาจาก�
    - Damaged quantity → quarantine for disposal
    - Lot number and expiry tracking
 
-3. **📦 Inventory Integration**
+3. **🏷️ Return Reasons** (return_reasons) ⭐ NEW (Phase 1)
+   - 19 standardized return reasons
+   - Categories: Clinical (ADR, Treatment change)
+   - Categories: Operational (Excess, Dispensing error)
+   - Categories: Quality (Expired, Damaged, Wrong drug)
+   - Complete tracking for quality management
+
+4. **📦 Inventory Integration**
    - Good drugs automatically restocked
    - RETURN transaction in inventory_transactions
    - Damaged drugs moved to quarantine location
    - Complete traceability from distribution to return
 
-4. **🗑️ Disposal Management** (Optional)
+5. **🗑️ Disposal Management** (Optional)
    - Committee-based disposal process
    - Destruction method documentation
    - Photo evidence requirement

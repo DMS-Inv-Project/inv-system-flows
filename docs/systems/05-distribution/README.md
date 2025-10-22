@@ -3,9 +3,10 @@
 **Department drug dispensing with FIFO/FEFO tracking**
 
 **Priority:** ⭐⭐⭐ สูง
-**Tables:** 2 tables
+**Tables:** 3 tables (2 core + 1 distribution type) ⭐
 **Status:** ✅ Production Ready
 **Workflows:** 4 major processes
+**Data:** 2 distribution types (Phase 3) ⭐
 
 ---
 
@@ -27,7 +28,12 @@ Distribution System จัดการการเบิกจ่ายยาใ
    - Real-time inventory deduction
    - Complete audit trail
 
-3. **📊 Usage Tracking**
+3. **🏷️ Distribution Types** (distribution_types) ⭐ NEW (Phase 3)
+   - จ่ายถาวร (Permanent distribution)
+   - ยืม-คืน (Loan-return)
+   - 2 standard types for tracking
+
+4. **📊 Usage Tracking**
    - Department drug consumption reports
    - Monthly/yearly usage analysis
    - Ministry compliance export (11 fields)
