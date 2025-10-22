@@ -44,11 +44,10 @@
 | 💰 **Budget Management** | [systems/02-budget-management/](systems/02-budget-management/) | ✅ Complete |
 | 🛒 **Procurement** | [systems/03-procurement/](systems/03-procurement/) | ✅ Complete |
 | 📦 **Inventory** | [systems/04-inventory/](systems/04-inventory/) | ✅ Complete |
-| 🏥 **Distribution** | [systems/05-drug-return/](systems/05-drug-return/) | ✅ Complete |
+| 🏥 **Distribution** | [systems/05-distribution/](systems/05-distribution/) | ✅ Complete |
 | 🔄 **Drug Return** | [systems/05-drug-return/](systems/05-drug-return/) | ✅ Complete |
-| 🔗 **TMT Integration** | [systems/06-tmt-integration/](systems/06-tmt-integration/) | ✅ Complete |
-| 🏥 **HPP System** | [systems/07-hpp-system/](systems/07-hpp-system/) | ✅ Complete |
-| 🔗 **HIS Integration** | [systems/08-his-integration/](systems/08-his-integration/) | ✅ Complete |
+| 🔗 **TMT Integration** | [systems/07-tmt-integration/](systems/07-tmt-integration/) | ✅ Complete |
+| 🏥 **HPP System** | [systems/08-hpp-system/](systems/08-hpp-system/) | ✅ Complete |
 
 **Each system includes:**
 - `README.md` - Overview and quick start
@@ -226,8 +225,7 @@ Ministry Compliance:
 - [x] Distribution - Clean template complete
 - [x] Drug Return - Clean template complete
 - [x] TMT Integration - Clean template complete
-- [ ] HPP System - Pending
-- [ ] HIS Integration - Pending
+- [x] HPP System - Clean template complete ✅ 🎉
 
 **API Documentation:**
 - [ ] Will be auto-generated from AegisX when backend is implemented
