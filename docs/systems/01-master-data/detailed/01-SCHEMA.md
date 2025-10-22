@@ -49,7 +49,7 @@ This document provides detailed schema documentation for the **Master Data Manag
 - `07-hpp-system` - Hospital pharmaceutical products (2 tables)
 - `08-his-integration` - HIS system integration (1 table)
 
-**For Complete Database Reference**: See `/docs/DATABASE_SCHEMA_COMPLETE.md` (all 36 tables)
+**For Complete Database Reference**: See `docs/systems/DATABASE_SCHEMA_COMPLETE.md` (all 36 tables)
 
 ---
 
@@ -701,7 +701,7 @@ For other module documentation, see:
 | **TMT Integration** | 7 tables | `docs/systems/06-tmt-integration/detailed/01-SCHEMA.md` |
 | **HPP System** | 2 tables | `docs/systems/07-hpp-system/detailed/01-SCHEMA.md` |
 | **HIS Integration** | 1 table | `docs/systems/08-his-integration/detailed/01-SCHEMA.md` |
-| **Complete Database** | All 36 tables | `/docs/DATABASE_SCHEMA_COMPLETE.md` ⭐ |
+| **Complete Database** | All 36 tables | `docs/systems/DATABASE_SCHEMA_COMPLETE.md` ⭐ |
 
 ---
 
