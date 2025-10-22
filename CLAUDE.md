@@ -26,16 +26,17 @@ npm run dev
 ```
 
 ### Step 3: Quick Facts (Current State)
-- **Status**: ✅ Production Ready (100% Ministry Compliant 🎉)
-- **Version**: 2.2.0 (Updated 2025-01-21)
-- **Database**: 36 tables, 11 views, 12 functions, 22 enums ⭐
-- **Ministry Compliance**: 100% COMPLETE (79/79 fields) 🎉 ⭐ NEW
-- **Budget Planning**: Drug-level planning with historical data ⭐
-- **Manual Entry**: Support for historical data import ⭐
-- **Seed Data**: Complete (5 locations, 5 departments, 6 budget types, 5 companies, 5 drugs)
-- **Backend API**: 🚧 Not started (Next priority)
-- **Frontend**: 🚧 Not started
-- **Last Verified**: 2025-01-21
+- **Project Type**: 📋 Database Schema + Documentation ONLY
+- **Status**: ✅ Schema Complete (Drug Master Imported) 🔓
+- **Version**: 2.4.0 (Updated 2025-01-22)
+- **Database**: 44 tables, 11 views, 12 functions, 22 enums ⭐
+- **Data Migrated**: 3,152 records (Phase 1-4) 🔓 ⭐ NEW
+- **Drug Catalog**: 1,109 generics + 1,169 trade drugs 🔓 ⭐ NEW
+- **Ministry Compliance**: 100% COMPLETE (79/79 fields) 🎉
+- **Budget Planning**: Drug-level planning with historical data
+- **Backend API**: ❌ Not in this repo (separate project)
+- **Frontend**: ❌ Not in this repo (separate project)
+- **Last Verified**: 2025-01-22
 
 ### Step 4: Key Files to Review
 1. `PROJECT_STATUS.md` - Complete current status
@@ -45,56 +46,81 @@ npm run dev
 
 ---
 
+## ⚠️ **IMPORTANT: Project Scope**
+
+**This repository is a DATABASE SCHEMA + DOCUMENTATION PROJECT ONLY**
+
+✅ **What this repo contains**:
+- Prisma schema definition (`prisma/schema.prisma`)
+- Database functions and views (`.sql` files)
+- Migration scripts (TypeScript for data import)
+- Comprehensive documentation (46 markdown files)
+- Database setup and seed data
+
+❌ **What this repo does NOT contain**:
+- Backend API (Express/Fastify) - **Not in this repo**
+- Frontend application (React) - **Not in this repo**
+- Business logic controllers - **Not in this repo**
+- API routes/endpoints - **Not in this repo**
+
+**Purpose**: Schema-first design approach for hospital inventory management system. This repo serves as the **database layer blueprint** and **documentation hub** for the INVS Modern project.
+
+---
+
 ## Project Overview
 
-**INVS Modern** - A modern hospital inventory management system built with PostgreSQL, Prisma ORM, and TypeScript. This system manages drug inventory, budget control, and procurement workflows for hospital environments.
+**INVS Modern** - Database schema and documentation for a modern hospital inventory management system built with PostgreSQL and Prisma ORM.
 
 - **Database**: PostgreSQL 15-alpine (Container: invs-modern-db, Port: 5434)
 - **ORM**: Prisma with full type safety
-- **Primary Language**: TypeScript with Node.js
-- **Version**: 2.2.0
-- **Status**: ✅ Production Ready (100% Ministry Compliant 🎉)
+- **Primary Language**: TypeScript (for migration scripts only)
+- **Version**: 2.4.0
+- **Status**: ✅ Schema Complete (44 tables, 3,152 records migrated) 🔓
 
 ---
 
 ## Current System State
 
-### ✅ What's Complete
+### ✅ What's Complete (This Repo)
 
 **Database Infrastructure:**
-- ✅ PostgreSQL (Production) - 36 tables, 22 enums ⭐
-- ✅ MySQL (Legacy Reference) - Container ready, optional import
+- ✅ PostgreSQL (Production) - 44 tables, 22 enums ⭐
+- ✅ MySQL (Legacy Reference) - Container ready, data migrated
 - ✅ Database Functions - 12 business logic functions
 - ✅ Database Views - 11 reporting views
-- ✅ Seed Data - Master data loaded
+- ✅ Data Migration - 3,152 records (Phase 1-4) 🔓 ⭐ NEW
+- ✅ Drug Master Data - 1,109 generics + 1,169 trade drugs 🔓 ⭐ NEW
+- ✅ Seed Data - Complete master data
 - ✅ Docker Compose - 2 databases + 2 web UIs
-- ✅ Budget Planning - Drug-level planning with historical data ⭐
-- ✅ Manual Entry - Support for historical data import ⭐
-- ✅ Ministry Compliance - 100% COMPLETE (79/79 fields) 🎉 ⭐ NEW
+- ✅ Budget Planning - Drug-level planning with historical data
+- ✅ Ministry Compliance - 100% COMPLETE (79/79 fields) 🎉
 
 **Documentation:**
-- ✅ 18 comprehensive guides created ⭐
-- ✅ 9 detailed flow documents with UI mockups ⭐
+- ✅ 23 comprehensive guides created ⭐
+- ✅ 9 detailed flow documents with UI mockups
+- ✅ 4 migration summary reports ⭐ NEW
 - ✅ Complete system setup guide
 - ✅ MySQL import guide
 - ✅ Frontend development guide
-- ✅ Budget planning with drugs guide ⭐
-- ✅ Ministry compliance analysis ⭐ NEW
+- ✅ Developer documentation (27 files)
+- ✅ Ministry compliance analysis
 
 **Testing:**
-- ✅ Fresh setup tested (2025-01-11)
+- ✅ Schema tested and verified (2025-01-22)
 - ✅ All containers healthy
 - ✅ Database connection verified
 - ✅ Prisma queries working
+- ✅ 3,152 records migrated successfully
 
-### 🚧 What's NOT Complete
+### ❌ What's NOT in This Repo
 
-- ❌ Backend API (Express/Fastify)
-- ❌ Authentication & Authorization
-- ❌ Frontend Application (React)
-- ❌ Production Deployment
+**These are SEPARATE projects:**
+- ❌ Backend API (Express/Fastify) - **Not in this repo**
+- ❌ Authentication & Authorization - **Not in this repo**
+- ❌ Frontend Application (React) - **Not in this repo**
+- ❌ Production Deployment - **Not in this repo**
 
-**Next Priority**: Backend API Development
+**This repo focus**: Database schema design + Documentation ONLY
 
 ---
 
@@ -328,16 +354,20 @@ Draft PR → Submit → Budget Check → Approve → Create PO → Send → Rece
 - `FINAL_SUMMARY.md` - System architecture summary
 - `CLAUDE.md` - This file
 
-### Core Application
-- `src/index.ts` - Main application entry point with database connection test
+### Core Database Files (Schema ONLY)
+- `src/index.ts` - Database connection test script
 - `src/lib/prisma.ts` - Prisma client configuration with global instance pattern
-- `prisma/schema.prisma` - Complete database schema (36 tables, 22 enums, 950+ lines) ⭐
+- `prisma/schema.prisma` - Complete database schema (44 tables, 22 enums, 950+ lines) ⭐
 - `prisma/functions.sql` - Business logic functions (12 functions, 610+ lines) ⭐
 - `prisma/views.sql` - Reporting views (11 views, 378 lines)
 - `prisma/seed.ts` - Master data seeding script
 
-### Scripts
-- `scripts/import-mysql-legacy.sh` - Import MySQL legacy database
+### Migration Scripts (Data Import)
+- `scripts/migrate-phase1-data.ts` - Procurement master data (57 records)
+- `scripts/migrate-phase2-data.ts` - Drug components & UOM (821 records)
+- `scripts/migrate-phase3-data.ts` - Distribution support (4 records)
+- `scripts/migrate-phase4-drug-master.ts` - Drug master data (3,006 records) ⭐ NEW
+- `scripts/import-mysql-legacy.sh` - Import MySQL legacy database (optional)
 - `scripts/tmt/` - TMT management scripts (4 files)
 - `scripts/integration/` - Integration scripts (2 files)
 - `scripts/archive/` - Archived legacy migration scripts
@@ -421,17 +451,25 @@ NODE_ENV=development
 
 ---
 
-## Next Steps / Roadmap
+## Next Steps (For Other Projects)
 
-### Phase 1: Backend API Development (CURRENT PRIORITY)
+⚠️ **IMPORTANT**: This repo contains DATABASE SCHEMA ONLY. Backend API and Frontend are SEPARATE projects.
 
-**Setup:**
-```bash
-# Recommended tech stack:
+### For Backend API Project (Separate Repo)
+
+**Not in this repo** - Create a new repository for backend API
+
+**Recommended tech stack:**
 - Express.js or Fastify
-- TypeScript + Prisma
+- TypeScript + Prisma (import schema from this repo)
 - Zod for validation
 - JWT for authentication
+
+**Use this repo's schema:**
+```bash
+# In backend project, reference this schema
+cp ../invs-modern/prisma/schema.prisma ./prisma/
+npm run db:generate
 ```
 
 **Required Endpoints:**
@@ -441,18 +479,29 @@ NODE_ENV=development
 4. Budget checking (POST /api/budget/check-availability)
 5. Inventory queries (GET /api/inventory)
 
-### Phase 2: Frontend Development
+### For Frontend Project (Separate Repo)
 
-**Setup:**
-```bash
-# Recommended tech stack:
+**Not in this repo** - Create a new repository for frontend
+
+**Recommended tech stack:**
 - React + TypeScript
 - TanStack Query (React Query)
 - shadcn/ui + TailwindCSS
 - React Hook Form + Zod
-```
 
-**Reference**: See `docs/flows/FLOW_08_Frontend_Purchase_Request.md` for complete UI mockups and code examples
+**Use this repo's documentation:**
+- See `docs/flows/FLOW_08_Frontend_Purchase_Request.md` for complete UI mockups
+- See `docs/systems/` for API specifications
+- See `docs/flows/` for business logic and workflows
+
+### This Repo Focus
+
+✅ **Continue to maintain:**
+- Database schema design
+- Migration scripts
+- Documentation
+- Business logic in SQL functions/views
+- Schema evolution and versioning
 
 ---
 
@@ -515,9 +564,12 @@ npm run dev
 ```
 
 ### Key Questions to Ask User
-1. "What's the current task or next feature to implement?"
-2. "Do you need help with backend API or frontend development?"
-3. "Should I review any specific flow or documentation?"
+1. "What schema changes or documentation updates do you need?"
+2. "Should I add more tables or modify existing schema?"
+3. "Do you need to migrate more data from MySQL?"
+4. "Should I update or create new documentation?"
+
+**Remember**: This repo is for **database schema + documentation ONLY**. For backend/frontend work, that's in separate projects.
 
 ---
 
