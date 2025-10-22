@@ -1,9 +1,10 @@
 # 🔄 Drug Return - Database Schema
 
 **System:** Drug Return Management
-**Tables:** 2 tables
+**Tables:** 3 tables (2 core + 1 return reasons) ⭐
 **Version:** 2.4.0
 **Last Updated:** 2025-01-22
+**Data Migrated:** 19 return reasons (Phase 1) ⭐
 
 ---
 
@@ -12,6 +13,7 @@
 ### Core Tables
 1. [Drug Returns](#1-drug_returns) - ใบรับคืนยา
 2. [Drug Return Items](#2-drug_return_items) - รายการยาที่รับคืน
+3. [Return Reasons](#3-return_reasons) ⭐ NEW (Phase 1) - เหตุผลการคืนยา
 
 ### Reference
 - [ER Diagram](#-entity-relationship-diagram)

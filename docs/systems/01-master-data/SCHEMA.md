@@ -1,13 +1,16 @@
 # 🏢 Master Data - Database Schema
 
 **System:** Master Data Management
-**Tables:** 9 tables
+**Tables:** 12 tables (9 core + 3 drug info support) ⭐
 **Version:** 2.4.0
 **Last Updated:** 2025-01-22
+**Data Migrated:** 3,152 records (Phase 1-4) 🔓
 
 ---
 
 ## 📊 Table Overview
+
+### Core Tables (9 tables)
 
 | Table | Records | Purpose |
 |-------|---------|---------|
@@ -18,8 +21,18 @@
 | `budgets` | 20-50 | Budget type + category combinations |
 | `bank` | 15-20 | Bank master data for payment processing |
 | `companies` | 50-200 | Vendors and manufacturers |
-| `drug_generics` | 500-2,000 | Generic drug catalog with working codes |
-| `drugs` | 1,000-5,000 | Trade drugs with ministry compliance fields ⭐ |
+| `drug_generics` | 1,109 | Generic drug catalog (WORKING_CODE 7 chars) 🔓 |
+| `drugs` | 1,169 | Trade drugs (TRADE_CODE 24 chars) with ministry compliance 🔓 |
+
+### Drug Information Support Tables (3 tables) ⭐ NEW
+
+| Table | Records | Purpose | Phase |
+|-------|---------|---------|-------|
+| `drug_components` | 736 | Active Pharmaceutical Ingredients for allergy checking 🔓 | ⭐ Phase 2 |
+| `drug_focus_lists` | 0/92 | Controlled substance lists (ยาเสพติด, วัตถุออกฤทธิ์) | ⭐ Phase 2 |
+| `drug_pack_ratios` | 0/1,641 | Pack size ratios and vendor-specific pricing | ⭐ Phase 1 |
+
+**Total:** 12 tables
 
 ---
 

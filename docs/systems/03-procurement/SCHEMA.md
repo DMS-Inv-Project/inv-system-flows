@@ -1,9 +1,10 @@
 # 🛒 Procurement - Database Schema
 
 **System:** Procurement Management
-**Tables:** 12 tables
+**Tables:** 15 tables (12 core + 3 procurement methods) ⭐
 **Version:** 2.4.0
 **Last Updated:** 2025-01-22
+**Data Migrated:** 57 records (Phase 1) ⭐
 
 ---
 
@@ -15,6 +16,7 @@
 3. [Purchase Orders](#3-purchase-orders--items) - ใบสั่งซื้อ
 4. [Receipts](#4-receipts--items) - ใบรับของ
 5. [Supporting Documents](#5-supporting-documents) - เอกสารประกอบ
+6. [Procurement Master Data](#6-procurement-master-data) ⭐ NEW (Phase 1 & 3)
 
 ### Reference
 - [ER Diagram](#-entity-relationship-diagram)
@@ -27,6 +29,8 @@
 ---
 
 ## 📊 Table Overview
+
+### Core Workflow Tables (12 tables)
 
 | Table | Records | Purpose |
 |-------|---------|---------|
@@ -42,6 +46,16 @@
 | `approval_documents` | 500-2,000 | PO approval documents |
 | `payment_documents` | 500-2,000 | Payment vouchers |
 | `payment_attachments` | 1,000-5,000 | Payment document attachments |
+
+### Procurement Master Data (3 tables) ⭐ NEW
+
+| Table | Records | Purpose | Phase |
+|-------|---------|---------|-------|
+| `purchase_methods` | 18 | วิธีการจัดซื้อ (e-bidding, สอบราคา, etc.) 🔓 | ⭐ Phase 1 |
+| `purchase_types` | 20 | ประเภทการซื้อ (ซื้อเอง, ซื้อร่วม, VMI, etc.) 🔓 | ⭐ Phase 1 |
+| `purchase_order_reasons` | 2 | เหตุผลการแก้ไข/ยกเลิก PO 🔓 | ⭐ Phase 3 |
+
+**Total:** 15 tables
 
 ---
 

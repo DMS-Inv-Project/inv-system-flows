@@ -1,9 +1,10 @@
 # 🏥 Distribution - Database Schema
 
 **System:** Distribution Management
-**Tables:** 2 tables
+**Tables:** 3 tables (2 core + 1 distribution type) ⭐
 **Version:** 2.4.0
 **Last Updated:** 2025-01-22
+**Data Migrated:** 2 distribution types (Phase 3) ⭐
 
 ---
 
@@ -12,6 +13,7 @@
 ### Core Tables
 1. [Drug Distributions](#1-drug_distributions) - ใบเบิกยา
 2. [Drug Distribution Items](#2-drug_distribution_items) - รายการยาที่เบิก
+3. [Distribution Types](#3-distribution_types) ⭐ NEW (Phase 3) - ประเภทการจ่าย
 
 ### Reference
 - [ER Diagram](#-entity-relationship-diagram)
