@@ -50,19 +50,6 @@ Master Data
 
 ---
 
-## 📊 Quick Statistics
-
-| Entity | Typical Count | Growth Rate |
-|--------|---------------|-------------|
-| Locations | 5-20 | Low |
-| Departments | 10-50 | Low |
-| Budget Types | 6-10 | Static |
-| Companies | 50-200 | Low |
-| Drug Generics | 500-2,000 | Medium |
-| Drugs (Trade) | 1,000-5,000 | Medium |
-
----
-
 ## 🎯 Key Features
 
 ### ✅ Ministry Compliance (v2.2.0) 🎉
@@ -98,65 +85,9 @@ Master Data
 | File | Description |
 |------|-------------|
 | **README.md** | This file - Overview of Master Data system |
-| **[SCHEMA.md](SCHEMA.md)** | Detailed schema of 9 tables with ER diagrams |
-| **[WORKFLOWS.md](WORKFLOWS.md)** | CRUD, Bulk Import, Search workflows (Mermaid diagrams) |
+| **[SCHEMA.md](SCHEMA.md)** | Database schema: 9 tables with ER diagrams |
+| **[WORKFLOWS.md](WORKFLOWS.md)** | Business workflows: CRUD, Bulk Import, Search |
 | **api/** | OpenAPI specs (will be auto-generated from AegisX) |
-
----
-
-## 🔄 Common Workflows
-
-### 1. CRUD Operations
-**File:** [WORKFLOWS.md](WORKFLOWS.md#crud-operations)
-
-- Create, Read, Update, Delete
-- Validation rules
-- Error handling
-
-### 2. Bulk Import
-**File:** [WORKFLOWS.md](WORKFLOWS.md#bulk-import)
-
-- CSV/Excel upload
-- Data validation
-- Error reporting
-- Rollback on errors
-
-### 3. Search & Filter
-**File:** [WORKFLOWS.md](WORKFLOWS.md#search-filter)
-
-- Multi-field search
-- Advanced filters
-- Pagination
-- Export results
-
----
-
-## 🔌 API Endpoints (Preview)
-
-**Will be auto-generated from AegisX backend**
-
-```typescript
-// Basic CRUD
-GET    /api/master-data/{entity}/                    // List with pagination
-POST   /api/master-data/{entity}/                    // Create
-GET    /api/master-data/{entity}/{id}                // Get by ID
-PUT    /api/master-data/{entity}/{id}                // Update
-DELETE /api/master-data/{entity}/{id}                // Soft delete
-
-// Bulk Operations
-POST   /api/master-data/{entity}/bulk                // Bulk create
-PUT    /api/master-data/{entity}/bulk                // Bulk update
-
-// Helpers
-GET    /api/master-data/{entity}/dropdown            // UI dropdown options
-POST   /api/master-data/{entity}/validate            // Pre-save validation
-GET    /api/master-data/{entity}/check/{field}       // Check uniqueness
-GET    /api/master-data/{entity}/export              // Export CSV/Excel
-```
-
-**Supported entities:**
-- `locations`, `departments`, `budget-types`, `budget-categories`, `budgets`
-- `banks`, `companies`, `drug-generics`, `drugs`
 
 ---
 
@@ -221,65 +152,6 @@ const drugs = await prisma.drug.findMany({
   },
   orderBy: { tradeName: 'asc' }
 });
-```
-
----
-
-## ✅ Validation Rules
-
-### Locations
-- `location_code` - Unique, 10 chars max
-- `location_type` - Must be valid enum (WAREHOUSE, PHARMACY, WARD, etc.)
-- `parent_id` - Must exist if specified (no circular references)
-
-### Departments
-- `dept_code` - Unique, 10 chars max
-- `his_code` - Must match HIS system (if integrated)
-- `consumption_group` - Must be 1-9 (ministry requirement)
-
-### Drug Generics
-- `working_code` - Unique, **exactly 7 characters** (ministry standard)
-- `dosage_form` - Must match standard forms (TAB, CAP, etc.)
-
-### Drugs
-- `drug_code` - Unique, **exactly 24 characters** (ministry standard)
-- `nlem_status` - Required (E or N)
-- `drug_status` - Required (1-4)
-- `product_category` - Required (1-5)
-- `generic_id` - Must exist in drug_generics
-- `manufacturer_id` - Must exist in companies
-
-### Companies
-- `company_code` - Unique, 10 chars max
-- `tax_id` - Unique if specified
-- `bank_id` - Must exist in bank table
-
----
-
-## 🚫 Common Errors
-
-### Error 1: Duplicate Code
-```
-Error: Unique constraint failed on the fields: (drug_code)
-Solution: Check existing drug codes before creating
-```
-
-### Error 2: Invalid Working Code Length
-```
-Error: working_code must be exactly 7 characters
-Solution: Pad with zeros (e.g., "1001" → "0001001")
-```
-
-### Error 3: Foreign Key Violation
-```
-Error: Foreign key constraint failed on generic_id
-Solution: Create drug generic first, then create trade drug
-```
-
-### Error 4: Missing Ministry Fields
-```
-Error: nlem_status is required
-Solution: Specify E (Essential) or N (Non-Essential)
 ```
 
 ---
