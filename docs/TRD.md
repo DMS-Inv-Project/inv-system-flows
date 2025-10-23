@@ -1,9 +1,9 @@
 # ⚙️ Technical Requirements Document (TRD)
 
 **Project:** INVS Modern - Hospital Inventory Management System
-**Version:** 2.4.0
-**Date:** 2025-01-22
-**Status:** Production Ready (Database Schema Phase)
+**Version:** 3.0.0
+**Date:** 2025-01-23
+**Status:** Production Ready (Database Schema Phase) - Updated Tech Stack
 
 ---
 
@@ -21,24 +21,28 @@ INVS Modern is built as a modern, type-safe database-centric application using P
 
 ### 1.3 Technology Stack
 
-**Database Tier:**
-- PostgreSQL 15-alpine
-- Prisma ORM 5.x (Type-safe query builder)
-- Database Functions (Business logic in PL/pgSQL)
-- Materialized Views (Performance optimization)
+**Database Tier:** (ระดับฐานข้อมูล)
+- PostgreSQL 15-alpine - ฐานข้อมูลหลักที่มีความเสถียรสูง
+- Prisma ORM 5.x - เครื่องมือจัดการฐานข้อมูลแบบ Type-safe
+- Database Functions (Business logic in PL/pgSQL) - ฟังก์ชันธุรกิจในฐานข้อมูล
+- Materialized Views - มุมมองข้อมูลสำหรับรายงานและเพิ่มประสิทธิภาพ
+- Redis 7.x - In-memory cache สำหรับเพิ่มประสิทธิภาพการเรียกข้อมูล
 
-**Backend API Tier** (Planned):
-- Node.js 20.x LTS
-- TypeScript 5.x (Strict mode)
-- Express.js or Fastify (REST API)
-- Zod (Runtime validation)
-- JWT (Authentication)
+**Backend API Tier:** (ระดับ API)
+- Node.js 20.x LTS - แพลตฟอร์มรันไทม์
+- TypeScript 5.x (Strict mode) - ภาษาพัฒนาที่มี Type Safety
+- Fastify 5.x - เว็บเฟรมเวิร์คที่มีประสิทธิภาพสูง (Fast & Low Overhead)
+- Zod - ตัวตรวจสอบข้อมูลและสร้าง Schema
+- JWT (RS256) - ระบบการยืนยันตัวตนด้วย JSON Web Token
+- Redis - Session storage & caching layer
 
-**Frontend Tier** (Planned):
-- React 18.x + TypeScript
-- TanStack Query (Data fetching)
-- shadcn/ui + TailwindCSS (UI components)
-- React Hook Form + Zod (Forms)
+**Frontend Tier:** (ระดับ Frontend)
+- Angular 20+ - เฟรมเวิร์คสำหรับพัฒนา Web Application
+- TypeScript 5.x - ภาษาพัฒนา Frontend
+- Angular Material UI - ชุดคอมโพเนนต์ UI ตาม Material Design 3
+- TailwindCSS 3.x - Utility-first CSS framework
+- Tremor - ชุดคอมโพเนนต์สำหรับ Dashboard และ Charts
+- RxJS - Reactive programming สำหรับจัดการ async data
 
 ---
 
@@ -46,32 +50,46 @@ INVS Modern is built as a modern, type-safe database-centric application using P
 
 ### 2.1 Architecture Style
 **Three-Tier Architecture** with emphasis on database-centric design:
+**สถาปัตยกรรมแบบ 3 ชั้น** โดยเน้นการออกแบบที่ฐานข้อมูลเป็นศูนย์กลาง
 
 ```
 ┌─────────────────────────────────────────────────┐
 │           Frontend (Web Browser)                │
-│  React + TypeScript + TanStack Query            │
+│           ส่วน Frontend (เว็บเบราว์เซอร์)       │
+│  Angular 20 + TypeScript + Angular Material     │
+│  - Standalone Components                        │
+│  - Signals (Reactive State)                     │
+│  - Material Design 3 UI                         │
+│  - TailwindCSS + Tremor (Charts)                │
 └───────────────┬─────────────────────────────────┘
                 │ HTTPS/JSON
                 │ REST API
 ┌───────────────▼─────────────────────────────────┐
 │           Backend API Server                    │
-│  Node.js + Express/Fastify + Prisma             │
-│  - Authentication & Authorization               │
+│           เซิร์ฟเวอร์ API                        │
+│  Node.js 20 + Fastify 5 + Prisma                │
+│  - JWT Authentication (RS256)                   │
 │  - Request Validation (Zod)                     │
 │  - Business Logic Orchestration                 │
-│  - Error Handling                               │
+│  - Error Handling & Logging                     │
+│  - Redis Cache Layer                            │
 └───────────────┬─────────────────────────────────┘
                 │ Prisma Client
                 │ Type-safe queries
+                │ + Redis Cache
 ┌───────────────▼─────────────────────────────────┐
-│        PostgreSQL Database                      │
-│  - 44 Tables (Normalized 3NF)                   │
+│        PostgreSQL Database + Redis Cache        │
+│        ฐานข้อมูล PostgreSQL + Redis            │
+│  PostgreSQL:                                    │
+│  - 52 Tables (Normalized 3NF)                   │
 │  - 22 Enums (Type safety)                       │
 │  - 12 Functions (Business logic)                │
 │  - 11 Views (Reporting)                         │
-│  - Row-level Security (Future)                  │
 │  - Audit Triggers                               │
+│  Redis:                                         │
+│  - Session Storage                              │
+│  - Query Result Cache (5-10 min)               │
+│  - API Response Cache                           │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -328,24 +346,37 @@ purchase_order_status         -- PO tracking
 
 ### 4.1 API Architecture (TR-API-001)
 
-**Framework:** Express.js or Fastify
+**Framework:** Fastify 5.x (เฟรมเวิร์คที่เน้นความเร็วและประสิทธิภาพ)
 **API Style:** RESTful JSON API
 **API Version:** v1 (URL prefix: `/api/v1`)
 
-**Directory Structure:**
+**เหตุผลในการเลือก Fastify 5:**
+- ประสิทธิภาพสูงกว่า Express (~30% faster)
+- Built-in schema validation (JSON Schema)
+- TypeScript support out of the box
+- Plugin architecture ที่ยืดหยุ่น
+- Async/await first-class support
+- Low overhead และ memory footprint ต่ำ
+
+**Directory Structure:** (โครงสร้างไดเรกทอรี)
 ```
 src/
-├── index.ts                 # App entry point
+├── app.ts                   # Fastify app setup & plugins
+├── server.ts                # Server entry point
 ├── lib/
 │   ├── prisma.ts           # Prisma client singleton
+│   ├── redis.ts            # Redis client
 │   ├── jwt.ts              # JWT utilities
-│   └── logger.ts           # Winston logger
-├── middleware/
-│   ├── auth.ts             # JWT authentication
-│   ├── rbac.ts             # Role-based access control
-│   ├── validate.ts         # Zod validation
-│   ├── error.ts            # Error handling
-│   └── logger.ts           # Request logging
+│   └── logger.ts           # Pino logger (Fastify default)
+├── plugins/
+│   ├── auth.plugin.ts      # JWT authentication plugin
+│   ├── rbac.plugin.ts      # Role-based access control
+│   ├── cors.plugin.ts      # CORS configuration
+│   └── cache.plugin.ts     # Redis caching plugin
+├── hooks/
+│   ├── onRequest.hook.ts   # Request logging
+│   ├── preHandler.hook.ts  # Validation hooks
+│   └── onError.hook.ts     # Error handling hooks
 ├── routes/
 │   ├── auth.routes.ts      # /api/v1/auth
 │   ├── drugs.routes.ts     # /api/v1/drugs
@@ -355,27 +386,37 @@ src/
 │   ├── distribution.routes.ts
 │   └── reports.routes.ts
 ├── controllers/
-│   └── [entity].controller.ts
+│   └── [entity].controller.ts  # Request handlers
 ├── services/
-│   └── [entity].service.ts
-├── validators/
-│   └── [entity].validator.ts
+│   └── [entity].service.ts     # Business logic
+├── schemas/
+│   └── [entity].schema.ts      # Zod validation schemas
 └── types/
-    └── [entity].types.ts
+    └── [entity].types.ts        # TypeScript types
 ```
 
-**Layered Architecture:**
-- **Routes**: HTTP routing and request parsing
-- **Middleware**: Authentication, validation, error handling
-- **Controllers**: Request/response handling
-- **Services**: Business logic orchestration
-- **Prisma Client**: Database access
+**Layered Architecture:** (สถาปัตยกรรมแบบแยกชั้น)
+- **Routes**: HTTP routing และ request parsing
+- **Plugins**: Fastify plugins สำหรับ authentication, caching, CORS
+- **Hooks**: Lifecycle hooks สำหรับ validation, logging, error handling
+- **Controllers**: Request/response handling (รับ-ส่งข้อมูล)
+- **Services**: Business logic orchestration (ตรรกะธุรกิจ)
+- **Prisma Client**: Database access (เข้าถึงฐานข้อมูล)
+- **Redis Client**: Caching layer (ระบบ cache)
+
+**Fastify-Specific Features:**
+- **Plugins**: แบ่งโมดูลด้วย Plugin architecture
+- **Hooks**: ใช้ Fastify lifecycle hooks แทน middleware
+- **Schema-based Validation**: ใช้ JSON Schema หรือ Zod
+- **Serialization**: Auto JSON serialization
+- **Decorators**: Request/Reply decorators สำหรับเพิ่ม functionality
 
 **Acceptance Criteria:**
-- Clear separation of concerns
-- Dependency injection for testability
-- No business logic in controllers
-- All database access via Prisma
+- Clear separation of concerns (แยกหน้าที่ชัดเจน)
+- Dependency injection for testability (ทดสอบได้ง่าย)
+- No business logic in controllers (ไม่มีตรรกะธุรกิจใน controller)
+- All database access via Prisma (เข้าฐานข้อมูลผ่าน Prisma เท่านั้น)
+- Redis caching for read-heavy endpoints (ใช้ Redis cache สำหรับ endpoint ที่อ่านข้อมูลบ่อย)
 
 ### 4.2 Authentication (TR-API-002)
 
@@ -647,56 +688,151 @@ GET /api/v1/drugs?page=2&limit=50&search=paracetamol
 
 ### 4.7 Performance (TR-API-007)
 
-**Requirements:**
-- API response time <500ms (p95)
-- Database query time <200ms (p95)
-- Support 100 concurrent requests
-- Throughput: 1,000 requests per minute
-- Connection pooling with 10-20 connections
+**Requirements:** (ข้อกำหนดด้านประสิทธิภาพ)
+- API response time <500ms (p95) - เวลาตอบสนอง API
+- Database query time <200ms (p95) - เวลา query ฐานข้อมูล
+- Support 100 concurrent requests - รองรับผู้ใช้พร้อมกัน 100 คน
+- Throughput: 1,000 requests per minute - ปริมาณการทำงานต่อนาที
+- Connection pooling with 10-20 connections - Pool การเชื่อมต่อฐานข้อมูล
 
-**Optimization Strategies:**
-- Database indexes on foreign keys and search fields
-- Prisma query optimization (select only needed fields)
-- Response caching for read-heavy endpoints (Redis)
-- Pagination limits (max 100 records per page)
+**Optimization Strategies:** (กลยุทธ์เพิ่มประสิทธิภาพ)
+
+**1. Database Optimization:**
+- Database indexes on foreign keys and search fields (สร้าง index บน FK และฟิลด์ค้นหา)
+- Prisma query optimization (select only needed fields) - เลือกเฉพาะฟิลด์ที่ต้องการ
+- Materialized views for complex reports (ใช้ materialized view สำหรับรายงานซับซ้อน)
+- Database connection pooling (10-20 connections) - จัดการ connection pool
+
+**2. Redis Caching Strategy:**
+```typescript
+// Cache configuration
+const cacheConfig = {
+  // Master data - Cache for 1 hour (ข้อมูลหลัก)
+  drugs: { ttl: 3600 },
+  drug_generics: { ttl: 3600 },
+  companies: { ttl: 3600 },
+  departments: { ttl: 3600 },
+
+  // Operational data - Cache for 5 minutes (ข้อมูลปฏิบัติการ)
+  inventory: { ttl: 300 },
+  budget_status: { ttl: 300 },
+
+  // Reports - Cache for 10 minutes (รายงาน)
+  low_stock_report: { ttl: 600 },
+  expiring_drugs: { ttl: 600 },
+
+  // Session storage - 1 day (เก็บ session)
+  user_session: { ttl: 86400 }
+};
+```
+
+**3. Fastify-Specific Optimizations:**
+- Schema compilation and validation caching
+- JSON serialization optimization
 - Async/await for non-blocking I/O
+- Multipart form handling optimization
+- Static file serving via `@fastify/static`
 
-**Monitoring:**
-- Log slow queries (>500ms)
-- Track API endpoint latencies
-- Monitor database connection pool
-- Alert on error rate >1%
+**4. API Response Optimization:**
+- Pagination limits (max 100 records per page) - จำกัดจำนวนข้อมูลต่อหน้า
+- Field selection (GraphQL-like sparse fieldsets) - เลือกฟิลด์ที่ต้องการ
+- Response compression (gzip/brotli) - บีบอัดข้อมูล
+- ETags for conditional requests - ใช้ ETag เพื่อลด bandwidth
+
+**5. Redis Caching Implementation:**
+```typescript
+// Example caching decorator
+async function getCachedDrugs(params: DrugSearchParams) {
+  const cacheKey = `drugs:${JSON.stringify(params)}`;
+
+  // Try cache first
+  const cached = await redis.get(cacheKey);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
+  // Query database
+  const drugs = await prisma.drug.findMany({
+    where: params,
+  });
+
+  // Store in cache
+  await redis.setex(cacheKey, 300, JSON.stringify(drugs));
+
+  return drugs;
+}
+```
+
+**Monitoring:** (การติดตามและตรวจสอบ)
+- Log slow queries (>500ms) - บันทึก query ที่ช้า
+- Track API endpoint latencies - ติดตามความเร็ว API
+- Monitor database connection pool - ตรวจสอบ connection pool
+- Alert on error rate >1% - แจ้งเตือนเมื่อ error เกิน 1%
+- Redis cache hit rate monitoring - ตรวจสอบอัตราการใช้ cache
 
 **Acceptance Criteria:**
 - Load testing confirms 100 concurrent users
 - Slow queries are identified and optimized
+- Redis cache hit rate >80% for master data
 - API latency dashboard available
 - Performance regressions caught in CI/CD
 
 ### 4.8 Logging (TR-API-008)
 
-**Logging Library:** Winston
+**Logging Library:** Pino (Fastify's default logger - เร็วกว่า Winston ~5x)
 
-**Log Levels:**
-- **error**: Errors requiring immediate attention
-- **warn**: Warning conditions
-- **info**: General informational messages
-- **debug**: Debug-level messages (development only)
+**เหตุผลในการเลือก Pino:**
+- เร็วกว่า Winston และ Bunyan อย่างมาก
+- Asynchronous logging (ไม่ block event loop)
+- Low overhead (ใช้ CPU และ memory น้อย)
+- Built-in support ใน Fastify
+- JSON output โดย default
+
+**Log Levels:** (ระดับการบันทึก Log)
+- **fatal**: ข้อผิดพลาดร้ายแรงที่ระบบหยุดทำงาน
+- **error**: ข้อผิดพลาดที่ต้องแก้ไขทันที
+- **warn**: สถานการณ์เตือน
+- **info**: ข้อความข้อมูลทั่วไป
+- **debug**: ข้อความสำหรับ debug (เฉพาะ development)
+- **trace**: รายละเอียดมากที่สุด (เฉพาะ debugging ลึก)
 
 **Log Format:**
 ```json
 {
-  "timestamp": "2025-01-22T10:30:45.123Z",
-  "level": "info",
-  "message": "PR created successfully",
-  "context": {
-    "userId": 123,
-    "prId": 456,
-    "department": "Pharmacy"
+  "level": 30,
+  "time": 1706001045123,
+  "pid": 12345,
+  "hostname": "invs-api-01",
+  "reqId": "req-abc-123",
+  "req": {
+    "method": "POST",
+    "url": "/api/v1/purchase-requests",
+    "remoteAddress": "192.168.1.100"
   },
-  "requestId": "req-abc-123",
-  "duration": 234
+  "userId": 123,
+  "department": "Pharmacy",
+  "msg": "PR created successfully",
+  "prId": 456,
+  "responseTime": 234
 }
+```
+
+**Pino Configuration:**
+```typescript
+import pino from 'pino';
+
+const logger = pino({
+  level: process.env.LOG_LEVEL || 'info',
+  transport: process.env.NODE_ENV === 'development' ? {
+    target: 'pino-pretty',  // Pretty print for development
+    options: {
+      colorize: true,
+      translateTime: 'SYS:standard',
+      ignore: 'pid,hostname'
+    }
+  } : undefined,
+  redact: ['req.headers.authorization', 'password'],  // Hide sensitive data
+});
 ```
 
 **What to Log:**
@@ -721,284 +857,1138 @@ GET /api/v1/drugs?page=2&limit=50&search=paracetamol
 ---
 
 ## 5. Frontend Technical Requirements
+## ข้อกำหนดทางเทคนิคด้าน Frontend
 
 ### 5.1 Frontend Architecture (TR-FE-001)
 
-**Framework:** React 18.x with TypeScript
-**Build Tool:** Vite
-**State Management:** TanStack Query + Zustand (global state)
-**Routing:** React Router v6
-**UI Library:** shadcn/ui + TailwindCSS
+**Framework:** Angular 20+ with TypeScript
+**เฟรมเวิร์ค:** Angular 20+ พร้อม TypeScript
+**Build Tool:** Angular CLI + esbuild (faster than Webpack)
+**State Management:** RxJS + Signals (Angular's reactive primitives)
+**Routing:** Angular Router
+**UI Library:** Angular Material UI + TailwindCSS + Tremor
 
-**Directory Structure:**
+**Angular 20 Key Features:**
+- **Standalone Components** - ไม่ต้องใช้ NgModule
+- **Signals** - Reactive state management ที่เร็วกว่า RxJS
+- **New Control Flow** - @if, @for, @switch แทน *ngIf, *ngFor
+- **Deferrable Views** - @defer สำหรับ lazy loading
+- **Built-in Control Flow** - ลดการใช้ directives
+- **Improved SSR/SSG** - Server-side rendering ที่ดีขึ้น
+
+**Directory Structure:** (โครงสร้างไดเรกทอรี)
 ```
 src/
-├── main.tsx                # App entry point
-├── App.tsx                 # Root component
-├── lib/
-│   ├── api.ts             # API client (Axios)
-│   ├── auth.ts            # Auth utilities
-│   └── queryClient.ts     # TanStack Query config
-├── hooks/
-│   ├── useAuth.ts         # Authentication hook
-│   ├── useDrugs.ts        # Drug queries
-│   ├── usePR.ts           # PR queries/mutations
-│   └── useInventory.ts    # Inventory queries
-├── components/
-│   ├── ui/                # shadcn/ui components
-│   ├── layout/
-│   │   ├── Header.tsx
-│   │   ├── Sidebar.tsx
-│   │   └── Layout.tsx
-│   ├── common/
-│   │   ├── DataTable.tsx
-│   │   ├── SearchInput.tsx
-│   │   ├── Pagination.tsx
-│   │   └── StatusBadge.tsx
-│   └── [module]/
-│       ├── DrugList.tsx
-│       ├── DrugForm.tsx
-│       └── DrugDetail.tsx
-├── pages/
-│   ├── LoginPage.tsx
-│   ├── DashboardPage.tsx
-│   ├── drugs/
-│   │   ├── DrugListPage.tsx
-│   │   ├── DrugDetailPage.tsx
-│   │   └── DrugFormPage.tsx
-│   ├── purchase-requests/
-│   └── inventory/
-├── types/
-│   └── api.types.ts       # API response types
-└── utils/
-    ├── formatters.ts
-    └── validators.ts
+├── main.ts                     # App entry point
+├── app/
+│   ├── app.config.ts          # App configuration (standalone)
+│   ├── app.routes.ts          # Routing configuration
+│   ├── app.component.ts       # Root component
+│   │
+│   ├── core/
+│   │   ├── services/
+│   │   │   ├── auth.service.ts        # Authentication
+│   │   │   ├── api.service.ts         # HTTP client wrapper
+│   │   │   └── error.service.ts       # Error handling
+│   │   ├── interceptors/
+│   │   │   ├── auth.interceptor.ts    # JWT token
+│   │   │   ├── error.interceptor.ts   # Error handling
+│   │   │   └── cache.interceptor.ts   # HTTP caching
+│   │   ├── guards/
+│   │   │   ├── auth.guard.ts          # Route protection
+│   │   │   └── role.guard.ts          # RBAC guard
+│   │   └── models/
+│   │       └── *.model.ts             # Data models
+│   │
+│   ├── shared/
+│   │   ├── components/
+│   │   │   ├── data-table/           # Reusable table
+│   │   │   ├── status-badge/         # Status display
+│   │   │   ├── search-input/         # Search box
+│   │   │   └── pagination/           # Pagination
+│   │   ├── directives/
+│   │   │   └── permission.directive.ts
+│   │   ├── pipes/
+│   │   │   ├── thai-date.pipe.ts     # Buddhist calendar
+│   │   │   └── currency-thb.pipe.ts  # THB formatting
+│   │   └── utils/
+│   │       ├── formatters.ts
+│   │       └── validators.ts
+│   │
+│   ├── features/
+│   │   ├── auth/
+│   │   │   ├── login/
+│   │   │   │   ├── login.component.ts
+│   │   │   │   └── login.component.html
+│   │   │   └── auth.routes.ts
+│   │   │
+│   │   ├── drugs/
+│   │   │   ├── drug-list/
+│   │   │   ├── drug-detail/
+│   │   │   ├── drug-form/
+│   │   │   ├── services/
+│   │   │   │   └── drug.service.ts
+│   │   │   └── drugs.routes.ts
+│   │   │
+│   │   ├── purchase-requests/
+│   │   │   ├── pr-list/
+│   │   │   ├── pr-form/          # Multi-step wizard
+│   │   │   ├── pr-approval/
+│   │   │   ├── services/
+│   │   │   │   └── pr.service.ts
+│   │   │   └── pr.routes.ts
+│   │   │
+│   │   ├── inventory/
+│   │   ├── distribution/
+│   │   └── reports/
+│   │
+│   └── layout/
+│       ├── header/
+│       ├── sidebar/
+│       └── main-layout/
+│
+├── assets/
+│   ├── i18n/
+│   │   ├── th.json                # Thai translations
+│   │   └── en.json                # English translations
+│   └── styles/
+│       ├── material-theme.scss    # Material Design theme
+│       └── tailwind.css
+│
+└── environments/
+    ├── environment.ts             # Development config
+    └── environment.prod.ts        # Production config
 ```
 
+**Angular Architecture Patterns:**
+- **Smart/Container Components**: Handle business logic (มีตรรกะธุรกิจ)
+- **Dumb/Presentational Components**: Pure UI components (แสดงผลเท่านั้น)
+- **Services**: Business logic and API calls (ตรรกะธุรกิจและเรียก API)
+- **Guards**: Route protection (ป้องกัน route)
+- **Interceptors**: HTTP middleware (จัดการ HTTP request/response)
+- **Signals**: Reactive state (state แบบ reactive)
+
 **Acceptance Criteria:**
-- Component reusability >70%
-- No prop drilling (use context or state management)
-- Consistent file naming convention
-- Clear separation of UI and business logic
+- Component reusability >70% (นำ component กลับมาใช้ได้มากกว่า 70%)
+- All components are standalone (ทุก component เป็น standalone)
+- Consistent file naming convention (ตั้งชื่อไฟล์ตามมาตรฐาน)
+- Clear separation of UI and business logic (แยก UI และตรรกะธุรกิจชัดเจน)
+- Type-safe API calls (เรียก API แบบ type-safe)
 
 ### 5.2 Data Fetching (TR-FE-002)
 
-**Library:** TanStack Query (React Query)
+**Library:** Angular HttpClient + RxJS
+**ไลบรารี:** Angular HttpClient + RxJS (สำหรับเรียก API และจัดการ async data)
 
-**Query Configuration:**
+**HTTP Configuration:**
 ```typescript
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000,     // 5 minutes
-      cacheTime: 10 * 60 * 1000,    // 10 minutes
-      refetchOnWindowFocus: false,
-      retry: 1,
-    },
-  },
-});
+// app.config.ts
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { cacheInterceptor } from './core/interceptors/cache.interceptor';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideHttpClient(
+      withInterceptors([authInterceptor, cacheInterceptor, errorInterceptor]),
+      withFetch()  // Use Fetch API instead of XHR
+    ),
+  ]
+};
 ```
 
-**Example Hook:**
+**Example Service with Signals:**
 ```typescript
-// hooks/useDrugs.ts
-export function useDrugs(params?: DrugSearchParams) {
-  return useQuery({
-    queryKey: ['drugs', params],
-    queryFn: () => api.get('/api/v1/drugs', { params }),
-    staleTime: 5 * 60 * 1000,
-  });
+// features/drugs/services/drug.service.ts
+import { Injectable, signal, computed } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Observable, tap, catchError, of } from 'rxjs';
+
+interface DrugSearchParams {
+  search?: string;
+  page?: number;
+  limit?: number;
 }
 
-export function useCreateDrug() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: CreateDrugInput) => api.post('/api/v1/drugs', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['drugs'] });
-    },
-  });
+interface Drug {
+  id: number;
+  name: string;
+  generic_name: string;
+  // ... other fields
 }
+
+@Injectable({ providedIn: 'root' })
+export class DrugService {
+  private apiUrl = '/api/v1/drugs';
+
+  // Signals for reactive state
+  private drugsSignal = signal<Drug[]>([]);
+  private loadingSignal = signal<boolean>(false);
+  private errorSignal = signal<string | null>(null);
+
+  // Computed signals
+  drugs = this.drugsSignal.asReadonly();
+  loading = this.loadingSignal.asReadonly();
+  error = this.errorSignal.asReadonly();
+  drugCount = computed(() => this.drugsSignal().length);
+
+  constructor(private http: HttpClient) {}
+
+  // Get drugs list
+  getDrugs(params?: DrugSearchParams): Observable<{ data: Drug[], meta: any }> {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    let httpParams = new HttpParams();
+    if (params?.search) httpParams = httpParams.set('search', params.search);
+    if (params?.page) httpParams = httpParams.set('page', params.page.toString());
+    if (params?.limit) httpParams = httpParams.set('limit', params.limit.toString());
+
+    return this.http.get<{ data: Drug[], meta: any }>(this.apiUrl, { params: httpParams })
+      .pipe(
+        tap(response => {
+          this.drugsSignal.set(response.data);
+          this.loadingSignal.set(false);
+        }),
+        catchError(error => {
+          this.errorSignal.set(error.message);
+          this.loadingSignal.set(false);
+          return of({ data: [], meta: {} });
+        })
+      );
+  }
+
+  // Get single drug
+  getDrug(id: number): Observable<{ data: Drug }> {
+    return this.http.get<{ data: Drug }>(`${this.apiUrl}/${id}`);
+  }
+
+  // Create drug
+  createDrug(drug: Partial<Drug>): Observable<{ data: Drug }> {
+    return this.http.post<{ data: Drug }>(this.apiUrl, drug)
+      .pipe(
+        tap(() => {
+          // Refresh list after create
+          this.getDrugs().subscribe();
+        })
+      );
+  }
+
+  // Update drug
+  updateDrug(id: number, drug: Partial<Drug>): Observable<{ data: Drug }> {
+    return this.http.put<{ data: Drug }>(`${this.apiUrl}/${id}`, drug)
+      .pipe(
+        tap(() => {
+          // Refresh list after update
+          this.getDrugs().subscribe();
+        })
+      );
+  }
+
+  // Delete drug
+  deleteDrug(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`)
+      .pipe(
+        tap(() => {
+          // Refresh list after delete
+          this.getDrugs().subscribe();
+        })
+      );
+  }
+}
+```
+
+**Using Service in Component:**
+```typescript
+// features/drugs/drug-list/drug-list.component.ts
+import { Component, OnInit, signal } from '@angular/core';
+import { DrugService } from '../services/drug.service';
+
+@Component({
+  selector: 'app-drug-list',
+  standalone: true,
+  templateUrl: './drug-list.component.html',
+})
+export class DrugListComponent implements OnInit {
+  searchTerm = signal('');
+
+  constructor(public drugService: DrugService) {}
+
+  ngOnInit() {
+    this.loadDrugs();
+  }
+
+  loadDrugs() {
+    this.drugService.getDrugs({
+      search: this.searchTerm(),
+      page: 1,
+      limit: 50
+    }).subscribe();
+  }
+
+  onSearch(term: string) {
+    this.searchTerm.set(term);
+    this.loadDrugs();
+  }
+}
+```
+
+**Template with New Control Flow:**
+```html
+<!-- drug-list.component.html -->
+<div class="p-4">
+  <!-- Search -->
+  <mat-form-field class="w-full">
+    <mat-label>ค้นหายา</mat-label>
+    <input matInput [value]="searchTerm()"
+           (input)="onSearch($any($event.target).value)">
+  </mat-form-field>
+
+  <!-- Loading state -->
+  @if (drugService.loading()) {
+    <mat-spinner diameter="40"></mat-spinner>
+  }
+
+  <!-- Error state -->
+  @if (drugService.error(); as error) {
+    <mat-error>{{ error }}</mat-error>
+  }
+
+  <!-- Data -->
+  @if (!drugService.loading() && !drugService.error()) {
+    <mat-table [dataSource]="drugService.drugs()">
+      <!-- Columns -->
+    </mat-table>
+  }
+</div>
 ```
 
 **Acceptance Criteria:**
-- All API calls use TanStack Query
-- Loading states displayed for all queries
-- Error boundaries catch query errors
-- Cache invalidation on mutations
+- All API calls use HttpClient (ทุก API call ใช้ HttpClient)
+- Loading states displayed for all queries (แสดง loading state)
+- Error handling with user-friendly messages (จัดการ error และแสดงข้อความที่เข้าใจง่าย)
+- Use Signals for reactive state (ใช้ Signals สำหรับ reactive state)
+- Interceptors handle authentication and errors (Interceptor จัดการ auth และ error)
 
 ### 5.3 Forms (TR-FE-003)
 
-**Library:** React Hook Form + Zod
+**Library:** Angular Reactive Forms + Custom Validators
+**ไลบรารี:** Angular Reactive Forms พร้อม Custom Validators
 
 **Form Implementation:**
 ```typescript
-const prFormSchema = z.object({
-  department_id: z.number(),
-  budget_type_id: z.number(),
-  fiscal_year: z.number(),
-  quarter: z.number().min(1).max(4),
-  justification: z.string().min(10),
-  items: z.array(z.object({
-    drug_id: z.number(),
-    quantity: z.number().positive(),
-    unit_price: z.number().positive(),
-  })).min(1),
-});
+// features/purchase-requests/pr-form/pr-form.component.ts
+import { Component, OnInit, signal } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { PurchaseRequestService } from '../services/pr.service';
 
-type PRFormData = z.infer<typeof prFormSchema>;
+interface PRFormValue {
+  department_id: number;
+  budget_type_id: number;
+  fiscal_year: number;
+  quarter: number;
+  justification: string;
+  items: Array<{
+    drug_id: number;
+    quantity: number;
+    unit_price: number;
+  }>;
+}
 
-function PRForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm<PRFormData>({
-    resolver: zodResolver(prFormSchema),
-  });
+@Component({
+  selector: 'app-pr-form',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule
+  ],
+  templateUrl: './pr-form.component.html',
+})
+export class PrFormComponent implements OnInit {
+  prForm!: FormGroup;
+  submitting = signal(false);
 
-  const createPR = useCreatePR();
+  constructor(
+    private fb: FormBuilder,
+    private prService: PurchaseRequestService,
+    private snackBar: MatSnackBar
+  ) {}
 
-  const onSubmit = (data: PRFormData) => {
-    createPR.mutate(data);
-  };
+  ngOnInit() {
+    this.initForm();
+  }
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {/* Form fields */}
-    </form>
-  );
+  initForm() {
+    this.prForm = this.fb.group({
+      department_id: ['', [Validators.required]],
+      budget_type_id: ['', [Validators.required]],
+      fiscal_year: [2025, [Validators.required, Validators.min(2020), Validators.max(2100)]],
+      quarter: ['', [Validators.required, Validators.min(1), Validators.max(4)]],
+      justification: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
+      items: this.fb.array([], [Validators.required, Validators.minLength(1)])
+    });
+  }
+
+  // Getter for items FormArray
+  get items(): FormArray {
+    return this.prForm.get('items') as FormArray;
+  }
+
+  // Add item to FormArray
+  addItem() {
+    const itemGroup = this.fb.group({
+      drug_id: ['', [Validators.required]],
+      quantity: ['', [Validators.required, Validators.min(1)]],
+      unit_price: ['', [Validators.required, Validators.min(0.01)]]
+    });
+    this.items.push(itemGroup);
+  }
+
+  // Remove item from FormArray
+  removeItem(index: number) {
+    this.items.removeAt(index);
+  }
+
+  // Submit form
+  onSubmit() {
+    if (this.prForm.invalid) {
+      // Mark all fields as touched to show validation errors
+      this.prForm.markAllAsTouched();
+      this.snackBar.open('กรุณากรอกข้อมูลให้ครบถ้วน', 'ปิด', { duration: 3000 });
+      return;
+    }
+
+    this.submitting.set(true);
+    const formValue: PRFormValue = this.prForm.value;
+
+    this.prService.createPR(formValue).subscribe({
+      next: (response) => {
+        this.snackBar.open('สร้างใบขอซื้อสำเร็จ', 'ปิด', { duration: 3000 });
+        this.prForm.reset();
+        this.submitting.set(false);
+      },
+      error: (error) => {
+        this.snackBar.open(`เกิดข้อผิดพลาด: ${error.message}`, 'ปิด', { duration: 5000 });
+        this.submitting.set(false);
+      }
+    });
+  }
+
+  // Helper method to get field error messages
+  getErrorMessage(fieldName: string): string {
+    const field = this.prForm.get(fieldName);
+    if (!field) return '';
+
+    if (field.hasError('required')) return 'กรุณากรอกข้อมูล';
+    if (field.hasError('minlength')) {
+      return `ต้องมีอย่างน้อย ${field.errors?.['minlength'].requiredLength} ตัวอักษร`;
+    }
+    if (field.hasError('min')) {
+      return `ค่าต่ำสุดคือ ${field.errors?.['min'].min}`;
+    }
+    if (field.hasError('max')) {
+      return `ค่าสูงสุดคือ ${field.errors?.['max'].max}`;
+    }
+    return '';
+  }
 }
 ```
 
-**Form Requirements:**
-- Client-side validation with Zod
-- Field-level error messages
-- Disabled submit during API call
-- Success/error notifications
-- Auto-save for long forms (every 30 seconds)
+**Template with Material UI:**
+```html
+<!-- pr-form.component.html -->
+<form [formGroup]="prForm" (ngSubmit)="onSubmit()" class="p-6">
+  <h2 class="text-2xl font-bold mb-6">สร้างใบขอซื้อ (Purchase Request)</h2>
+
+  <!-- Basic Info -->
+  <div class="grid grid-cols-2 gap-4 mb-4">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>แผนก (Department)</mat-label>
+      <mat-select formControlName="department_id" required>
+        <mat-option *ngFor="let dept of departments" [value]="dept.id">
+          {{dept.name}}
+        </mat-option>
+      </mat-select>
+      @if (prForm.get('department_id')?.invalid && prForm.get('department_id')?.touched) {
+        <mat-error>{{getErrorMessage('department_id')}}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>ประเภทงบประมาณ (Budget Type)</mat-label>
+      <mat-select formControlName="budget_type_id" required>
+        <mat-option *ngFor="let type of budgetTypes" [value]="type.id">
+          {{type.name}}
+        </mat-option>
+      </mat-select>
+      @if (prForm.get('budget_type_id')?.invalid && prForm.get('budget_type_id')?.touched) {
+        <mat-error>{{getErrorMessage('budget_type_id')}}</mat-error>
+      }
+    </mat-form-field>
+  </div>
+
+  <!-- Items Section -->
+  <div class="mb-4">
+    <h3 class="text-lg font-semibold mb-2">รายการยา (Items)</h3>
+
+    @for (item of items.controls; track $index) {
+      <div [formGroupName]="$index" class="grid grid-cols-4 gap-2 mb-2 items-start">
+        <!-- Drug selection -->
+        <mat-form-field appearance="outline" class="col-span-2">
+          <mat-label>ยา</mat-label>
+          <mat-select formControlName="drug_id" required>
+            <mat-option *ngFor="let drug of drugs" [value]="drug.id">
+              {{drug.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Quantity -->
+        <mat-form-field appearance="outline">
+          <mat-label>จำนวน</mat-label>
+          <input matInput type="number" formControlName="quantity" required>
+        </mat-form-field>
+
+        <!-- Unit Price -->
+        <mat-form-field appearance="outline">
+          <mat-label>ราคา/หน่วย</mat-label>
+          <input matInput type="number" formControlName="unit_price" required>
+        </mat-form-field>
+
+        <!-- Remove button -->
+        <button mat-icon-button color="warn" type="button"
+                (click)="removeItem($index)" class="mt-2">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    }
+
+    <button mat-stroked-button type="button" (click)="addItem()" class="mt-2">
+      <mat-icon>add</mat-icon> เพิ่มรายการ
+    </button>
+  </div>
+
+  <!-- Justification -->
+  <mat-form-field appearance="outline" class="w-full mb-4">
+    <mat-label>เหตุผลในการขอซื้อ (Justification)</mat-label>
+    <textarea matInput formControlName="justification" rows="4"
+              placeholder="กรุณาระบุเหตุผลในการขอซื้ออย่างน้อย 10 ตัวอักษร"></textarea>
+    @if (prForm.get('justification')?.invalid && prForm.get('justification')?.touched) {
+      <mat-error>{{getErrorMessage('justification')}}</mat-error>
+    }
+  </mat-form-field>
+
+  <!-- Submit Buttons -->
+  <div class="flex gap-2 justify-end">
+    <button mat-stroked-button type="button" routerLink="/purchase-requests">
+      ยกเลิก
+    </button>
+    <button mat-raised-button color="primary" type="submit"
+            [disabled]="prForm.invalid || submitting()">
+      @if (submitting()) {
+        <mat-spinner diameter="20" class="inline-block mr-2"></mat-spinner>
+      }
+      บันทึก
+    </button>
+  </div>
+</form>
+```
+
+**Form Requirements:** (ข้อกำหนดของฟอร์ม)
+- Client-side validation with Validators (ตรวจสอบข้อมูลฝั่ง client)
+- Field-level error messages (แสดงข้อความ error แยกแต่ละฟิลด์)
+- Disabled submit during API call (ปิดปุ่ม submit ขณะเรียก API)
+- Success/error notifications with MatSnackBar (แจ้งเตือนผลลัพธ์)
+- Auto-save for long forms (every 30 seconds) - บันทึกอัตโนมัติทุก 30 วินาที
+- FormArray for dynamic item lists (ใช้ FormArray สำหรับรายการแบบไดนามิก)
 
 **Acceptance Criteria:**
-- All forms use React Hook Form
-- Validation errors displayed clearly
-- Forms are accessible (ARIA labels)
-- Loading states during submission
+- All forms use Reactive Forms (ทุกฟอร์มใช้ Reactive Forms)
+- Validation errors displayed clearly (แสดง validation error ชัดเจน)
+- Forms are accessible (ARIA labels from Material UI) - รองรับ accessibility
+- Loading states during submission (แสดง loading ขณะ submit)
+- TypeScript types for form values (มี type สำหรับค่าในฟอร์ม)
 
 ### 5.4 UI Components (TR-FE-004)
 
-**Component Library:** shadcn/ui + TailwindCSS
+**Component Library:** Angular Material UI + TailwindCSS + Tremor
+**ชุดคอมโพเนนต์:** Angular Material UI (Material Design 3) + TailwindCSS + Tremor
 
-**Core Components:**
-- Button, Input, Select, Checkbox, Radio
-- Dialog (Modal), Alert, Toast (Notifications)
-- Card, Table, Badge, Tabs
-- DatePicker, Autocomplete, Combobox
-- DataTable (with sorting, filtering, pagination)
+**Angular Material Core Components:**
+- **Form Controls**: MatFormField, MatInput, MatSelect, MatCheckbox, MatRadio, MatDatepicker, MatAutocomplete
+- **Navigation**: MatToolbar, MatSidenav, MatMenu, MatTabs, Breadcrumbs
+- **Layout**: MatCard, MatExpansionPanel, MatDivider, MatList
+- **Buttons**: MatButton, MatIconButton, MatFab
+- **Data Display**: MatTable, MatPaginator, MatSort, MatChip, MatBadge
+- **Feedback**: MatDialog, MatSnackBar, MatProgressSpinner, MatProgressBar, MatTooltip
+- **Icons**: MatIcon (Material Icons + Custom icons)
 
-**Styling:**
-- TailwindCSS utility classes
-- Custom theme with hospital branding
-- Dark mode support (optional)
-- Responsive design (mobile-first)
+**Tremor Components (Dashboard & Charts):**
+- **Metrics**: TremorCard, TremorMetric, TremorText
+- **Charts**: TremorAreaChart, TremorBarChart, TremorDonutChart, TremorLineChart
+- **Data Display**: TremorTable, TremorProgressBar, TremorTracker
+- **Layout**: TremorGrid, TremorFlex
+
+**Example Material Theme Configuration:**
+```typescript
+// material-theme.scss
+@use '@angular/material' as mat;
+
+$my-primary: mat.define-palette(mat.$blue-palette, 500);
+$my-accent: mat.define-palette(mat.$green-palette, A200);
+$my-warn: mat.define-palette(mat.$red-palette);
+
+$my-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: $my-primary,
+    tertiary: $my-accent,
+  ),
+  typography: (
+    brand-family: 'Inter, sans-serif',
+    plain-family: 'Inter, sans-serif',
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+:root {
+  @include mat.all-component-themes($my-theme);
+  @include mat.typography-hierarchy($my-theme);
+}
+```
+
+**Example Component Usage:**
+```typescript
+// data-table.component.ts
+import { Component, ViewChild, signal } from '@angular/core';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+@Component({
+  selector: 'app-drug-data-table',
+  standalone: true,
+  imports: [
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatButtonModule,
+    MatIconModule
+  ],
+  template: `
+    <div class="p-4">
+      <!-- Search Input -->
+      <mat-form-field class="w-full mb-4">
+        <mat-label>ค้นหา</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="ค้นหายา...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <!-- Table -->
+      <div class="mat-elevation-z2 rounded-lg overflow-hidden">
+        <table mat-table [dataSource]="dataSource" matSort class="w-full">
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>รหัส</th>
+            <td mat-cell *matCellDef="let drug">{{drug.id}}</td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ชื่อยา</th>
+            <td mat-cell *matCellDef="let drug">{{drug.name}}</td>
+          </ng-container>
+
+          <!-- Generic Column -->
+          <ng-container matColumnDef="generic">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ชื่อสามัญ</th>
+            <td mat-cell *matCellDef="let drug">{{drug.generic_name}}</td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>จัดการ</th>
+            <td mat-cell *matCellDef="let drug">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="viewDrug(drug)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>ดูรายละเอียด</span>
+                </button>
+                <button mat-menu-item (click)="editDrug(drug)">
+                  <mat-icon>edit</mat-icon>
+                  <span>แก้ไข</span>
+                </button>
+                <button mat-menu-item (click)="deleteDrug(drug)">
+                  <mat-icon>delete</mat-icon>
+                  <span>ลบ</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"
+                       showFirstLastButtons
+                       [pageSize]="25">
+        </mat-paginator>
+      </div>
+    </div>
+  `
+})
+export class DrugDataTableComponent {
+  displayedColumns = ['id', 'name', 'generic', 'actions'];
+  dataSource: MatTableDataSource<any>;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  constructor() {
+    this.dataSource = new MatTableDataSource([]);
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  viewDrug(drug: any) { /* ... */ }
+  editDrug(drug: any) { /* ... */ }
+  deleteDrug(drug: any) { /* ... */ }
+}
+```
+
+**Styling with TailwindCSS:**
+- Utility-first CSS classes (class="p-4 mb-2 rounded-lg")
+- Custom theme colors matching Material Design
+- Responsive breakpoints (sm:, md:, lg:, xl:, 2xl:)
+- Grid system (grid, grid-cols-*, gap-*)
+- Flexbox utilities (flex, justify-*, items-*)
+
+**Design System:**
+- **Colors**: Material Design 3 color palette
+- **Typography**: Inter font family, Thai language support
+- **Spacing**: 4px base unit (space-1 = 4px)
+- **Border Radius**: rounded-sm (2px), rounded (4px), rounded-lg (8px)
+- **Shadows**: mat-elevation-z1 to z24
+- **Breakpoints**: Mobile-first (sm: 640px, md: 768px, lg: 1024px, xl: 1280px)
 
 **Acceptance Criteria:**
-- Consistent design system
-- Accessible components (WCAG 2.1 AA)
-- Responsive on mobile (≥375px width)
-- Loading skeletons for async content
+- Consistent design system (ระบบออกแบบที่สม่ำเสมอ)
+- Accessible components WCAG 2.1 AA (รองรับ accessibility)
+- Responsive on mobile ≥375px width (รองรับมือถือ)
+- Loading skeletons for async content (แสดง skeleton ขณะโหลด)
+- Thai language support (รองรับภาษาไทย)
+- Material Design 3 guidelines (ตามมาตรฐาน Material Design 3)
 
 ### 5.5 Internationalization (TR-FE-005)
 
-**Primary Language:** Thai
-**Secondary Language:** English
+**Primary Language:** Thai (ภาษาไทย)
+**Secondary Language:** English (ภาษาอังกฤษ)
 
-**Library:** react-i18next
+**Library:** @ngx-translate/core or Angular i18n (built-in)
 
 **Translation Structure:**
-```typescript
-// locales/th.json
+```json
+// assets/i18n/th.json
 {
   "common": {
     "save": "บันทึก",
     "cancel": "ยกเลิก",
-    "search": "ค้นหา"
+    "search": "ค้นหา",
+    "edit": "แก้ไข",
+    "delete": "ลบ",
+    "confirm": "ยืนยัน",
+    "loading": "กำลังโหลด..."
   },
   "drug": {
     "title": "รายการยา",
     "add": "เพิ่มยา",
-    "edit": "แก้ไขยา"
+    "edit": "แก้ไขยา",
+    "delete": "ลบยา",
+    "generic_name": "ชื่อสามัญ",
+    "trade_name": "ชื่อการค้า"
   },
   "validation": {
     "required": "กรุณากรอกข้อมูล",
-    "minLength": "ต้องมีอย่างน้อย {{count}} ตัวอักษร"
+    "minLength": "ต้องมีอย่างน้อย {{count}} ตัวอักษร",
+    "maxLength": "ต้องไม่เกิน {{count}} ตัวอักษร",
+    "min": "ค่าต่ำสุดคือ {{min}}",
+    "max": "ค่าสูงสุดคือ {{max}}"
+  },
+  "date": {
+    "buddhist_era": "พ.ศ.",
+    "christian_era": "ค.ศ."
+  }
+}
+```
+
+**ngx-translate Configuration:**
+```typescript
+// app.config.ts
+import { HttpClient } from '@angular/common/http';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+    importProvidersFrom(
+      TranslateModule.forRoot({
+        defaultLanguage: 'th',
+        loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+        }
+      })
+    )
+  ]
+};
+```
+
+**Usage in Components:**
+```typescript
+// app.component.ts
+export class AppComponent {
+  constructor(private translate: TranslateService) {
+    // Set default language
+    translate.setDefaultLang('th');
+    translate.use('th');
+  }
+
+  switchLanguage(lang: string) {
+    this.translate.use(lang);
+  }
+}
+```
+
+```html
+<!-- Template -->
+<button mat-button>{{ 'common.save' | translate }}</button>
+<p>{{ 'validation.minLength' | translate:{ count: 10 } }}</p>
+```
+
+**Buddhist Calendar Support:**
+```typescript
+// pipes/thai-date.pipe.ts
+import { Pipe, PipeTransform } from '@angular/core';
+import { formatDate } from '@angular/common';
+
+@Pipe({
+  name: 'thaiDate',
+  standalone: true
+})
+export class ThaiDatePipe implements PipeTransform {
+  transform(value: Date | string, format: string = 'dd/MM/yyyy'): string {
+    if (!value) return '';
+
+    const date = new Date(value);
+    const buddhistYear = date.getFullYear() + 543;
+
+    // Format with Buddhist year
+    const formatted = formatDate(date, format, 'th-TH');
+    return formatted.replace(date.getFullYear().toString(), buddhistYear.toString());
   }
 }
 ```
 
 **Acceptance Criteria:**
-- All UI text is translatable
-- Language switcher in header
-- Date/number formatting locale-aware
-- RTL support not required
+- All UI text is translatable (ข้อความทุกอันแปลได้)
+- Language switcher in header (สลับภาษาในหัวข้อ)
+- Date/number formatting locale-aware (รูปแบบวันที่และตัวเลขตามภาษา)
+- Buddhist calendar support for Thai (รองรับปีพุทธศักราชสำหรับภาษาไทย)
+- RTL support not required (ไม่ต้องรองรับภาษา Right-to-Left)
 
 ### 5.6 Performance (TR-FE-006)
 
-**Requirements:**
-- First Contentful Paint (FCP) <1.5 seconds
-- Largest Contentful Paint (LCP) <2.5 seconds
-- Time to Interactive (TTI) <3.5 seconds
-- Cumulative Layout Shift (CLS) <0.1
-- Bundle size <500KB gzipped
+**Requirements:** (ข้อกำหนดประสิทธิภาพ)
+- First Contentful Paint (FCP) <1.5 seconds - หน้าแสดงผลครั้งแรก
+- Largest Contentful Paint (LCP) <2.5 seconds - เนื้อหาหลักแสดงครบ
+- Time to Interactive (TTI) <3.5 seconds - พร้อมใช้งาน
+- Cumulative Layout Shift (CLS) <0.1 - ไม่มีการเลื่อนหน้าจอกระทันหัน
+- Bundle size <500KB gzipped - ขนาดไฟล์ที่บีบอัดแล้ว
 
-**Optimization:**
-- Code splitting (React.lazy)
-- Image optimization (WebP format)
-- Tree shaking (remove unused code)
-- Memoization (React.memo, useMemo)
-- Virtual scrolling for long lists (TanStack Virtual)
+**Angular-Specific Optimizations:**
+
+**1. Lazy Loading & Code Splitting:**
+```typescript
+// app.routes.ts
+export const routes: Routes = [
+  {
+    path: 'drugs',
+    loadComponent: () => import('./features/drugs/drug-list/drug-list.component')
+      .then(m => m.DrugListComponent)
+  },
+  {
+    path: 'purchase-requests',
+    loadChildren: () => import('./features/purchase-requests/pr.routes')
+      .then(m => m.PR_ROUTES)
+  }
+];
+```
+
+**2. Deferrable Views (Angular 17+):**
+```html
+<!-- Lazy load heavy components -->
+@defer (on viewport) {
+  <app-chart-dashboard></app-chart-dashboard>
+} @placeholder {
+  <mat-spinner></mat-spinner>
+}
+```
+
+**3. OnPush Change Detection:**
+```typescript
+@Component({
+  selector: 'app-drug-list',
+  changeDetection: ChangeDetectionStrategy.OnPush,  // Optimize change detection
+  standalone: true,
+})
+export class DrugListComponent {}
+```
+
+**4. Signals (Better than RxJS for performance):**
+```typescript
+// Use Signals instead of Observables where possible
+drugsSignal = signal<Drug[]>([]);
+filteredDrugs = computed(() => this.drugsSignal().filter(/* ... */));
+```
+
+**5. Virtual Scrolling:**
+```typescript
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+
+@Component({
+  template: `
+    <cdk-virtual-scroll-viewport itemSize="50" class="h-96">
+      <div *cdkVirtualFor="let drug of drugs">
+        {{ drug.name }}
+      </div>
+    </cdk-virtual-scroll-viewport>
+  `
+})
+```
+
+**6. Image Optimization:**
+- Use NgOptimizedImage directive
+- WebP format with fallback
+- Lazy loading images
+- Responsive images with srcset
+
+**7. Build Optimization:**
+```json
+// angular.json
+{
+  "optimization": true,
+  "buildOptimizer": true,
+  "aot": true,
+  "sourceMap": false,
+  "namedChunks": false
+}
+```
 
 **Acceptance Criteria:**
-- Lighthouse score >90
-- Bundle analysis shows no large dependencies
-- Images are lazy-loaded
-- List virtualization for >100 items
+- Lighthouse score >90 (คะแนน Lighthouse มากกว่า 90)
+- Bundle size analysis shows no large dependencies (ไม่มี dependency ขนาดใหญ่)
+- Images are lazy-loaded (รูปภาพโหลดแบบ lazy)
+- Virtual scrolling for >100 items (ใช้ virtual scrolling สำหรับรายการมากกว่า 100)
+- OnPush change detection strategy (ใช้ OnPush change detection)
 
 ### 5.7 Testing (TR-FE-007)
 
-**Testing Stack:**
-- Unit: Vitest + React Testing Library
-- E2E: Playwright
+**Testing Stack:** (เครื่องมือทดสอบ)
+- Unit: Jasmine + Karma (Angular default) or Jest
+- Component Testing: Angular Testing Library
+- E2E: Playwright or Cypress
 
 **Test Coverage:**
-- Critical user flows: 100%
-- Components: 80%
-- Utilities: 90%
+- Critical user flows: 100% (ฟีเจอร์สำคัญทดสอบครบ 100%)
+- Components: 80% (component ทดสอบ 80%)
+- Services: 90% (service ทดสอบ 90%)
+- Utilities: 90% (utility ทดสอบ 90%)
 
-**Example Test:**
+**Example Unit Test (Jasmine):**
 ```typescript
-// components/DrugList.test.tsx
-describe('DrugList', () => {
-  it('displays drug list', async () => {
-    const { getByText } = render(<DrugList />);
-    await waitFor(() => {
-      expect(getByText('Paracetamol')).toBeInTheDocument();
-    });
+// drug-list.component.spec.ts
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { DrugListComponent } from './drug-list.component';
+import { DrugService } from '../services/drug.service';
+import { of } from 'rxjs';
+
+describe('DrugListComponent', () => {
+  let component: DrugListComponent;
+  let fixture: ComponentFixture<DrugListComponent>;
+  let drugService: jasmine.SpyObj<DrugService>;
+
+  beforeEach(async () => {
+    const drugServiceSpy = jasmine.createSpyObj('DrugService', ['getDrugs']);
+
+    await TestBed.configureTestingModule({
+      imports: [DrugListComponent, HttpClientTestingModule],
+      providers: [
+        { provide: DrugService, useValue: drugServiceSpy }
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(DrugListComponent);
+    component = fixture.componentInstance;
+    drugService = TestBed.inject(DrugService) as jasmine.SpyObj<DrugService>;
   });
 
-  it('handles search', async () => {
-    const { getByPlaceholderText } = render(<DrugList />);
-    const search = getByPlaceholderText('Search drugs...');
-    fireEvent.change(search, { target: { value: 'para' } });
-    await waitFor(() => {
-      expect(mockApiCall).toHaveBeenCalledWith(expect.objectContaining({
-        search: 'para'
-      }));
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should load drugs on init', () => {
+    const mockDrugs = [
+      { id: 1, name: 'Paracetamol', generic_name: 'Paracetamol' },
+      { id: 2, name: 'Ibuprofen', generic_name: 'Ibuprofen' }
+    ];
+
+    drugService.getDrugs.and.returnValue(of({ data: mockDrugs, meta: {} }));
+
+    component.ngOnInit();
+
+    expect(drugService.getDrugs).toHaveBeenCalled();
+    expect(component.drugService.drugs().length).toBe(2);
+  });
+
+  it('should filter drugs on search', () => {
+    component.onSearch('para');
+
+    expect(component.searchTerm()).toBe('para');
+    expect(drugService.getDrugs).toHaveBeenCalledWith(
+      jasmine.objectContaining({ search: 'para' })
+    );
+  });
+});
+```
+
+**Example E2E Test (Playwright):**
+```typescript
+// e2e/purchase-request.spec.ts
+import { test, expect } from '@playwright/test';
+
+test.describe('Purchase Request Flow', () => {
+  test('should create a new purchase request', async ({ page }) => {
+    // Login
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'test_user');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+
+    // Navigate to PR form
+    await page.goto('/purchase-requests/new');
+
+    // Fill form
+    await page.selectOption('mat-select[formControlName="department_id"]', '1');
+    await page.selectOption('mat-select[formControlName="budget_type_id"]', '1');
+    await page.fill('input[formControlName="fiscal_year"]', '2025');
+    await page.selectOption('mat-select[formControlName="quarter"]', '1');
+
+    // Add item
+    await page.click('button:has-text("เพิ่มรายการ")');
+    await page.selectOption('mat-select[formControlName="drug_id"]', '1');
+    await page.fill('input[formControlName="quantity"]', '100');
+    await page.fill('input[formControlName="unit_price"]', '50');
+
+    // Fill justification
+    await page.fill('textarea[formControlName="justification"]',
+      'ขอซื้อยาเพื่อใช้ในแผนก');
+
+    // Submit
+    await page.click('button[type="submit"]');
+
+    // Verify success
+    await expect(page.locator('mat-snack-bar-container'))
+      .toContainText('สร้างใบขอซื้อสำเร็จ');
+  });
+});
+```
+
+**Service Test Example:**
+```typescript
+// drug.service.spec.ts
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { DrugService } from './drug.service';
+
+describe('DrugService', () => {
+  let service: DrugService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [DrugService]
     });
+    service = TestBed.inject(DrugService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should fetch drugs', () => {
+    const mockResponse = {
+      data: [{ id: 1, name: 'Paracetamol' }],
+      meta: { total: 1 }
+    };
+
+    service.getDrugs().subscribe(response => {
+      expect(response.data.length).toBe(1);
+      expect(response.data[0].name).toBe('Paracetamol');
+    });
+
+    const req = httpMock.expectOne('/api/v1/drugs');
+    expect(req.request.method).toBe('GET');
+    req.flush(mockResponse);
   });
 });
 ```
 
 **Acceptance Criteria:**
-- All PRs require passing tests
-- E2E tests cover critical workflows
-- CI runs tests on every commit
+- All PRs require passing tests (ทุก PR ต้องผ่านการทดสอบ)
+- E2E tests cover critical workflows (E2E ครอบคลุม workflow สำคัญ)
+- CI runs tests on every commit (CI ทดสอบทุกครั้งที่ commit)
+- Test coverage reports available (มีรายงาน test coverage)
 
 ---
 
@@ -1009,8 +1999,10 @@ describe('DrugList', () => {
 **Docker Compose Setup:**
 ```yaml
 services:
+  # PostgreSQL Database (ฐานข้อมูลหลัก)
   db:
     image: postgres:15-alpine
+    container_name: invs-db
     ports: ["5434:5432"]
     volumes:
       - postgres-data:/var/lib/postgresql/data
@@ -1018,19 +2010,125 @@ services:
       POSTGRES_USER: invs_user
       POSTGRES_PASSWORD: invs123
       POSTGRES_DB: invs_modern
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U invs_user -d invs_modern"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+  # Redis Cache (แคชและ session storage)
+  redis:
+    image: redis:7-alpine
+    container_name: invs-redis
+    ports: ["6379:6379"]
+    command: redis-server --appendonly yes --requirepass invs123
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # pgAdmin (Database management UI)
   pgadmin:
     image: dpage/pgadmin4
+    container_name: invs-pgadmin
     ports: ["8081:80"]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@invs.com
+      PGADMIN_DEFAULT_PASSWORD: invs123
+    depends_on:
+      - db
 
-  api:  # Future
-    build: .
+  # Backend API (Fastify 5)
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: invs-api
     ports: ["3000:3000"]
-    depends_on: [db]
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://invs_user:invs123@db:5432/invs_modern
+      REDIS_URL: redis://:invs123@redis:6379
+      JWT_SECRET: your-secret-key
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
 
-  frontend:  # Future
-    build: ./frontend
-    ports: ["5173:5173"]
+  # Frontend (Angular 20)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: invs-frontend
+    ports: ["4200:4200"]
+    environment:
+      API_URL: http://localhost:3000/api/v1
+    depends_on:
+      - api
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres-data:
+  redis-data:
+```
+
+**Backend Dockerfile:**
+```dockerfile
+# backend/Dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Build TypeScript
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
+```
+
+**Frontend Dockerfile:**
+```dockerfile
+# frontend/Dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install Angular CLI globally
+RUN npm install -g @angular/cli@20
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+EXPOSE 4200
+
+# Run Angular dev server
+CMD ["ng", "serve", "--host", "0.0.0.0", "--poll=2000"]
 ```
 
 **Developer Machine Requirements:**
@@ -1578,16 +2676,32 @@ async function checkBudgetAvailability(...) {
 ## 12. Appendices
 
 ### Appendix A: Technology Decisions
+### ภาคผนวก A: การตัดสินใจเลือกเทคโนโลยี
 
-| Decision | Technology | Rationale |
+| Decision (หัวข้อ) | Technology (เทคโนโลยี) | Rationale (เหตุผล) |
 |----------|-----------|-----------|
-| Database | PostgreSQL 15 | Hospital IT standard, ACID compliance, JSON support |
-| ORM | Prisma | Type safety, great DX, auto-migrations |
-| Language | TypeScript | Type safety reduces bugs, great tooling |
-| Backend | Node.js + Express | JavaScript ecosystem, async I/O, large community |
-| Frontend | React | Component model, large ecosystem, hospital preference |
-| Validation | Zod | Type-safe validation, integrates with TypeScript |
-| Testing | Vitest + Playwright | Fast, modern, great DX |
+| **Database (ฐานข้อมูล)** | PostgreSQL 15-alpine | - Hospital IT standard (มาตรฐาน IT โรงพยาบาล)<br>- ACID compliance (การันตีความถูกต้อง)<br>- JSON support (รองรับ JSON native)<br>- Excellent performance (ประสิทธิภาพสูง) |
+| **Cache (แคช)** | Redis 7.x | - In-memory speed (เร็วมากเพราะอยู่ใน memory)<br>- Session storage (เก็บ session)<br>- Pub/Sub support (รองรับ real-time)<br>- Simple key-value operations |
+| **ORM** | Prisma 5.x | - Type safety (ปลอดภัยด้วย TypeScript types)<br>- Great DX (ประสบการณ์นักพัฒนาดีเยี่ยม)<br>- Auto-migrations (สร้าง migration อัตโนมัติ)<br>- Schema-first approach |
+| **Language (ภาษา)** | TypeScript 5.x | - Type safety reduces bugs (ลดข้อผิดพลาด)<br>- Great tooling (เครื่องมือดีเยี่ยม)<br>- Better IDE support (รองรับ autocomplete)<br>- Industry standard |
+| **Backend Framework** | Fastify 5.x | - **30% faster than Express** (เร็วกว่า Express 30%)<br>- Low overhead (ใช้ทรัพยากรน้อย)<br>- Built-in schema validation<br>- TypeScript first-class support<br>- Plugin architecture (สถาปัตยกรรม plugin) |
+| **Backend Logger** | Pino | - **5x faster than Winston** (เร็วกว่า Winston 5 เท่า)<br>- Asynchronous logging (ไม่ block event loop)<br>- Low CPU overhead<br>- Fastify default logger |
+| **Frontend Framework** | Angular 20+ | - **Enterprise-grade** (เหมาะกับองค์กรใหญ่)<br>- Complete solution (ไม่ต้องหา library เพิ่ม)<br>- Strong TypeScript support<br>- Signals for reactive state<br>- Material Design 3 built-in<br>- Large community (ชุมชนใหญ่) |
+| **UI Library** | Angular Material UI | - Material Design 3 standard<br>- Accessibility built-in (รองรับ WCAG)<br>- Complete component set<br>- Thai language support<br>- Well-documented |
+| **CSS Framework** | TailwindCSS 3.x | - Utility-first approach<br>- Small bundle size<br>- Highly customizable<br>- Responsive by default<br>- Works well with Angular Material |
+| **Charts & Dashboard** | Tremor | - Beautiful out-of-the-box<br>- Designed for dashboards<br>- Responsive charts<br>- Easy to use<br>- Tailwind-based |
+| **Validation** | Zod | - Type-safe validation (ตรวจสอบแบบ type-safe)<br>- Integrates with TypeScript<br>- Runtime + compile-time safety<br>- Works with both backend and frontend |
+| **Testing (Backend)** | Vitest + Supertest | - Fast (เร็วมาก)<br>- Modern API<br>- Great TypeScript support<br>- Compatible with Jest |
+| **Testing (Frontend)** | Jasmine + Karma / Jest | - Angular default (Jasmine+Karma)<br>- Jest alternative (เร็วกว่า)<br>- Great mocking support<br>- Component testing |
+| **E2E Testing** | Playwright | - Fast and reliable<br>- Multi-browser support<br>- Great DX<br>- Auto-wait (ไม่ต้องเขียน wait) |
+| **Containerization** | Docker + Docker Compose | - Easy local development<br>- Consistent environments<br>- Simple deployment<br>- Industry standard |
+
+**Key Technology Changes from Default:**
+- ✅ **Frontend**: Angular 20 instead of React (Enterprise-grade, complete solution)
+- ✅ **Backend Framework**: Fastify 5 instead of Express (30% faster, better TypeScript)
+- ✅ **Caching**: Redis 7 added (Session storage, performance boost)
+- ✅ **Logger**: Pino instead of Winston (5x faster, async)
+- ✅ **UI**: Angular Material instead of shadcn/ui (Material Design 3, enterprise-ready)
 
 ### Appendix B: Related Documents
 
@@ -1597,12 +2711,14 @@ async function checkBudgetAvailability(...) {
 - **PROJECT_STATUS.md** - Current project status
 
 ### Appendix C: Change History
+### ภาคผนวก C: ประวัติการเปลี่ยนแปลง
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0.0 | 2025-01-01 | Project Team | Initial draft |
-| 2.0.0 | 2025-01-10 | Project Team | Post-migration update |
-| 2.4.0 | 2025-01-22 | Claude Code | Complete TRD with technical specs |
+| 1.0.0 | 2025-01-01 | Project Team | Initial draft (เอกสารฉบับแรก) |
+| 2.0.0 | 2025-01-10 | Project Team | Post-migration update (อัพเดทหลัง migrate ข้อมูล) |
+| 2.4.0 | 2025-01-22 | Claude Code | Complete TRD with technical specs (เพิ่ม spec ทางเทคนิคครบถ้วน) |
+| **3.0.0** | **2025-01-23** | **Claude Code** | **Major tech stack update:** (อัพเดทเทคโนโลยีหลัก)<br>- Frontend: Angular 20 (was React)<br>- Backend: Fastify 5 (was Express)<br>- Cache: Added Redis 7.x<br>- Logger: Pino (was Winston)<br>- UI: Angular Material + TailwindCSS + Tremor<br>- Added Thai language details throughout (เพิ่มรายละเอียดภาษาไทย)<br>- Updated Docker Compose with Redis<br>- Updated all code examples |
 
 ---
 
