@@ -112,6 +112,157 @@ INVS Modern is built as a modern, type-safe database-centric application using P
 - Backend: API orchestration and authentication
 - Frontend: User interface and experience
 
+### 2.3 System Diagrams
+### ไดอะแกรมระบบ
+
+#### 2.3.1 Network Architecture Diagram
+#### แผนผังสถาปัตยกรรมเครือข่าย
+
+```mermaid
+graph TB
+    subgraph "Client Layer (ชั้น Client)"
+        Browser[Web Browser<br/>เว็บเบราว์เซอร์]
+        Mobile[Mobile Browser<br/>มือถือ]
+    end
+
+    subgraph "Load Balancer (ถ้ามี)"
+        LB[Nginx / Load Balancer]
+    end
+
+    subgraph "Application Layer (ชั้น Application)"
+        Frontend[Angular 20 Frontend<br/>Port 4200<br/>- Material UI<br/>- TailwindCSS<br/>- Tremor Charts]
+
+        Backend[Fastify 5 API<br/>Port 3000<br/>- REST API<br/>- JWT Auth<br/>- Pino Logger]
+    end
+
+    subgraph "Cache Layer (ชั้น Cache)"
+        Redis[Redis 7.x<br/>Port 6379<br/>- Session Storage<br/>- Query Cache<br/>- API Cache]
+    end
+
+    subgraph "Data Layer (ชั้นข้อมูล)"
+        PostgreSQL[(PostgreSQL 15<br/>Port 5434<br/>- 52 Tables<br/>- 12 Functions<br/>- 11 Views)]
+    end
+
+    subgraph "Management Tools (เครื่องมือจัดการ)"
+        pgAdmin[pgAdmin 4<br/>Port 8081]
+    end
+
+    Browser --> LB
+    Mobile --> LB
+    LB --> Frontend
+    Frontend --> Backend
+    Backend --> Redis
+    Backend --> PostgreSQL
+    Redis -.->|Cache Hit| Backend
+    PostgreSQL -.->|Cache Miss| Backend
+    pgAdmin --> PostgreSQL
+
+    style Frontend fill:#42A5F5
+    style Backend fill:#66BB6A
+    style Redis fill:#EF5350
+    style PostgreSQL fill:#5C6BC0
+```
+
+#### 2.3.2 Component Architecture Diagram
+#### แผนผังสถาปัตยกรรมคอมโพเนนต์
+
+```mermaid
+graph TB
+    subgraph "Frontend Components (Angular 20)"
+        UI[UI Layer<br/>Angular Material + Tailwind]
+        Services[Services Layer<br/>HttpClient + Signals]
+        Guards[Guards & Interceptors<br/>Auth + Error Handling]
+
+        UI --> Services
+        Services --> Guards
+    end
+
+    subgraph "Backend Components (Fastify 5)"
+        Routes[Routes Layer<br/>API Endpoints]
+        Plugins[Plugins<br/>Auth, CORS, Cache]
+        Hooks[Hooks<br/>Request/Response Pipeline]
+        Controllers[Controllers<br/>Request Handlers]
+        BusinessServices[Services<br/>Business Logic]
+
+        Routes --> Plugins
+        Plugins --> Hooks
+        Hooks --> Controllers
+        Controllers --> BusinessServices
+    end
+
+    subgraph "Data Access Layer"
+        Prisma[Prisma Client<br/>Type-safe ORM]
+        RedisClient[Redis Client<br/>ioredis]
+
+        BusinessServices --> Prisma
+        BusinessServices --> RedisClient
+    end
+
+    subgraph "Database Layer"
+        Tables[(Tables<br/>52 tables)]
+        Functions[(Functions<br/>12 functions)]
+        Views[(Views<br/>11 views)]
+
+        Prisma --> Tables
+        Prisma --> Functions
+        Prisma --> Views
+    end
+
+    Guards -.->|HTTPS/JSON| Routes
+    RedisClient --> Cache[(Redis Cache)]
+
+    style UI fill:#E3F2FD
+    style Routes fill:#E8F5E9
+    style Prisma fill:#F3E5F5
+    style Tables fill:#FFF3E0
+```
+
+#### 2.3.3 Deployment Architecture Diagram
+#### แผนผังการติดตั้งระบบ
+
+```mermaid
+graph TB
+    subgraph "Docker Compose Environment"
+        subgraph "Container: invs-frontend"
+            FrontendApp[Angular 20 App<br/>ng serve<br/>Port 4200]
+        end
+
+        subgraph "Container: invs-api"
+            BackendApp[Fastify 5 API<br/>Node.js 20<br/>Port 3000]
+        end
+
+        subgraph "Container: invs-redis"
+            RedisServer[Redis 7 Alpine<br/>Port 6379<br/>Persistent Volume]
+        end
+
+        subgraph "Container: invs-db"
+            PostgresServer[PostgreSQL 15 Alpine<br/>Port 5434<br/>Persistent Volume]
+        end
+
+        subgraph "Container: invs-pgadmin"
+            pgAdminUI[pgAdmin 4<br/>Port 8081]
+        end
+    end
+
+    subgraph "Volumes (ข้อมูลถาวร)"
+        PostgresData[(postgres-data<br/>Database Files)]
+        RedisData[(redis-data<br/>Cache Files)]
+    end
+
+    FrontendApp -->|API Calls| BackendApp
+    BackendApp -->|Cache| RedisServer
+    BackendApp -->|Queries| PostgresServer
+    pgAdminUI -.->|Management| PostgresServer
+
+    RedisServer --> RedisData
+    PostgresServer --> PostgresData
+
+    style FrontendApp fill:#42A5F5
+    style BackendApp fill:#66BB6A
+    style RedisServer fill:#EF5350
+    style PostgresServer fill:#5C6BC0
+```
+
 ---
 
 ## 3. Database Technical Requirements
@@ -853,6 +1004,251 @@ const logger = pino({
 - Logs include request ID for tracing
 - Log rotation: 10 files, 10MB each
 - Logs retained for 90 days
+
+### 4.9 Workflow Sequence Diagrams
+### ลำดับการทำงานของระบบ (Sequence Diagrams)
+
+#### 4.9.1 User Authentication Flow
+#### ลำดับการ Login (การเข้าสู่ระบบ)
+
+```mermaid
+sequenceDiagram
+    participant U as User<br/>(ผู้ใช้)
+    participant F as Frontend<br/>(Angular)
+    participant A as API<br/>(Fastify)
+    participant R as Redis<br/>(Cache)
+    participant DB as PostgreSQL
+
+    U->>F: เข้าหน้า Login<br/>Enter username/password
+    F->>F: Validate form<br/>(Client-side)
+    F->>A: POST /api/v1/auth/login<br/>{ username, password }
+
+    A->>DB: SELECT user WHERE username
+    DB-->>A: User record
+
+    A->>A: Verify password<br/>(bcrypt compare)
+
+    alt Password Valid (รหัสผ่านถูกต้อง)
+        A->>A: Generate JWT<br/>(access + refresh tokens)
+        A->>R: Store refresh token<br/>SET session:{userId}
+        R-->>A: OK
+        A-->>F: 200 OK<br/>{ accessToken, refreshToken, user }
+        F->>F: Store tokens<br/>(httpOnly cookies)
+        F->>U: Redirect to Dashboard<br/>เข้าหน้า Dashboard
+    else Password Invalid (รหัสผ่านผิด)
+        A-->>F: 401 Unauthorized<br/>{ error: "Invalid credentials" }
+        F->>U: Show error message<br/>แสดงข้อความผิดพลาด
+    end
+```
+
+#### 4.9.2 Purchase Request Creation Flow
+#### ลำดับการสร้างใบขอซื้อ (PR)
+
+```mermaid
+sequenceDiagram
+    participant U as User<br/>(เจ้าหน้าที่)
+    participant F as Frontend
+    participant A as API
+    participant R as Redis
+    participant DB as PostgreSQL
+
+    U->>F: กรอกฟอร์ม PR<br/>Fill PR form
+    U->>F: Add drug items<br/>เพิ่มรายการยา
+    F->>F: Validate form<br/>(Client validation)
+
+    U->>F: Click Submit<br/>กดปุ่มบันทึก
+    F->>A: POST /api/v1/purchase-requests<br/>{ department, items, budget_type, ... }
+
+    A->>A: Authenticate<br/>(Verify JWT)
+    A->>A: Validate request<br/>(Zod schema)
+
+    A->>DB: BEGIN TRANSACTION
+
+    A->>DB: Call check_budget_availability()<br/>ตรวจสอบงบประมาณ
+    DB-->>A: { available: true, amount: 500000 }
+
+    alt Budget Available (งบพอ)
+        A->>DB: INSERT INTO purchase_requests
+        DB-->>A: PR ID = 123
+
+        A->>DB: INSERT INTO purchase_request_items<br/>(สร้างรายการยา)
+        DB-->>A: Items created
+
+        A->>DB: Call reserve_budget()<br/>จองงบประมาณ
+        DB-->>A: Reservation ID
+
+        A->>DB: COMMIT
+
+        A->>R: INVALIDATE cache<br/>DEL pr:list:*
+        R-->>A: OK
+
+        A-->>F: 201 Created<br/>{ data: { id: 123, status: "DRAFT" } }
+        F->>U: Show success<br/>แสดงความสำเร็จ
+        F->>F: Navigate to PR detail<br/>ไปหน้ารายละเอียด PR
+    else Budget Insufficient (งบไม่พอ)
+        A->>DB: ROLLBACK
+        A-->>F: 409 Conflict<br/>{ error: "Insufficient budget" }
+        F->>U: Show error<br/>แจ้งเตือนงบไม่เพียงพอ
+    end
+```
+
+#### 4.9.3 Budget Check Flow
+#### ลำดับการตรวจสอบงบประมาณ
+
+```mermaid
+sequenceDiagram
+    participant F as Frontend
+    participant A as API
+    participant R as Redis
+    participant DB as PostgreSQL
+
+    F->>A: POST /api/v1/budget/check<br/>{ fiscal_year, budget_type, dept, amount, quarter }
+
+    A->>R: GET budget:2025:1:10:Q1<br/>ตรวจสอบ cache
+
+    alt Cache Hit (มี cache)
+        R-->>A: Cached result<br/>{ available: true, ... }
+        A-->>F: 200 OK (from cache)<br/>{ available: true, amount: 500000 }
+    else Cache Miss (ไม่มี cache)
+        R-->>A: null
+
+        A->>DB: SELECT check_budget_availability(...)<br/>เรียกฟังก์ชันจากฐานข้อมูล
+
+        DB->>DB: Calculate:<br/>allocated - spent - reserved
+
+        DB-->>A: { available: boolean, available_amount }
+
+        A->>R: SETEX budget:2025:1:10:Q1 300<br/>เก็บ cache 5 นาที
+        R-->>A: OK
+
+        A-->>F: 200 OK<br/>{ available: true, amount: 500000 }
+    end
+
+    F->>F: Show budget status<br/>แสดงสถานะงบประมาณ
+
+    alt Available (งบพอ)
+        F->>F: Enable submit button<br/>เปิดใช้ปุ่มบันทึก
+    else Not Available (งบไม่พอ)
+        F->>F: Disable submit button<br/>ปิดปุ่มบันทึก
+        F->>F: Show warning<br/>แสดงคำเตือน
+    end
+```
+
+#### 4.9.4 Goods Receiving Flow
+#### ลำดับการรับของ (Receipt)
+
+```mermaid
+sequenceDiagram
+    participant U as Warehouse Staff<br/>(เจ้าหน้าที่คลัง)
+    participant F as Frontend
+    participant A as API
+    participant DB as PostgreSQL
+
+    U->>F: Select PO to receive<br/>เลือก PO ที่จะรับของ
+    F->>A: GET /api/v1/purchase-orders/{id}
+    A->>DB: SELECT purchase_order + items
+    DB-->>A: PO data
+    A-->>F: PO details
+
+    F->>U: Show PO items<br/>แสดงรายการในใบ PO
+
+    U->>F: Scan/Enter lot numbers<br/>สแกนบาร์โค้ด/ใส่ Lot
+    U->>F: Enter expiry dates<br/>ใส่วันหมดอายุ
+    U->>F: Enter quantities<br/>ระบุจำนวน
+
+    U->>F: Click Post Receipt<br/>กดรับของเข้าระบบ
+
+    F->>A: POST /api/v1/receipts<br/>{ po_id, items: [{ drug_id, lot, expiry, qty }] }
+
+    A->>DB: BEGIN TRANSACTION
+
+    A->>DB: INSERT INTO receipts<br/>สร้างเอกสารรับของ
+    DB-->>A: Receipt ID
+
+    A->>DB: INSERT INTO receipt_items
+    DB-->>A: Items created
+
+    A->>DB: INSERT INTO drug_lots<br/>สร้าง lot ใหม่
+    DB-->>A: Lots created
+
+    A->>DB: Call update_inventory_from_receipt()<br/>อัพเดทสต็อก
+    DB->>DB: Update inventory quantities<br/>เพิ่มจำนวนสินค้า
+    DB->>DB: Create inventory_transactions<br/>สร้างรายการเคลื่อนไหว
+    DB-->>A: Inventory updated
+
+    A->>DB: UPDATE purchase_order<br/>status = "FULLY_RECEIVED"
+    DB-->>A: OK
+
+    A->>DB: COMMIT
+
+    A-->>F: 201 Created<br/>{ receipt_id, status: "POSTED" }
+    F->>U: Show success + Print receipt<br/>แสดงความสำเร็จและพิมพ์ใบรับ
+```
+
+#### 4.9.5 Drug Distribution Flow
+#### ลำดับการจ่ายยาไปแผนก
+
+```mermaid
+sequenceDiagram
+    participant D as Department Staff<br/>(เจ้าหน้าที่แผนก)
+    participant P as Pharmacist<br/>(เภสัชกร)
+    participant F as Frontend
+    participant A as API
+    participant DB as PostgreSQL
+
+    D->>F: Create distribution request<br/>สร้างใบเบิกยา
+    D->>F: Select drugs + quantities<br/>เลือกยาและจำนวน
+    D->>F: Submit request<br/>ส่งคำขอ
+
+    F->>A: POST /api/v1/distributions<br/>{ dept_id, items: [...] }
+    A->>DB: INSERT distribution (status=PENDING)
+    DB-->>A: Distribution ID
+    A-->>F: Request created<br/>สร้างคำขอแล้ว
+
+    Note over P,F: Pharmacist reviews<br/>(เภสัชกรตรวจสอบ)
+
+    P->>F: View pending distributions<br/>ดูรายการที่รอ
+    F->>A: GET /api/v1/distributions?status=PENDING
+    A->>DB: SELECT distributions
+    DB-->>A: Pending items
+    A-->>F: Show list
+
+    P->>F: Check stock availability<br/>ตรวจสอบสต็อก
+    F->>A: GET /api/v1/inventory/check
+    A->>DB: SELECT inventory
+    DB-->>A: Stock levels
+    A-->>F: Show availability
+
+    alt Stock Available (สต็อกพอ)
+        P->>F: Approve distribution<br/>อนุมัติการจ่าย
+        F->>A: POST /api/v1/distributions/{id}/approve
+        A->>DB: UPDATE status = APPROVED
+        DB-->>A: OK
+
+        P->>F: Fulfill distribution<br/>จ่ายยาจริง (Select FEFO lots)
+        F->>A: POST /api/v1/distributions/{id}/fulfill<br/>{ lots: [...] }
+
+        A->>DB: BEGIN TRANSACTION
+        A->>DB: Call get_fefo_lots()<br/>หา lot ที่ใกล้หมดอายุก่อน
+        DB-->>A: Lot list (FEFO order)
+
+        A->>DB: INSERT distribution_items<br/>(with lot_id)
+        A->>DB: UPDATE drug_lots<br/>(decrease quantities)
+        A->>DB: INSERT inventory_transactions<br/>(type=ISSUE)
+        A->>DB: UPDATE distribution status=FULFILLED
+        A->>DB: COMMIT
+
+        A-->>F: 200 OK
+        F->>P: Print distribution slip<br/>พิมพ์ใบจ่าย
+        F->>D: Notify department<br/>แจ้งแผนกว่าพร้อมรับของ
+    else Stock Insufficient (สต็อกไม่พอ)
+        P->>F: Reject with reason<br/>ปฏิเสธพร้อมเหตุผล
+        F->>A: POST /api/v1/distributions/{id}/reject
+        A->>DB: UPDATE status = REJECTED
+        A-->>F: OK
+        F->>D: Notify rejection<br/>แจ้งแผนกว่าปฏิเสธ
+    end
+```
 
 ---
 
