@@ -121,13 +121,12 @@ npm run db:studio
 - **[MYSQL_IMPORT_GUIDE.md](docs/MYSQL_IMPORT_GUIDE.md)** - Import legacy database
 - **[docs/project-tracking/MINISTRY_5_FILES_ANALYSIS.md](docs/project-tracking/MINISTRY_5_FILES_ANALYSIS.md)** - Ministry compliance analysis
 
-### Migration Reports ⭐ NEW
-- **[docs/MISSING_TABLES_ANALYSIS.md](docs/MISSING_TABLES_ANALYSIS.md)** - Original 12 missing tables analysis
-- **[docs/PHASE1_MIGRATION_SUMMARY.md](docs/PHASE1_MIGRATION_SUMMARY.md)** - Phase 1: Procurement (4 tables, 57 records)
-- **[docs/PHASE2_MIGRATION_SUMMARY.md](docs/PHASE2_MIGRATION_SUMMARY.md)** - Phase 2: Drug info (2 tables, 821 records)
-- **[docs/PHASE3_MIGRATION_SUMMARY.md](docs/PHASE3_MIGRATION_SUMMARY.md)** - Phase 3: Distribution (2 tables, 4 records)
-- **[docs/PHASE4_MIGRATION_SUMMARY.md](docs/PHASE4_MIGRATION_SUMMARY.md)** - Phase 4: Drug master (3,006 records) 🔓
-- **[docs/REMAINING_TABLES_SUMMARY.md](docs/REMAINING_TABLES_SUMMARY.md)** - 4 optional tables left
+### Migration Reports ⭐ (Archive)
+- **[docs/migration-reports/](docs/migration-reports/)** - Complete migration documentation (Phase 1-4)
+  - Phase 1: Procurement methods (4 tables, 57 records)
+  - Phase 2: Drug components (2 tables, 828 records)
+  - Phase 3: Distribution types (2 tables, 4 records)
+  - Phase 4: Drug master data (3,006 records) 🔓
 
 ---
 
