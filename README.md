@@ -2,7 +2,7 @@
 
 Modern Hospital Inventory Management System built with PostgreSQL, Prisma, and TypeScript.
 
-**Version**: 2.4.0 | **Status**: ✅ Schema Complete (Drug Master Imported 🔓) | **Last Updated**: 2025-01-22
+**Version**: 2.5.0 | **Status**: ✅ Documentation Complete (TRD + BRD) 📋 | **Last Updated**: 2025-01-23
 
 ---
 
@@ -98,9 +98,11 @@ npm run db:studio
 
 ### Essential Guides (Start Here)
 1. **[PROJECT_STATUS.md](PROJECT_STATUS.md)** ⭐ - Current status & next steps
-2. **[SYSTEM_SETUP_GUIDE.md](SYSTEM_SETUP_GUIDE.md)** - Complete setup instructions
-3. **[FINAL_SUMMARY.md](FINAL_SUMMARY.md)** - System architecture summary
-4. **[docs/flows/QUICK_START_GUIDE.md](docs/flows/QUICK_START_GUIDE.md)** - Quick start guide
+2. **[docs/BRD.md](docs/BRD.md)** 📋 - Business Requirements Document ⭐ NEW
+3. **[docs/TRD.md](docs/TRD.md)** 🔧 - Technical Requirements Document ⭐ NEW
+4. **[SYSTEM_SETUP_GUIDE.md](SYSTEM_SETUP_GUIDE.md)** - Complete setup instructions
+5. **[FINAL_SUMMARY.md](FINAL_SUMMARY.md)** - System architecture summary
+6. **[docs/flows/QUICK_START_GUIDE.md](docs/flows/QUICK_START_GUIDE.md)** - Quick start guide
 
 ### Flow Documentation
 1. **[FLOW_01_Master_Data_Setup.md](docs/flows/FLOW_01_Master_Data_Setup.md)** - Master data management
