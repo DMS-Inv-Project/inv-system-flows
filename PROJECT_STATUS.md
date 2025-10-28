@@ -157,7 +157,15 @@ invs-modern/
 │   │   ├── PHASE_8_TMT_MAPPING_PLAN.md
 │   │   └── PHASE_8_TMT_MAPPING_SUMMARY.md
 │   ├── migration-reports/     ✅ Phase 1-4 reports
-│   ├── systems/               ✅ System documentation
+│   ├── systems/               ✅ 8 Systems documentation (v2.6.0) ⭐ NEW
+│   │   ├── 01-master-data    ✅ Phase 5-8 updated
+│   │   ├── 02-budget         ✅ Version sync
+│   │   ├── 03-procurement    ✅ Version sync
+│   │   ├── 04-inventory      ✅ Version sync
+│   │   ├── 05-distribution   ✅ Version sync
+│   │   ├── 06-drug-return    ✅ Version sync
+│   │   ├── 07-tmt-integration ✅ Phase 7-8 updated ⭐
+│   │   └── 08-hpp-system     ✅ Version sync
 │   ├── BRD.md                ✅ Business Requirements (Thai)
 │   ├── TRD.md                ✅ Technical Requirements (Thai)
 │   └── [other docs]
