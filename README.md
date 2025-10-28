@@ -2,7 +2,7 @@
 
 Modern Hospital Inventory Management System built with PostgreSQL, Prisma, and TypeScript.
 
-**Version**: 2.5.0 | **Status**: ✅ Documentation Complete (TRD + BRD) 📋 | **Last Updated**: 2025-01-23
+**Version**: 2.6.0 | **Status**: ✅ Full Data Migration Complete 🎉 | **Last Updated**: 2025-01-28
 
 ---
 
@@ -10,7 +10,7 @@ Modern Hospital Inventory Management System built with PostgreSQL, Prisma, and T
 
 **This repository is a DATABASE SCHEMA + DOCUMENTATION PROJECT ONLY**
 
-✅ What's included: Prisma schema, SQL functions/views, migration scripts, documentation
+✅ What's included: Prisma schema, SQL functions/views, migration scripts, full data (81K records), documentation
 ❌ Not included: Backend API, Frontend (separate projects)
 
 ---
@@ -18,21 +18,21 @@ Modern Hospital Inventory Management System built with PostgreSQL, Prisma, and T
 ## 📊 Current Project Status
 
 ```
-✅ Database: Complete (52 tables, 11 views, 12 functions, 22 enums) ⭐ +16 tables
-✅ Data Migrated: 3,152 records (Phase 1-4) 🔓 ⭐ NEW
-✅ Drug Master: 1,109 generics + 1,169 trade drugs 🔓 ⭐ NEW
-✅ Drug Components: 736 records (allergy checking) 🔓 ⭐ NEW
+✅ Database: Complete (52 tables, 11 views, 12 functions, 22 enums)
+✅ Data Migrated: 81,353 records (Phase 1-8 COMPLETE) 🚀 ⭐ NEW
+✅ Drug Master: 1,109 generics + 1,169 trade drugs 🔓
+✅ Lookup Tables: 107 dosage forms + 88 drug units 🔓 ⭐ NEW
+✅ TMT Integration: 76,904 concepts (5 levels) 🔓 ⭐ NEW
+✅ Drug-TMT Mapping: 561 drugs (47.99% coverage) 🔓 ⭐ NEW
 ✅ Ministry Compliance: 100% COMPLETE (79/79 fields) 🎉
-✅ 5 Export Files: DRUGLIST, PURCHASEPLAN, RECEIPT, DISTRIBUTION, INVENTORY
-✅ Docker Setup: Working (PostgreSQL + MySQL legacy)
-✅ Documentation: Complete (23 comprehensive guides + 4 migration reports)
-✅ Seed Data: Complete (5 entities, 29 records)
-✅ Budget Planning: Drug-level planning feature added
-❌ Backend API: Not in this repo (separate project)
-❌ Frontend: Not in this repo (separate project)
+✅ Docker Setup: Working (4 containers)
+✅ Documentation: Complete (46+ guides + 7 migration reports) ⭐
+✅ Seed Data: Complete with TMT samples
+🚀 Backend API: Ready to start (full data available)
+🚀 Frontend: Ready to start (full data available)
 ```
 
-**🎊 Latest Achievement**: Phase 4 Complete - Drug Master Data Imported! (+2,059% data increase) 🔓
+**🎊 Latest Achievement**: Phase 8 Complete - Full Data Migration Done! (81,353 records) 🎉
 
 **📋 For complete status**: See [PROJECT_STATUS.md](PROJECT_STATUS.md)
 
@@ -45,424 +45,446 @@ Modern Hospital Inventory Management System built with PostgreSQL, Prisma, and T
 - Docker & Docker Compose
 - Git
 
-### 1. Start Database
-```bash
-# Start all containers (PostgreSQL + MySQL + pgAdmin + phpMyAdmin)
-docker-compose up -d
+### Option 1: Basic Setup (10 minutes) - For Development
 
-# Check if containers are healthy
-docker ps | grep invs
-```
-
-### 2. Setup Project
 ```bash
-# Install dependencies
+# 1. Clone and install
+git clone <repo-url>
+cd invs-modern
 npm install
 
-# Generate Prisma client
+# 2. Start containers
+docker-compose up -d
+
+# 3. Setup with basic data
+npm run setup:fresh
+
+# 4. Verify
+npm run dev
+```
+
+**You get**: Schema + ~50 basic records
+
+### Option 2: Full Data Import (20 minutes) - Production-Like
+
+```bash
+# 1. Clone and install
+git clone <repo-url>
+cd invs-modern
+npm install
+
+# 2. Start containers
+docker-compose up -d
+
+# 3. Setup with ALL data
+npm run setup:full
+
+# 4. Verify and explore
+npm run dev
+npm run db:studio  # http://localhost:5555
+```
+
+**You get**: Schema + 81,353 records (all Phase 1-8 data)
+
+### Option 3: Backup Restore (5 minutes) - Fastest ⭐
+
+```bash
+# 1. Clone and install
+git clone <repo-url>
+cd invs-modern
+npm install
+
+# 2. Start containers
+docker-compose up -d
+
+# 3. Restore from backup
+gunzip -c backup-full.sql.gz | docker exec -i invs-modern-db psql -U invs_user -d invs_modern
 npm run db:generate
 
-# Push schema to database
-npm run db:push
-
-# Seed master data
-npm run db:seed
-
-# Apply functions and views
-docker exec -i invs-modern-db psql -U invs_user -d invs_modern < prisma/functions.sql
-docker exec -i invs-modern-db psql -U invs_user -d invs_modern < prisma/views.sql
-```
-
-### 3. Verify Installation
-```bash
-# Test database connection
+# 4. Verify
 npm run dev
-
-# Open Prisma Studio
-npm run db:studio
-# Navigate to: http://localhost:5555
 ```
 
-**Expected Output:**
+**You get**: Complete database in 1 minute!
+
+---
+
+## 📦 What Data is Included?
+
+### After Full Import (`npm run setup:full`):
+
+| Category | Records | Source |
+|----------|---------|--------|
+| **Master Data** | ~50 | Seed script |
+| **Drug Master** | 3,006 | Phase 1-4 |
+| **Lookup Tables** | 213 | Phase 5 ⭐ NEW |
+| **FK Mappings** | 1,085 | Phase 6 ⭐ NEW |
+| **TMT Concepts** | 76,904 | Phase 7 ⭐ NEW |
+| **Drug-TMT Map** | 561 | Phase 8 ⭐ NEW |
+| **Total** | **81,353** | **COMPLETE** 🎉 |
+
+**Breakdown:**
+- Companies: 5
+- Locations: 5
+- Departments: 5
+- Drug Generics: 1,109 (97.6% with FK mapping)
+- Trade Drugs: 1,169 (47.99% with TMT)
+- Dosage Forms: 107
+- Drug Units: 88
+- TMT Concepts: 76,904 (VTM→GP→GPU→TP→TPU)
+
+---
+
+## 🗂️ Project Structure
+
 ```
-✅ Database connected successfully!
-📍 Locations in database: 5
-💊 Drug Generics in database: 1109
-💊 Trade Drugs in database: 1169
-🏢 Companies in database: 5
+invs-modern/
+├── prisma/
+│   ├── schema.prisma          # 52 tables, 22 enums (950+ lines)
+│   ├── functions.sql          # 12 business functions (610+ lines)
+│   ├── views.sql              # 11 reporting views (378 lines)
+│   ├── seed.ts               # Master data seeding
+│   └── migrations/            # 11 migrations
+│
+├── scripts/
+│   ├── migrate-phase1-data.ts          # Phase 1 (57 records)
+│   ├── migrate-phase2-data.ts          # Phase 2 (821 records)
+│   ├── migrate-phase3-data.ts          # Phase 3 (4 records)
+│   ├── migrate-phase4-drug-master.ts   # Phase 4 (3,006 records)
+│   ├── migrate-phase5-lookup-tables.ts # Phase 5 (213 records) ⭐
+│   ├── migrate-phase6-map-string-to-fk.ts # Phase 6 (1,085 mappings) ⭐
+│   ├── migrate-phase7-tmt-concepts.ts  # Phase 7 (76,904 records) ⭐
+│   └── migrate-phase8-map-tmt.ts       # Phase 8 (561 mappings) ⭐
+│
+├── docs/
+│   ├── flows/                 # 9 detailed flow documents
+│   ├── migration/             # Phase 7-8 summaries ⭐ NEW
+│   ├── migration-reports/     # Phase 1-4 reports
+│   ├── BRD.md                # Business Requirements (Thai, 67KB)
+│   └── TRD.md                # Technical Requirements (Thai, 106KB)
+│
+├── QUICK_START.md            # Quick start guide ⭐ NEW
+├── SETUP_FRESH_CLONE.md      # Detailed clone setup ⭐ NEW
+├── PROJECT_STATUS.md          # Complete project status
+├── CLAUDE.md                  # AI assistant context
+└── docker-compose.yml         # 4 containers setup
 ```
+
+---
+
+## 💻 Available Commands
+
+### Setup Commands
+```bash
+npm run setup:fresh      # Migrate + Seed (basic data)
+npm run setup:full       # Migrate + Seed + Import All (81K records)
+```
+
+### Database Commands
+```bash
+npm run db:migrate       # Apply migrations
+npm run db:seed          # Seed basic data
+npm run db:reset         # Reset database
+npm run db:studio        # Open Prisma Studio (http://localhost:5555)
+npm run db:generate      # Generate Prisma Client
+```
+
+### Import Commands (Individual)
+```bash
+npm run import:phase1    # Procurement master (57)
+npm run import:phase2    # Drug components (821)
+npm run import:phase3    # Distribution support (4)
+npm run import:phase4    # Drug master (3,006)
+npm run import:phase5    # Lookup tables (213) ⭐
+npm run import:phase6    # FK mappings (1,085) ⭐
+npm run import:phase7    # TMT concepts (76,904) ⭐
+npm run import:phase8    # Drug-TMT map (561) ⭐
+```
+
+### Import Commands (Groups)
+```bash
+npm run import:all       # All phases 1-8 (20 min)
+npm run import:drugs     # Phase 1-4 only (5 min)
+npm run import:lookups   # Phase 5-6 only (2 min)
+npm run import:tmt       # Phase 7-8 only (7 min)
+```
+
+### Development Commands
+```bash
+npm run build            # Build TypeScript
+npm run dev              # Test database connection
+npm start                # Run production build
+```
+
+---
+
+## 🔍 Web Interfaces
+
+**Prisma Studio** (Database Browser)
+- URL: http://localhost:5555
+- Command: `npm run db:studio`
+- Features: Browse all tables, edit data, run queries
+
+**pgAdmin** (PostgreSQL Management)
+- URL: http://localhost:8081
+- Email: admin@invs.com
+- Password: invs123
+
+**phpMyAdmin** (MySQL Reference)
+- URL: http://localhost:8082
+- Username: invs_user
+- Password: invs123
+
+---
+
+## 🗄️ Database Connections
+
+**PostgreSQL (Modern - Production)**
+- Host: localhost
+- Port: 5434
+- Database: invs_modern
+- Username: invs_user
+- Password: invs123
+
+**MySQL (Legacy - Reference Only)**
+- Host: localhost
+- Port: 3307
+- Database: invs_banpong
+- Username: invs_user
+- Password: invs123
 
 ---
 
 ## 📚 Documentation
 
-### Essential Guides (Start Here)
-1. **[PROJECT_STATUS.md](PROJECT_STATUS.md)** ⭐ - Current status & next steps
-2. **[docs/BRD.md](docs/BRD.md)** 📋 - Business Requirements Document ⭐ NEW
-3. **[docs/TRD.md](docs/TRD.md)** 🔧 - Technical Requirements Document ⭐ NEW
-4. **[SYSTEM_SETUP_GUIDE.md](SYSTEM_SETUP_GUIDE.md)** - Complete setup instructions
-5. **[FINAL_SUMMARY.md](FINAL_SUMMARY.md)** - System architecture summary
-6. **[docs/flows/QUICK_START_GUIDE.md](docs/flows/QUICK_START_GUIDE.md)** - Quick start guide
+### Quick Guides
+- **[QUICK_START.md](QUICK_START.md)** - Quick start for fresh clone ⭐ NEW
+- **[SETUP_FRESH_CLONE.md](SETUP_FRESH_CLONE.md)** - Detailed setup guide ⭐ NEW
+- **[PROJECT_STATUS.md](PROJECT_STATUS.md)** - Complete project status
+- **[SYSTEM_SETUP_GUIDE.md](SYSTEM_SETUP_GUIDE.md)** - System setup instructions
 
-### Flow Documentation
-1. **[FLOW_01_Master_Data_Setup.md](docs/flows/FLOW_01_Master_Data_Setup.md)** - Master data management
-2. **[FLOW_02_Budget_Management.md](docs/flows/FLOW_02_Budget_Management.md)** - Budget control workflow
-3. **[FLOW_02B_Budget_Planning_with_Drugs.md](docs/flows/FLOW_02B_Budget_Planning_with_Drugs.md)** - Drug-level budget planning ⭐ NEW
-4. **[FLOW_03_Procurement_Part1_PR.md](docs/flows/FLOW_03_Procurement_Part1_PR.md)** - Purchase requests
-5. **[FLOW_04_Inventory_Management.md](docs/flows/FLOW_04_Inventory_Management.md)** - Inventory & FIFO/FEFO
-6. **[FLOW_05_Drug_Distribution.md](docs/flows/FLOW_05_Drug_Distribution.md)** - Department distribution
-7. **[FLOW_06_TMT_Integration.md](docs/flows/FLOW_06_TMT_Integration.md)** - Thai Medical Terminology
-8. **[FLOW_07_Ministry_Reporting.md](docs/flows/FLOW_07_Ministry_Reporting.md)** - Ministry reports (5 files)
-9. **[FLOW_08_Frontend_Purchase_Request.md](docs/flows/FLOW_08_Frontend_Purchase_Request.md)** - Frontend UI guide
-10. **[DATA_FLOW_COMPLETE_GUIDE.md](docs/flows/DATA_FLOW_COMPLETE_GUIDE.md)** - All flows summary
+### Business & Technical Docs
+- **[docs/BRD.md](docs/BRD.md)** - Business Requirements Document (Thai)
+- **[docs/TRD.md](docs/TRD.md)** - Technical Requirements Document (Thai)
+- **[docs/DATABASE_DESIGN.md](docs/DATABASE_DESIGN.md)** - Database design
+- **[docs/SYSTEM_ARCHITECTURE.md](docs/SYSTEM_ARCHITECTURE.md)** - System architecture
 
-### Technical Documentation
-- **[prisma/schema.prisma](prisma/schema.prisma)** - Database schema (52 tables, 22 enums) ⭐ **+16 tables**
-- **[prisma/functions.sql](prisma/functions.sql)** - Business logic functions (12)
-- **[prisma/views.sql](prisma/views.sql)** - Reporting views (11)
-- **[MYSQL_IMPORT_GUIDE.md](docs/MYSQL_IMPORT_GUIDE.md)** - Import legacy database
-- **[docs/project-tracking/MINISTRY_5_FILES_ANALYSIS.md](docs/project-tracking/MINISTRY_5_FILES_ANALYSIS.md)** - Ministry compliance analysis
+### Flow Documentation (9 flows)
+1. **FLOW_01**: Master Data Setup
+2. **FLOW_02**: Budget Management
+3. **FLOW_02B**: Budget Planning with Drugs ⭐
+4. **FLOW_03**: Procurement (Purchase Request)
+5. **FLOW_04**: Inventory Management
+6. **FLOW_05**: Drug Distribution
+7. **FLOW_06**: TMT Integration
+8. **FLOW_07**: Ministry Reporting
+9. **FLOW_08**: Frontend Purchase Request (UI mockups)
 
-### Migration Reports ⭐ (Archive)
-- **[docs/migration-reports/](docs/migration-reports/)** - Complete migration documentation (Phase 1-4)
-  - Phase 1: Procurement methods (4 tables, 57 records)
-  - Phase 2: Drug components (2 tables, 828 records)
-  - Phase 3: Distribution types (2 tables, 4 records)
-  - Phase 4: Drug master data (3,006 records) 🔓
+### Migration Documentation
+- **Phase 1-4**: [docs/migration-reports/](docs/migration-reports/) (4 reports)
+- **Phase 7-8**: [docs/migration/](docs/migration/) (3 reports) ⭐ NEW
+  - PHASE_7_TMT_SUMMARY.md
+  - PHASE_8_TMT_MAPPING_PLAN.md
+  - PHASE_8_TMT_MAPPING_SUMMARY.md
 
 ---
 
-## 🗄️ Database Architecture
+## 🎯 Database Features
 
-### Current Setup (Simplified 2-Database Architecture)
+### Business Logic Functions (12)
+- Budget checking & reservation
+- Drug-level budget plan validation ⭐
+- FIFO/FEFO inventory allocation
+- Inventory updates from receipts
+- Budget plan purchase tracking
 
+### Reporting Views (11)
+- Ministry exports (5 views):
+  - DRUGLIST, PURCHASEPLAN, RECEIPT, DISTRIBUTION, INVENTORY
+- Operational views (6 views):
+  - Budget status, Expiring drugs, Low stock, Current stock, etc.
+
+### Ministry Compliance
+- ✅ 100% COMPLETE (79/79 required fields)
+- ✅ All 5 export files supported
+- ✅ DMSIC Standards พ.ศ. 2568 compliant
+
+### TMT Integration ⭐ NEW
+- ✅ 76,904 concepts (5 levels)
+- ✅ Full hierarchy: VTM → GP → GPU → TP → TPU
+- ✅ 561 drugs mapped to TMT TPU
+- ✅ Ready for ministry reporting & HIS integration
+
+---
+
+## 📊 Database Statistics
+
+```sql
+-- After full import (npm run setup:full):
+
+Total Tables:           52
+Total Enums:            22
+Total Views:            11
+Total Functions:        12
+
+Total Records:          81,353
+  - Master Data:        ~50
+  - Drug Master:        3,006
+  - Lookup Tables:      213
+  - FK Mappings:        1,085
+  - TMT Concepts:       76,904
+  - Drug-TMT Map:       561
+
+Database Size:          ~50-80 MB
 ```
-┌──────────────────────┐       ┌──────────────────────┐
-│   MySQL (Legacy)     │       │ PostgreSQL (Modern)  │
-│   Port: 3307         │       │  Port: 5434          │
-│   invs_banpong       │◄─────►│  invs_modern         │
-│   133 tables         │Migrate│  52 tables ⭐ +16    │
-│   📖 Reference Only  │       │  📝 Production       │
-│                      │       │  22 enums            │
-│                      │       │  3,152 records 🔓   │
-│                      │       │  100% Ministry ✅    │
-└──────────────────────┘       └──────────────────────┘
-       ↓                               ↓
-  phpMyAdmin                      pgAdmin
-  :8082                           :8081
-```
-
-### PostgreSQL (Production) - 36 Tables ⭐
-
-**Master Data (6 tables)**
-- `locations` - Storage locations
-- `departments` - Hospital departments + ministry consumption groups ⭐
-- `budget_types` - Budget categories
-- `companies` - Vendors/manufacturers
-- `drug_generics` - Generic drug catalog
-- `drugs` - Trade drugs + ministry compliance fields (NLEM, status, category) ⭐
-
-**Budget Management (4 tables)** ⭐ NEW
-- `budget_allocations` - Annual budget by quarter (Q1-Q4)
-- `budget_reservations` - Budget reservation system
-- `budget_plans` - Drug-level budget planning (from legacy system)
-- `budget_plan_items` - Drug items with 3-year historical data
-
-**Procurement (6 tables)**
-- `purchase_requests` - Purchase request workflow
-- `purchase_request_items` - PR line items
-- `purchase_orders` - Purchase orders
-- `purchase_order_items` - PO line items
-- `receipts` - Goods receiving
-- `receipt_items` - Receipt line items
-
-**Inventory (3 tables)**
-- `inventory` - Stock levels per location
-- `drug_lots` - FIFO/FEFO lot tracking
-- `inventory_transactions` - All movements
-
-**Distribution (2 tables)**
-- `drug_distributions` - Department distributions
-- `drug_distribution_items` - Distribution line items
-
-**TMT Integration (3 tables)**
-- `tmt_concepts` - Thai Medical Terminology (25,991 concepts)
-- `tmt_mappings` - Drug-TMT mappings
-- `his_drug_master` - HIS integration
-
-**Database Functions (12)** ⭐ NEW
-- Budget: `check_budget_availability`, `reserve_budget`, `commit_budget`, `release_budget`
-- Budget Planning: `check_drug_in_budget_plan`, `update_budget_plan_purchase` ⭐ NEW
-- Inventory: `get_fifo_lots`, `get_fefo_lots`, `update_inventory_from_receipt`
-- Others: 3 utility functions
-
-**Database Views (11)**
-- Ministry Exports: `export_druglist`, `export_purchase_plan`, `export_receipt`, `export_distribution`, `export_inventory`
-- Operational: `budget_status_current`, `expiring_drugs`, `low_stock_items`, `current_stock_summary`, `budget_reservations_active`, `purchase_order_status`
 
 ---
 
-## 📊 Database Access
+## ✅ Verification
 
-### PostgreSQL (Production)
-- **Host**: localhost
-- **Port**: 5434
-- **Database**: invs_modern
-- **Username**: invs_user
-- **Password**: invs123
-
-### MySQL (Legacy Reference)
-- **Host**: localhost
-- **Port**: 3307
-- **Database**: invs_banpong
-- **Username**: invs_user
-- **Password**: invs123
-
-### Web Interfaces
-- **Prisma Studio**: http://localhost:5555 (run `npm run db:studio`)
-- **pgAdmin**: http://localhost:8081 (admin@invs.com / invs123)
-- **phpMyAdmin**: http://localhost:8082 (invs_user / invs123)
-
----
-
-## 🛠️ Available Scripts
-
-### Development
+### Check Database Connection
 ```bash
-npm run dev              # Start development server
-npm run build            # Build TypeScript
-npm start                # Run built application
-```
-
-### Database
-```bash
-npm run db:generate      # Generate Prisma client
-npm run db:push          # Push schema to database
-npm run db:migrate       # Create and run migration
-npm run db:seed          # Seed master data
-npm run db:studio        # Open Prisma Studio
-```
-
-### MySQL Legacy Import (Optional)
-```bash
-# Place SQL file in: scripts/INVS_MySQL_Database_20231119.sql
-./scripts/import-mysql-legacy.sh
-```
-
----
-
-## 💰 Key Features
-
-### 1. Budget Management
-- ✅ Quarterly allocation (Q1-Q4)
-- ✅ Real-time budget checking
-- ✅ Budget reservation system
-- ✅ Automatic budget commitment
-- ✅ Budget monitoring dashboard
-- ✅ **Drug-level budget planning** ⭐ NEW
-  - Plan drug purchases with 3-year historical analysis
-  - Quarterly quantity breakdown (Q1-Q4)
-  - Track actual purchases vs. plan
-  - Automatic PR validation against plan
-
-**Example:**
-```typescript
-// Check budget availability
-const available = await check_budget_availability(
-  fiscal_year: 2025,
-  budget_type_id: 1,
-  department_id: 2,
-  amount: 50000,
-  quarter: 1
-)
-
-// Check if drug is in budget plan ⭐ NEW
-const inPlan = await check_drug_in_budget_plan(
-  fiscal_year: 2025,
-  department_id: 2,
-  generic_id: 1,
-  requested_qty: 5000,
-  quarter: 1
-)
-```
-
-### 2. Procurement Workflow
-```
-Draft → Submit → Budget Check → Approve →
-Create PO → Send → Receive → Post to Inventory
-```
-
-### 3. Inventory Management
-- ✅ FIFO/FEFO lot tracking
-- ✅ Multi-location support
-- ✅ Expiry date monitoring
-- ✅ Low stock alerts
-- ✅ Average cost calculation
-
-### 4. Ministry Compliance
-- ✅ 5 export files for Ministry of Public Health
-- ✅ TMT integration (25,991 concepts)
-- ✅ HIS integration ready
-- ✅ Standardized drug codes
-
----
-
-## 📁 Project Structure
-
-```
-invs-modern/
-├── prisma/
-│   ├── schema.prisma          # 34 tables, 880+ lines ⭐
-│   ├── functions.sql          # 12 functions, 610+ lines ⭐
-│   ├── views.sql              # 11 views, 378 lines
-│   ├── seed.ts                # Master data seeding
-│   └── migrations/            # Version control
-│
-├── src/
-│   ├── index.ts               # Database connection test
-│   └── lib/
-│       └── prisma.ts          # Prisma client setup
-│
-├── scripts/
-│   ├── import-mysql-legacy.sh # MySQL import script
-│   ├── tmt/                   # TMT management (4 scripts)
-│   ├── integration/           # Integration scripts (2)
-│   └── archive/               # Legacy scripts
-│
-├── docs/
-│   ├── flows/                 # 9 detailed flow docs + complete guide ⭐
-│   ├── MYSQL_IMPORT_GUIDE.md
-│   ├── LARGE_FILES_GUIDE.md
-│   └── SCRIPT_CLEANUP_GUIDE.md
-│
-├── SYSTEM_SETUP_GUIDE.md      # Complete setup guide
-├── FINAL_SUMMARY.md           # System summary
-├── PROJECT_STATUS.md          # Current status ⭐
-├── CLAUDE.md                  # AI assistant context
-├── README.md                  # This file
-└── docker-compose.yml         # 2 databases + 2 UIs
-```
-
----
-
-## 🚧 Next Steps
-
-### Phase 1: Backend API Development (Current Priority)
-
-**Required:**
-- [ ] REST API endpoints (Express/Fastify)
-- [ ] Authentication & Authorization
-- [ ] Request validation (Zod)
-- [ ] Error handling middleware
-- [ ] API documentation (Swagger/OpenAPI)
-
-**Recommended Tech Stack:**
-- Express.js or Fastify
-- TypeScript + Prisma
-- Zod for validation
-- JWT for authentication
-
-### Phase 2: Frontend Development
-
-**Required:**
-- [ ] React application setup
-- [ ] Component library (shadcn/ui + TailwindCSS)
-- [ ] State management (TanStack Query)
-- [ ] Forms (React Hook Form + Zod)
-- [ ] UI for all flows
-
-**Reference:** See `docs/flows/FLOW_08_Frontend_Purchase_Request.md` for complete UI guide
-
----
-
-## 🔄 Session Recovery (If Context Lost)
-
-### Quick Health Check
-```bash
-# 1. Check containers
-docker ps | grep invs
-# Expected: 4 containers (postgres, mysql, pgadmin, phpmyadmin)
-
-# 2. Test connection
 npm run dev
-# Expected: ✅ Database connected successfully!
-
-# 3. Check tables
-docker exec invs-modern-db psql -U invs_user -d invs_modern -c "\dt"
-# Expected: 34 tables listed (includes budget_plans, budget_plan_items)
-
-# 4. Read current status
-cat PROJECT_STATUS.md
 ```
 
-### If Something Broken
+Expected output:
+```
+✅ Database connected successfully!
+📍 Locations in database: 5
+💊 Drugs in database: 1169
+🏢 Companies in database: 5
+```
+
+### Check Data Completeness
 ```bash
-# Complete reset (deletes all data!)
+npm run db:studio
+```
+
+Then browse:
+- `tmt_concepts` table (expect 76,904 records) ⭐
+- `drugs` table (expect 1,169 records)
+- `drug_generics` table (expect 1,109 records)
+- `dosage_forms` table (expect 107 records) ⭐
+- `drug_units` table (expect 88 records) ⭐
+
+---
+
+## 🚀 Next Steps
+
+### Option 1: Backend API Development (Recommended)
+
+**Why now?**
+- ✅ Complete schema (52 tables)
+- ✅ Full data (81,353 records)
+- ✅ Business functions ready
+- ✅ TMT integration ready
+
+**Suggested stack:**
+- Fastify 5 + Prisma + TypeScript
+- Zod for validation
+- JWT authentication
+- Swagger/OpenAPI docs
+
+### Option 2: Frontend Development
+
+**Why now?**
+- ✅ Complete data for UI testing
+- ✅ Can use Prisma Studio as mock API
+- ✅ UI mockups available (FLOW_08)
+
+**Suggested stack:**
+- React + TypeScript + Vite
+- shadcn/ui + TailwindCSS
+- TanStack Query
+- React Hook Form + Zod
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Containers not starting:**
+```bash
 docker-compose down -v
-
-# Fresh setup (5 minutes)
 docker-compose up -d
-npm run db:generate
-npm run db:push
-npm run db:seed
-docker exec -i invs-modern-db psql -U invs_user -d invs_modern < prisma/functions.sql
-docker exec -i invs-modern-db psql -U invs_user -d invs_modern < prisma/views.sql
+```
+
+**Migration drift error:**
+```bash
+npm run db:migrate -- --force
+```
+
+**Import fails:**
+```bash
+# Check MySQL container
+docker ps | grep mysql
+docker-compose restart invs-mysql-original
+
+# Re-run specific phase
+npm run import:phase5  # example
+```
+
+**Database reset:**
+```bash
+npm run db:reset
+npm run setup:full
 ```
 
 ---
 
-## 🔐 Environment Variables
+## 📞 Support
 
-Create `.env` file:
-```env
-DATABASE_URL="postgresql://invs_user:invs123@localhost:5434/invs_modern?schema=public"
-NODE_ENV=development
-PORT=3000
-```
+### Issues & Questions
+- Check [PROJECT_STATUS.md](PROJECT_STATUS.md) for current status
+- Check [QUICK_START.md](QUICK_START.md) for setup help
+- Check [SETUP_FRESH_CLONE.md](SETUP_FRESH_CLONE.md) for detailed guide
+
+### Additional Resources
+- Prisma Documentation: https://www.prisma.io/docs
+- PostgreSQL Documentation: https://www.postgresql.org/docs/
+- Docker Documentation: https://docs.docker.com/
 
 ---
 
-## 📈 Success Metrics
+## 📈 Version History
 
-| Metric | Status | Details |
-|--------|--------|---------|
-| Database Design | ✅ Complete | 34 tables, normalized ⭐ |
-| Business Logic | ✅ Complete | 12 functions, 11 views ⭐ |
-| Documentation | ✅ Complete | 14 comprehensive guides ⭐ |
-| Budget Planning | ✅ Complete | Drug-level planning ⭐ NEW |
-| Docker Setup | ✅ Complete | Tested & verified |
-| Backend API | 🚧 Not Started | Next priority |
-| Frontend | 🚧 Not Started | After backend |
+### v2.6.0 (2025-01-28) ⭐ CURRENT
+- ✅ Phase 5-8 migration complete
+- ✅ Lookup tables imported (213 records)
+- ✅ FK mappings complete (1,085 mappings)
+- ✅ TMT concepts imported (76,904 records)
+- ✅ Drug-TMT mapping complete (561 drugs)
+- ✅ Total records: 81,353 (Full dataset)
+- ✅ Production ready for backend development
+
+### v2.5.0 (2025-01-23)
+- ✅ BRD + TRD documentation complete (Thai)
+- ✅ Phase 1-4 migration complete (3,152 records)
+- ✅ Ministry compliance 100% complete
+
+### v2.4.0 (2025-01-22)
+- ✅ Phase 4 drug master migration (3,006 records)
+- ✅ 52 tables complete
+- ✅ Drug catalog unlocked
+
+---
+
+## 📝 License
+
+MIT License
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open Pull Request
+This is a database schema project. For contribution guidelines, please refer to the documentation.
 
 ---
 
-## 📄 License
+**Status**: ✅ **PRODUCTION READY** (Full Data Migration Complete)
+**Version**: 2.6.0
+**Last Updated**: 2025-01-28
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🆘 Support
-
-- **Documentation**: See `docs/` folder and `PROJECT_STATUS.md`
-- **Setup Guide**: `SYSTEM_SETUP_GUIDE.md`
-- **Flow Guides**: `docs/flows/` directory
-- **Database Schema**: Use Prisma Studio (http://localhost:5555)
-
----
-
-**INVS Modern** - Making hospital inventory management efficient and reliable! 🏥✨
-
-**Status**: ✅ Ready for Backend API Development
-**Last Verified**: 2025-01-11
-**Next Phase**: Build REST API
+*Built with ❤️ for INVS Modern Team*
+*Database + Full Data (81K records) Ready for Backend Development! 🚀*

@@ -111,6 +111,99 @@ model Bank {
   @@map("bank")
 }
 
+// ==========================================
+// MASTER DATA LOOKUPS (Phase 4 - v2.4.0)
+// Priority 1 & 2 Lookup Tables
+// ==========================================
+
+// Dosage Form - รูปแบบยา (Priority 1)
+// จาก dosage_form ใน MySQL (107 records)
+model DosageForm {
+  id          BigInt        @id @default(autoincrement())
+  code        String        @unique @db.VarChar(10) // DFORM_ID from MySQL
+  name        String        @db.VarChar(60) // DFORM_NAME
+  nameEn      String?       @map("name_en") @db.VarChar(60)
+  isHidden    Boolean       @default(false) @map("is_hidden")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  drugs       Drug[]
+  generics    DrugGeneric[]
+
+  @@map("dosage_forms")
+}
+
+// Drug Unit - หน่วยนับยา (Priority 1)
+// จาก sale_unit ใน MySQL (88 records)
+model DrugUnit {
+  id            BigInt        @id @default(autoincrement())
+  code          String        @unique @db.VarChar(10) // SU_ID from MySQL
+  name          String        @db.VarChar(60) // SALE_UNIT
+  nameEn        String?       @map("name_en") @db.VarChar(60)
+  standardCode  String?       @map("standard_code") @db.VarChar(15) // SU_ID_EX
+  isHidden      Boolean       @default(false) @map("is_hidden")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  drugsAsUnit      Drug[]        @relation("DrugUnit")
+  genericsAsSaleUnit DrugGeneric[] @relation("GenericSaleUnit")
+
+  @@map("drug_units")
+}
+
+// Adjustment Reason - เหตุผลการปรับปรุงสต็อค (Priority 1)
+// สำหรับ inventory_transactions ประเภท ADJUST
+model AdjustmentReason {
+  id                    BigInt                 @id @default(autoincrement())
+  code                  Int                    @unique
+  reason                String                 @db.VarChar(100)
+  category              String?                @db.VarChar(30) // damage, loss, found, system_error, expired
+  isHidden              Boolean                @default(false) @map("is_hidden")
+  createdAt             DateTime               @default(now()) @map("created_at")
+  updatedAt             DateTime               @default(now()) @updatedAt @map("updated_at")
+
+  inventoryTransactions InventoryTransaction[]
+
+  @@map("adjustment_reasons")
+}
+
+// Hospital - ข้อมูลโรงพยาบาล (Priority 2)
+// จาก hosp ใน MySQL (13,176 records - รพ. ทั่วประเทศ)
+// สำหรับ Ministry Reporting
+model Hospital {
+  id           BigInt   @id @default(autoincrement())
+  hospCode     String   @unique @map("hosp_code") @db.VarChar(5) // MOPH 5-digit code
+  hospName     String   @map("hosp_name") @db.VarChar(100)
+  hospType     String?  @map("hosp_type") @db.VarChar(20) // รพช., รพท., รพศ., etc.
+  provinceCode String?  @map("province_code") @db.VarChar(2)
+  areaCode     String?  @map("area_code") @db.VarChar(4) // เขตสุขภาพ 1-13
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@index([provinceCode])
+  @@index([areaCode])
+  @@map("hospitals")
+}
+
+// Return Action - การดำเนินการกับยาคืน (Priority 2)
+// จาก rtn_action ใน MySQL (ว่าง - ต้องสร้างข้อมูลใหม่)
+model ReturnAction {
+  id             BigInt           @id @default(autoincrement())
+  code           Int              @unique
+  action         String           @db.VarChar(60)
+  actionType     String?          @map("action_type") @db.VarChar(30) // restock, dispose, quarantine, return_vendor
+  isHidden       Boolean          @default(false) @map("is_hidden")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @default(now()) @updatedAt @map("updated_at")
+
+  drugReturnItems DrugReturnItem[]
+
+  @@map("return_actions")
+}
+
+// ==========================================
+
 model Company {
   id                  BigInt          @id @default(autoincrement())
   companyCode         String?         @unique @map("company_code") @db.VarChar(10)
@@ -205,8 +298,15 @@ model DrugGeneric {
   id                   BigInt                          @id @default(autoincrement())
   workingCode          String                          @unique @map("working_code") @db.VarChar(7)
   drugName             String                          @map("drug_name") @db.VarChar(60)
-  dosageForm           String                          @map("dosage_form") @db.VarChar(20)
-  saleUnit             String                          @map("sale_unit") @db.VarChar(5)
+
+  // Phase 4: New FK fields (v2.4.0)
+  dosageFormId         BigInt?                         @map("dosage_form_id") // FK to dosage_forms
+  saleUnitId           BigInt?                         @map("sale_unit_id") // FK to drug_units
+
+  // Legacy fields (will be removed after migration)
+  dosageForm           String?                         @map("dosage_form") @db.VarChar(20)
+  saleUnit             String?                         @map("sale_unit") @db.VarChar(5)
+
   composition          String?                         @db.VarChar(50)
   strength             Decimal?                        @db.Decimal(10, 2)
   strengthUnit         String?                         @map("strength_unit") @db.VarChar(20)
@@ -223,6 +323,10 @@ model DrugGeneric {
   tmtCode              String?                         @map("tmt_code") @db.VarChar(10)
   standardUnit         String?                         @map("standard_unit") @db.VarChar(10)
   therapeuticGroup     String?                         @map("therapeutic_group") @db.VarChar(50)
+
+  // Relations
+  dosageFormRel        DosageForm?                     @relation(fields: [dosageFormId], references: [id])
+  saleUnitRel          DrugUnit?                       @relation("GenericSaleUnit", fields: [saleUnitId], references: [id])
   drugs                Drug[]
   hppProducts          HospitalPharmaceuticalProduct[]
   purchaseRequestItems PurchaseRequestItem[]
@@ -239,14 +343,21 @@ model Drug {
   tradeName          String                          @map("trade_name") @db.VarChar(100)
   genericId          BigInt?                         @map("generic_id")
   strength           String?                         @db.VarChar(50)
+
+  // Phase 4: New FK fields (v2.4.0)
+  dosageFormId       BigInt?                         @map("dosage_form_id") // FK to dosage_forms
+  unitId             BigInt?                         @map("unit_id") // FK to drug_units
+
+  // Legacy fields (will be removed after migration)
   dosageForm         String?                         @map("dosage_form") @db.VarChar(30)
+  unit               String?                         @map("unit") @db.VarChar(10)
+
   manufacturerId     BigInt?                         @map("manufacturer_id")
   atcCode            String?                         @map("atc_code") @db.VarChar(10)
   standardCode       String?                         @map("standard_code") @db.VarChar(24)
   barcode            String?                         @db.VarChar(20)
   packSize           Int                             @default(1) @map("pack_size")
   unitPrice          Decimal?                        @map("unit_price") @db.Decimal(10, 2) // ราคาขายต่อหน่วย
-  unit               String                          @default("TAB") @db.VarChar(10)
   isActive           Boolean                         @default(true) @map("is_active")
   createdAt          DateTime                        @default(now()) @map("created_at")
   updatedAt          DateTime                        @default(now()) @updatedAt @map("updated_at")
@@ -275,6 +386,11 @@ model Drug {
   derivedProducts    Drug[]                          @relation("HppBaseProduct")
   generic            DrugGeneric?                    @relation(fields: [genericId], references: [id])
   manufacturer       Company?                        @relation(fields: [manufacturerId], references: [id])
+
+  // Phase 4: New lookup relations (v2.4.0)
+  dosageFormRel      DosageForm?                     @relation(fields: [dosageFormId], references: [id])
+  unitRel            DrugUnit?                       @relation("DrugUnit", fields: [unitId], references: [id])
+
   hppBaseReferences     HospitalPharmaceuticalProduct[] @relation("HppBaseReference")
   hppProducts           HospitalPharmaceuticalProduct[]
   inventory             Inventory[]
@@ -329,17 +445,23 @@ model DrugLot {
 }
 
 model InventoryTransaction {
-  id              BigInt          @id @default(autoincrement())
-  inventoryId     BigInt          @map("inventory_id")
-  transactionType TransactionType @map("transaction_type")
-  quantity        Decimal         @db.Decimal(10, 2)
-  unitCost        Decimal?        @map("unit_cost") @db.Decimal(10, 2)
-  referenceId     BigInt?         @map("reference_id")
-  referenceType   String?         @map("reference_type") @db.VarChar(20)
-  notes           String?
-  createdBy       BigInt          @map("created_by")
-  createdAt       DateTime        @default(now()) @map("created_at")
-  inventory       Inventory       @relation(fields: [inventoryId], references: [id])
+  id                  BigInt             @id @default(autoincrement())
+  inventoryId         BigInt             @map("inventory_id")
+  transactionType     TransactionType    @map("transaction_type")
+  quantity            Decimal            @db.Decimal(10, 2)
+  unitCost            Decimal?           @map("unit_cost") @db.Decimal(10, 2)
+  referenceId         BigInt?            @map("reference_id")
+  referenceType       String?            @map("reference_type") @db.VarChar(20)
+
+  // Phase 4: Add adjustment reason (v2.4.0)
+  adjustmentReasonId  BigInt?            @map("adjustment_reason_id") // For ADJUST transactions
+
+  notes               String?
+  createdBy           BigInt             @map("created_by")
+  createdAt           DateTime           @default(now()) @map("created_at")
+
+  inventory           Inventory          @relation(fields: [inventoryId], references: [id])
+  adjustmentReason    AdjustmentReason?  @relation(fields: [adjustmentReasonId], references: [id])
 
   @@map("inventory_transactions")
 }
@@ -1034,22 +1156,28 @@ model DrugReturn {
 }
 
 model DrugReturnItem {
-  id              BigInt     @id @default(autoincrement())
-  returnId        BigInt     @map("return_id")
-  drugId          BigInt     @map("drug_id")
-  totalQuantity   Decimal    @map("total_quantity") @db.Decimal(10, 2)
-  goodQuantity    Decimal    @map("good_quantity") @db.Decimal(10, 2)
-  damagedQuantity Decimal    @map("damaged_quantity") @db.Decimal(10, 2)
-  lotNumber       String     @map("lot_number") @db.VarChar(20)
-  expiryDate      DateTime   @map("expiry_date") @db.Date
-  returnType      ReturnType @map("return_type")
-  locationId      BigInt?    @map("location_id")
-  unitCost        Decimal?   @map("unit_cost") @db.Decimal(10, 2)
-  notes           String?    @db.Text
-  createdAt       DateTime   @default(now()) @map("created_at")
-  drugReturn      DrugReturn @relation(fields: [returnId], references: [id], onDelete: Cascade)
-  drug            Drug       @relation(fields: [drugId], references: [id])
-  location        Location?  @relation(fields: [locationId], references: [id])
+  id              BigInt         @id @default(autoincrement())
+  returnId        BigInt         @map("return_id")
+  drugId          BigInt         @map("drug_id")
+  totalQuantity   Decimal        @map("total_quantity") @db.Decimal(10, 2)
+  goodQuantity    Decimal        @map("good_quantity") @db.Decimal(10, 2)
+  damagedQuantity Decimal        @map("damaged_quantity") @db.Decimal(10, 2)
+  lotNumber       String         @map("lot_number") @db.VarChar(20)
+  expiryDate      DateTime       @map("expiry_date") @db.Date
+  returnType      ReturnType     @map("return_type")
+  locationId      BigInt?        @map("location_id")
+
+  // Phase 4: Add return action (v2.4.0)
+  returnActionId  BigInt?        @map("return_action_id") // What to do with returned drugs
+
+  unitCost        Decimal?       @map("unit_cost") @db.Decimal(10, 2)
+  notes           String?        @db.Text
+  createdAt       DateTime       @default(now()) @map("created_at")
+
+  drugReturn      DrugReturn     @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  drug            Drug           @relation(fields: [drugId], references: [id])
+  location        Location?      @relation(fields: [locationId], references: [id])
+  returnAction    ReturnAction?  @relation(fields: [returnActionId], references: [id])
 
   @@map("drug_return_items")
 }
