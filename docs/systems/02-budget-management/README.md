@@ -6,6 +6,8 @@
 **Tables:** 4 tables
 **Status:** ✅ Production Ready
 **Functions:** 6 database functions
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 
 ---
 
@@ -254,4 +256,4 @@ console.log({
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0
