@@ -3,10 +3,10 @@
 **Foundation data for all systems**
 
 **Priority:** ⭐⭐⭐ สูงสุด
-**Tables:** 12 tables (9 core + 3 drug info support) ⭐
+**Tables:** 16 tables (9 core + 3 drug info + 4 lookup tables) ⭐
 **Status:** ✅ Production Ready
 **Ministry Compliance:** ✅ 100%
-**Data:** 3,152 records migrated (Phase 1-4) 🔓
+**Data:** 81,353 records migrated (Phase 1-8 COMPLETE) 🚀
 
 ---
 
@@ -14,7 +14,7 @@
 
 Master Data System เป็นระบบจัดการข้อมูลพื้นฐานที่ระบบอื่นๆ ทั้งหมดต้องใช้:
 
-### 4 กลุ่มข้อมูลหลัก
+### 5 กลุ่มข้อมูลหลัก
 
 1. **🏥 Organization Data** (3 tables)
    - `locations` - สถานที่จัดเก็บยา (warehouse, pharmacy, ward, emergency)
@@ -27,14 +27,20 @@ Master Data System เป็นระบบจัดการข้อมูล�
    - `budgets` - งบประมาณ (combination of type + category)
 
 3. **💊 Drug & Company Data** (3 tables)
-   - `drug_generics` - ยาสามัญ (1,109 records) 🔓
-   - `drugs` - ยาการค้า (1,169 records with ministry compliance) 🔓
+   - `drug_generics` - ยาสามัญ (1,109 records, 97.6% with FK mapping) 🔓
+   - `drugs` - ยาการค้า (1,169 records, 47.99% with TMT) 🔓
    - `companies` - ผู้ผลิต/จำหน่าย (vendors & manufacturers)
 
-4. **🧪 Drug Information Support** (3 tables) ⭐ NEW (Phase 1-2)
-   - `drug_components` - ส่วนประกอบยา/API (736 records for allergy checking) 🔓 ⭐ Phase 2
-   - `drug_focus_lists` - รายการยาพิเศษ/ควบคุม (92 pending) ⭐ Phase 2
-   - `drug_pack_ratios` - อัตราส่วนหีบห่อตาม vendor (1,641 pending) ⭐ Phase 1
+4. **🧪 Drug Information Support** (3 tables)
+   - `drug_components` - ส่วนประกอบยา/API (736 records for allergy checking) 🔓
+   - `drug_focus_lists` - รายการยาพิเศษ/ควบคุม (92 pending)
+   - `drug_pack_ratios` - อัตราส่วนหีบห่อตาม vendor (1,641 pending)
+
+5. **📚 Lookup Tables** (4 tables) ⭐ NEW (Phase 5)
+   - `dosage_forms` - รูปแบบยา (107 records: TAB, CAP, INJ, etc.) 🔓
+   - `drug_units` - หน่วยยา (88 records: mg, ml, unit, IU, etc.) 🔓
+   - `adjustment_reasons` - เหตุผลปรับปรุงสต็อก (10 records) 🔓
+   - `return_actions` - การจัดการยาคืน/ทำลาย (8 records) 🔓
 
 ---
 
@@ -232,4 +238,4 @@ const drugs = await prisma.drug.findMany({
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

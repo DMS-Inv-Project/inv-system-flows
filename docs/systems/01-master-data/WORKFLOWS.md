@@ -1,8 +1,8 @@
 # 🔄 Master Data - Business Workflows
 
 **System:** Master Data Management
-**Version:** 2.4.0
-**Last Updated:** 2025-01-22
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 
 ---
 
@@ -132,8 +132,9 @@ sequenceDiagram
 {
   drug_code: "123456789012345678901234", // 24 chars
   trade_name: "Tylenol 500mg",
-  generic_id: 1, // Select from dropdown
-  manufacturer_id: 5, // Select from dropdown
+  generic_id: 1, // Select from dropdown (drug_generics)
+  manufacturer_id: 5, // Select from dropdown (companies)
+  tmt_tpu_id: 100234, // Optional: Select from TMT search ⭐ NEW
   nlem_status: "E", // Radio: Essential / Non-Essential
   drug_status: "STATUS_1", // Dropdown: Active
   product_category: "CATEGORY_1", // Dropdown
@@ -142,6 +143,11 @@ sequenceDiagram
   package_unit: "TAB"
 }
 ```
+
+**Phase 8 Enhancement:** ⭐
+- Added optional `tmt_tpu_id` field for TMT integration
+- TMT search dialog with 76,904 concepts available
+- 47.99% of existing drugs already mapped
 
 #### Step 3: Client-side Validation
 **Checks:**
@@ -401,11 +407,16 @@ flowchart TD
 
 **Template Structure:**
 ```
-| drug_code (24 chars) | trade_name | working_code (7 chars) | manufacturer_code | nlem_status | drug_status | product_category | unit_price |
-|---------------------|------------|----------------------|------------------|-------------|-------------|-----------------|-----------|
-| 123456789012345678901234 | Tylenol 500mg | 0001001 | PFIZER | E | STATUS_1 | CATEGORY_1 | 2.50 |
-| 234567890123456789012345 | Advil 400mg | 0001002 | ZUELLIG | E | STATUS_1 | CATEGORY_1 | 3.00 |
+| drug_code (24 chars) | trade_name | working_code (7 chars) | manufacturer_code | tmt_tpu_id | nlem_status | drug_status | product_category | unit_price |
+|---------------------|------------|----------------------|------------------|-----------|-------------|-------------|-----------------|-----------|
+| 123456789012345678901234 | Tylenol 500mg | 0001001 | PFIZER | 100234 | E | STATUS_1 | CATEGORY_1 | 2.50 |
+| 234567890123456789012345 | Advil 400mg | 0001002 | ZUELLIG | 100567 | E | STATUS_1 | CATEGORY_1 | 3.00 |
 ```
+
+**Phase 8 Enhancement:** ⭐
+- Added optional `tmt_tpu_id` column for TMT integration
+- Provide TMT lookup sheet with 76,904 concepts
+- Column can be left empty if TMT code unknown
 
 #### Step 2: User Fills Data
 **User Actions:**
@@ -943,4 +954,4 @@ POST   /api/master-data/drugs/validate
 - [SCHEMA.md](SCHEMA.md) - Database schema
 - [../../END_TO_END_WORKFLOWS.md](../../END_TO_END_WORKFLOWS.md) - Cross-system workflows
 
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0
