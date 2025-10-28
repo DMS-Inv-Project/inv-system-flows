@@ -39,7 +39,7 @@
 │  ✅ TMT Integration: 76,904 concepts (5 levels) ⭐    │
 │  ✅ MySQL Legacy: Available for reference              │
 │  ✅ Docker Setup: 4 containers running                 │
-│  ✅ Documentation: 46+ comprehensive guides ⭐         │
+│  ✅ Documentation: 54+ comprehensive guides ⭐         │
 │  ✅ Migration Docs: 8 phase summaries complete ⭐     │
 │                                                         │
 │  🚀 Backend API: Ready to start (full data available)  │
@@ -182,7 +182,7 @@ invs-modern/
 
 ### 6. Documentation Complete ✅
 
-**Total**: 46+ markdown files
+**Total**: 54+ markdown files
 
 **Main Documentation:**
 - ✅ README.md - Project overview
@@ -211,6 +211,24 @@ invs-modern/
 - ✅ FLOW_07: Ministry Reporting
 - ✅ FLOW_08: Frontend Purchase Request (with UI mockups)
 - ✅ DATA_FLOW_COMPLETE_GUIDE.md - Summary of all flows
+
+**API Development Guides (8 files):** ⭐ NEW
+- ✅ 01-master-data/API_DEVELOPMENT_GUIDE.md - Master data CRUD APIs
+- ✅ 02-budget-management/API_DEVELOPMENT_GUIDE.md - Budget workflow APIs
+- ✅ 03-procurement/API_DEVELOPMENT_GUIDE.md - Purchase request/order APIs
+- ✅ 04-inventory/API_DEVELOPMENT_GUIDE.md - Inventory & FIFO/FEFO APIs
+- ✅ 05-distribution/API_DEVELOPMENT_GUIDE.md - Distribution workflow APIs
+- ✅ 06-drug-return/API_DEVELOPMENT_GUIDE.md - Return & destruction APIs
+- ✅ 07-tmt-integration/API_DEVELOPMENT_GUIDE.md - TMT search & mapping APIs
+- ✅ 08-hpp-system/API_DEVELOPMENT_GUIDE.md - Hospital-prepared product APIs
+
+**API Development Guides Features:** 🎉
+- ✅ Complete RBAC matrix (5 roles: Finance Manager, Dept Head, Pharmacist, Nurse, Other Staff)
+- ✅ API development priorities (phased approach, 15-30 endpoints per system)
+- ✅ Standardized error codes (150+ error codes across all systems with Thai/English messages)
+- ✅ Request/Response examples (40+ detailed examples with TypeScript/JSON)
+- ✅ Environment configuration (60+ config variables with defaults)
+- ✅ Testing guidelines (unit, integration, and performance test examples)
 
 **Migration Documentation:**
 - ✅ docs/migration-reports/PHASE1_MIGRATION_SUMMARY.md
@@ -410,6 +428,7 @@ ORDER BY
 - ✅ Business functions ready (12 functions)
 - ✅ Views ready (11 views)
 - ✅ TMT integration ready (76,904 concepts)
+- ✅ API Development Guides ready (8 complete guides) ⭐ NEW
 
 **Tech Stack Recommendation:**
 - Backend: Fastify 5 + Prisma + TypeScript
