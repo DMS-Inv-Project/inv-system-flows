@@ -5,6 +5,8 @@
 **Priority:** ⭐⭐ ปานกลาง
 **Tables:** 3 tables (2 core + 1 return reasons) ⭐
 **Status:** ✅ Production Ready
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 **Workflows:** 4 major processes
 **Data:** 19 return reasons (Phase 1) ⭐
 
@@ -544,4 +546,4 @@ console.log(`Found ${history.length} returns from Nursing Department`);
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

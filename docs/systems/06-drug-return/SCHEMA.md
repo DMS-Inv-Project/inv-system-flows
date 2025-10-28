@@ -2,8 +2,8 @@
 
 **System:** Drug Return Management
 **Tables:** 3 tables (2 core + 1 return reasons) ⭐
-**Version:** 2.4.0
-**Last Updated:** 2025-01-22
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 **Data Migrated:** 19 return reasons (Phase 1) ⭐
 
 ---
@@ -646,4 +646,4 @@ Common actions after return:
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

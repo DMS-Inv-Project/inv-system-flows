@@ -2,8 +2,8 @@
 
 **System:** Hospital Pharmaceutical Products (HPP)
 **Tables:** 2 tables
-**Version:** 2.4.0
-**Last Updated:** 2025-01-22
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 
 ---
 
@@ -396,4 +396,4 @@ console.log(`${product.product_name} contains ${product.formulations.length} com
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

@@ -2,8 +2,8 @@
 
 **System:** Drug Return Management
 **Workflows:** 4 major processes
-**Version:** 2.4.0
-**Last Updated:** 2025-01-22
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 
 ---
 
@@ -742,7 +742,7 @@ async function completeDisposal(
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0
 
 ---
 

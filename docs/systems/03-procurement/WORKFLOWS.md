@@ -1,8 +1,8 @@
 # 🛒 Procurement - Business Workflows
 
 **System:** Procurement Management
-**Version:** 2.4.0
-**Last Updated:** 2025-01-22
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 
 ---
 
@@ -1213,7 +1213,7 @@ GET    /api/procurement/payment/:id/attachments // List attachments
 - [SCHEMA.md](SCHEMA.md) - Database schema (12 tables)
 - [../../END_TO_END_WORKFLOWS.md](../../END_TO_END_WORKFLOWS.md) - Cross-system workflows
 
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0
 
 ---
 

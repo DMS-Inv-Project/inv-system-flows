@@ -6,6 +6,8 @@
 **Tables:** 2 tables
 **HPP Types:** 5 types (R, M, F, X, OHPP)
 **Status:** ✅ Production Ready
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 **Workflows:** 4 major processes
 
 ---
@@ -518,4 +520,4 @@ popularComponents.forEach(comp => {
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

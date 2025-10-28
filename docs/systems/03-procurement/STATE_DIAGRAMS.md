@@ -1,8 +1,8 @@
 # 🔄 Procurement - State Diagrams
 
 **System:** Procurement Management
-**Version:** 2.4.0
-**Last Updated:** 2025-01-22
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 
 ---
 

@@ -1,26 +1,19 @@
 # 🔗 TMT Integration - Database Schema
 
 **System:** Thai Medical Terminology (TMT) Integration
-**Tables:** 10 tables
-**TMT Concepts:** 25,991 concepts loaded
-**Version:** 2.4.0
-**Last Updated:** 2025-01-22
+**Tables:** 1 core table + 1 FK relationship
+**TMT Concepts:** 76,904 concepts loaded (Phase 7) 🔓 ⭐
+**Drug Mappings:** 561 drugs (47.99%) (Phase 8) 🔓 ⭐
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 
 ---
 
 ## 📖 Table of Contents
 
-### Core Tables
-1. [TMT Concepts](#1-tmt_concepts) - 25,991 TMT concepts
-2. [TMT Relationships](#2-tmt_relationships) - Hierarchy
-3. [TMT Mappings](#3-tmt_mappings) - Drug-to-TMT mappings
-4. [TMT Attributes](#4-tmt_attributes) - Additional properties
-5. [TMT Manufacturers](#5-tmt_manufacturers) - Manufacturer codes
-6. [TMT Dosage Forms](#6-tmt_dosage_forms) - Form codes
-7. [TMT Units](#7-tmt_units) - Unit codes
-8. [HIS Drug Master](#8-his_drug_master) - HIS integration
-9. [TMT Usage Stats](#9-tmt_usage_stats) - Usage tracking
-10. [Ministry Reports](#10-ministry_reports) - Compliance reports
+### Core Tables (Phase 7-8) ⭐
+1. [TMT Concepts](#1-tmt_concepts) - 76,904 TMT concepts (5 levels)
+2. [Drug-TMT Mapping](#2-drug-tmt-mapping) - drugs.tmt_tpu_id FK (561 mapped)
 
 ### Reference
 - [ER Diagram](#-entity-relationship-diagram)
@@ -31,20 +24,19 @@
 
 ---
 
-## 📊 Table Overview
+## 📊 Table Overview (Phase 7-8) ⭐
 
 | Table | Records | Purpose |
 |-------|---------|---------|
-| `tmt_concepts` | 25,991 | Thai Medical Terminology concepts (10 levels) |
-| `tmt_relationships` | 50,000+ | Parent-child hierarchy relationships |
-| `tmt_mappings` | 1,000-5,000 | Hospital drug → TMT mappings |
-| `tmt_attributes` | 100,000+ | Additional concept attributes |
-| `tmt_manufacturers` | 500-1,000 | TMT manufacturer codes |
-| `tmt_dosage_forms` | 87 | TMT dosage form codes |
-| `tmt_units` | 50-100 | TMT unit codes with conversion |
-| `his_drug_master` | 1,000-10,000 | HIS drug master data |
-| `tmt_usage_stats` | 10,000+ | Usage statistics for compliance |
-| `ministry_reports` | 100-500 | Generated ministry reports |
+| `tmt_concepts` | **76,904** 🔓 | Thai Medical Terminology concepts (5 levels) |
+| `drugs.tmt_tpu_id` | **561 mapped** 🔓 | FK to TMT TPU level (47.99% coverage) |
+
+**Level Distribution:**
+- VTM: 2,691 concepts (สารออกฤทธิ์)
+- GP: 7,991 concepts (ยาสามัญ + รูปแบบ)
+- GPU: 9,835 concepts (ยาสามัญ + หน่วย)
+- TP: 27,360 concepts (ยาการค้า)
+- TPU: 29,027 concepts (ยาการค้า + หน่วย)
 
 ---
 
@@ -631,4 +623,4 @@ async function generateComplianceReport(period: string) {
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

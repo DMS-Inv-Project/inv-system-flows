@@ -2,8 +2,8 @@
 
 **System:** Distribution Management
 **Tables:** 3 tables (2 core + 1 distribution type) ⭐
-**Version:** 2.4.0
-**Last Updated:** 2025-01-22
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 **Data Migrated:** 2 distribution types (Phase 3) ⭐
 
 ---
@@ -540,4 +540,4 @@ WHERE dd.status IN ('DISPENSED', 'COMPLETED');
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

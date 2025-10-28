@@ -3,10 +3,13 @@
 **Thai Medical Terminology (TMT) for Ministry Compliance**
 
 **Priority:** ⭐⭐⭐ สูง (Ministry Requirement)
-**Tables:** 10 tables
-**TMT Concepts:** 25,991 loaded
+**Tables:** 3 tables (core TMT system)
+**TMT Concepts:** 76,904 loaded (Phase 7) 🔓 ⭐
+**Drug Mappings:** 561 drugs (47.99% coverage) (Phase 8) 🔓 ⭐
 **Status:** ✅ Production Ready
 **Workflows:** 3 major processes
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 
 ---
 
@@ -14,39 +17,40 @@
 
 TMT Integration System จัดการการเชื่อมต่อกับมาตรฐาน Thai Medical Terminology:
 
-### 3 โมดูลหลัก
+### 2 โมดูลหลัก ⭐ (Phase 7-8)
 
-1. **📚 TMT Data Management** (7 tables)
-   - `tmt_concepts` - 25,991 TMT concepts (10 levels)
-   - `tmt_relationships` - Hierarchy relationships
-   - `tmt_attributes` - Additional properties
-   - `tmt_manufacturers` - Manufacturer codes
-   - `tmt_dosage_forms` - 87 dosage form codes
-   - `tmt_units` - Unit codes with conversion
-   - Ministry-standard reference data
+1. **📚 TMT Concepts** (1 table) - Phase 7 🔓
+   - `tmt_concepts` - **76,904 TMT concepts** (5 levels)
+   - Complete hierarchy: VTM → GP → GPU → TP → TPU
+   - FSN (Fully Specified Name) + Preferred Term
+   - Strength and dosage form information
+   - Active/inactive status tracking
 
-2. **🔗 Drug-to-TMT Mapping** (1 table)
-   - `tmt_mappings` - Hospital drugs → TMT concepts
-   - Pharmacist verification required
-   - One-to-one mapping
-   - Preferred level: GP (Generic Product)
-
-3. **📊 Compliance & Reporting** (2 tables)
-   - `his_drug_master` - HIS integration
-   - `tmt_usage_stats` - Usage tracking
-   - `ministry_reports` - Compliance reports
-   - Target: >= 95% drugs mapped
+2. **🔗 Drug-to-TMT Mapping** (2 tables) - Phase 8 🔓
+   - `drugs.tmt_tpu_id` - Direct FK to TPU level
+   - **561 drugs mapped** (47.99% coverage)
+   - **608 drugs unmapped** (hospital-prepared or no TMTID)
+   - One-to-one mapping at TPU level
+   - Ministry reporting ready
 
 ---
 
 ## 🎯 Key Features
 
-### ✅ 25,991 TMT Concepts Loaded
+### ✅ 76,904 TMT Concepts Loaded (Phase 7) ⭐
 
-**10-Level Hierarchy:**
+**5-Level Hierarchy:**
 ```
-SUBS → VTM → GP → TP → GPU → TPU → GPP → TPP → GP-F → GP-X
+VTM (สารออกฤทธิ์) → GP (ยาสามัญ+รูปแบบ) → GPU (ยาสามัญ+หน่วย)
+                  → TP (ยาการค้า) → TPU (ยาการค้า+หน่วย)
 ```
+
+**Distribution by Level:**
+- VTM: 2,691 concepts (สารออกฤทธิ์)
+- GP: 7,991 concepts (ยาสามัญ + รูปแบบ)
+- GPU: 9,835 concepts (ยาสามัญ + หน่วย)
+- TP: 27,360 concepts (ยาการค้า)
+- TPU: 29,027 concepts (ยาการค้า + หน่วย)
 
 ### ✅ Drug-to-TMT Mapping
 
@@ -261,15 +265,15 @@ console.log(`Found ${unmapped.length} unmapped drugs - action required!`);
 
 ## 📈 Next Steps
 
-1. ✅ **Read** [SCHEMA.md](SCHEMA.md) - Understand 10 tables + TMT hierarchy
+1. ✅ **Read** [SCHEMA.md](SCHEMA.md) - Understand TMT concepts + hierarchy
 2. ✅ **Read** [WORKFLOWS.md](WORKFLOWS.md) - Understand 3 business workflows
-3. ⏳ **Load** TMT Data - Download and load 25,991 concepts
-4. ⏳ **Map** Drugs - Map all active drugs to TMT
-5. ⏳ **Monitor** Compliance - Track >= 95% target
+3. ✅ **Load** TMT Data - 76,904 concepts loaded (Phase 7) ⭐
+4. ✅ **Map** Drugs - 561 drugs mapped to TMT TPU (Phase 8) ⭐
+5. ⏳ **Improve** Coverage - Map remaining 608 drugs (52.01%)
 6. ⏳ **Integrate** HIS - Map HIS drug master
-7. ⏳ **Report** Ministry - Generate quarterly reports
+7. ⏳ **Report** Ministry - Generate quarterly DRUGLIST reports
 
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

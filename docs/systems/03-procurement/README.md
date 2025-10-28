@@ -5,6 +5,8 @@
 **Priority:** ⭐⭐⭐ สูง
 **Tables:** 15 tables (12 core + 3 procurement methods) ⭐
 **Status:** ✅ Production Ready
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 **Workflows:** 4 major processes
 **Data:** 57 records migrated (Phase 1) ⭐
 
@@ -474,4 +476,4 @@ console.log({
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

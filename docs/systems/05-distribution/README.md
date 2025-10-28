@@ -5,6 +5,8 @@
 **Priority:** ⭐⭐⭐ สูง
 **Tables:** 3 tables (2 core + 1 distribution type) ⭐
 **Status:** ✅ Production Ready
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 **Workflows:** 4 major processes
 **Data:** 2 distribution types (Phase 3) ⭐
 
@@ -555,4 +557,4 @@ console.log('Top drug usage:', usageReport);
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

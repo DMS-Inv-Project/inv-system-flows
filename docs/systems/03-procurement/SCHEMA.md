@@ -2,8 +2,8 @@
 
 **System:** Procurement Management
 **Tables:** 15 tables (12 core + 3 procurement methods) ⭐
-**Version:** 2.4.0
-**Last Updated:** 2025-01-22
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 **Data Migrated:** 57 records (Phase 1) ⭐
 
 ---
@@ -939,4 +939,4 @@ ORDER BY r.receipt_date DESC;
 - [WORKFLOWS.md](WORKFLOWS.md) - Business workflows
 - [../../DATABASE_STRUCTURE.md](../../DATABASE_STRUCTURE.md) - Complete 44-table schema
 
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0

@@ -1,8 +1,8 @@
 # 🔄 HPP System - Business Workflows
 
 **System:** Hospital Pharmaceutical Products (HPP)
-**Version:** 2.4.0
-**Last Updated:** 2025-01-22
+**Version:** 2.6.0
+**Last Updated:** 2025-01-28
 
 ---
 
@@ -1107,7 +1107,7 @@ Response: { success: boolean }
 ---
 
 **Built with ❤️ for INVS Modern Team**
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0
 
 ---
 
