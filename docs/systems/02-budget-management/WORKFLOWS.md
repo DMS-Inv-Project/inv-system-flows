@@ -1268,7 +1268,7 @@ SELECT update_budget_plan_purchase(
 - [SCHEMA.md](SCHEMA.md) - Database schema
 - [../../END_TO_END_WORKFLOWS.md](../../END_TO_END_WORKFLOWS.md) - Cross-system workflows
 
-**Last Updated:** 2025-01-22 | **Version:** 2.4.0
+**Last Updated:** 2025-01-28 | **Version:** 2.6.0
 
 ---
 
