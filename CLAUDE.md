@@ -2,6 +2,21 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## READ FIRST
+
+| Document | Purpose |
+|----------|---------|
+| `HANDOFF.md` | Quick start for new Claude instances |
+| `PROJECT_STATUS.md` | Current project status and data summary |
+| `prisma/schema.prisma` | Database schema (52 tables) |
+| `backup/invs_modern_full.sql.gz` | Full database backup (~103K records) |
+
+**Version**: 3.0.0 | **Status**: Database + Data Complete | **Next**: Backend API
+
+---
+
 ## Project Overview
 
 **INVS Modern** is a database schema and documentation project for a hospital drug inventory management system. This is NOT a backend API or frontend project - it contains only:
@@ -41,10 +56,7 @@ docker exec -i invs-modern-db psql -U invs_user -d invs_modern < prisma/views.sq
 
 ### Data Migration (from MySQL legacy)
 ```bash
-# Run all phases (81,353 records total)
-npm run import:all
-
-# Or run individual phases
+# Run individual phases (~103K records total)
 npm run import:phase1   # Procurement master (57 records)
 npm run import:phase2   # Drug components (821 records)
 npm run import:phase3   # Distribution support (4 records)
@@ -53,11 +65,24 @@ npm run import:phase5   # Lookup tables (213 records)
 npm run import:phase6   # FK mappings (1,085 records)
 npm run import:phase7   # TMT concepts (76,904 records)
 npm run import:phase8   # Drug-TMT mapping (561 records)
+npm run import:phase9   # Drug pack ratios (1,266 records)
+npm run import:phase10  # Drug components (736 records)
+npm run import:phase11  # Focus lists (62 records)
+npm run import:phase12  # Companies (800 records)
+npm run import:phase13  # All drugs (6,092 records)
+npm run import:phase14  # Budget management (1,713 records)
+npm run import:phase15  # Inventory + lots (13,138 records)
 
 # Grouped imports
 npm run import:drugs    # Phase 1-4
 npm run import:lookups  # Phase 5-6
 npm run import:tmt      # Phase 7-8
+```
+
+### Quick Restore (Recommended)
+```bash
+# Restore from backup instead of running all phases
+gunzip -c backup/invs_modern_full.sql.gz | docker exec -i invs-modern-db psql -U invs_user -d invs_modern
 ```
 
 ### Full Setup
