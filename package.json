@@ -24,6 +24,8 @@
     "import:phase9": "tsx scripts/migrate-phase9-pack-ratios.ts",
     "import:phase10": "tsx scripts/migrate-phase10-drug-components.ts",
     "import:phase11": "tsx scripts/migrate-phase11-focus-lists.ts",
+    "import:phase12": "tsx scripts/migrate-phase12-companies.ts",
+    "import:phase13": "tsx scripts/migrate-phase13-all-drugs.ts",
     "import:all": "npm run import:phase1 && npm run import:phase2 && npm run import:phase3 && npm run import:phase4 && npm run import:phase5 && npm run import:phase6 && npm run import:phase7 && npm run import:phase8 && npm run import:phase9 && npm run import:phase10 && npm run import:phase11",
     "import:drugs": "npm run import:phase1 && npm run import:phase2 && npm run import:phase3 && npm run import:phase4",
     "import:lookups": "npm run import:phase5 && npm run import:phase6",
