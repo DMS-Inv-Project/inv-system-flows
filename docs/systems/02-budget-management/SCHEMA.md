@@ -11,10 +11,10 @@
 
 | Table | Records | Purpose |
 |-------|---------|---------|
-| `budget_allocations` | 100-500 | Annual budget allocation by department & quarter (Q1-Q4) |
-| `budget_plans` | 50-200 | Budget planning headers (fiscal year + department) |
-| `budget_plan_items` | 1,000-5,000 | Drug-level budget planning with 3-year historical data |
-| `budget_reservations` | 200-1,000 | Temporary budget reservations for pending PRs |
+| `budget_allocations` | 0 (pending) | Annual budget allocation by department & quarter (Q1-Q4) |
+| `budget_plans` | **3** | Budget planning headers (fiscal year + department) |
+| `budget_plan_items` | **1,710** | Drug-level budget planning with 3-year historical data |
+| `budget_reservations` | 0 (pending) | Temporary budget reservations for pending PRs |
 
 ---
 

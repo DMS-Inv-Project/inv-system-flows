@@ -44,21 +44,21 @@
 | Category | Table | Records |
 |----------|-------|--------:|
 | **Master Data** | | |
-| | drugs | 7,261 |
-| | drug_generics | 1,109 |
-| | companies | 800 |
-| | departments | 108 |
-| | locations | 96 |
+| | drugs | **7,261** |
+| | drug_generics | **1,109** |
+| | companies | **800** |
+| | departments | **108** |
+| | locations | **96** |
 | | drug_components | 736 |
 | | drug_pack_ratios | 1,266 |
 | | dosage_forms | 107 |
 | | drug_units | 88 |
 | **Budget** | | |
-| | budget_plans | 3 |
-| | budget_plan_items | 1,710 |
+| | budget_plans | **3** |
+| | budget_plan_items | **1,710** |
 | **Inventory** | | |
-| | inventory | 7,105 |
-| | drug_lots | 6,033 |
+| | inventory | **7,105** |
+| | drug_lots | **6,033** |
 | **TMT** | | |
 | | tmt_concepts | 76,904 |
 | **Lookups** | | |

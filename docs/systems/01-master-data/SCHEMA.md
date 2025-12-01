@@ -14,15 +14,15 @@
 
 | Table | Records | Purpose |
 |-------|---------|---------|
-| `locations` | 5-20 | Storage locations (warehouse, pharmacy, ward, emergency) |
-| `departments` | 10-50 | Hospital departments with budget codes |
+| `locations` | **96** | Storage locations (warehouse, pharmacy, ward, emergency) |
+| `departments` | **108** | Hospital departments with budget codes |
 | `budget_types` | 6-10 | Budget type groups (operational, investment, emergency) |
 | `budget_categories` | 10-20 | Budget expense categories with accounting codes |
 | `budgets` | 20-50 | Budget type + category combinations |
 | `bank` | 15-20 | Bank master data for payment processing |
-| `companies` | 50-200 | Vendors and manufacturers |
-| `drug_generics` | 1,109 | Generic drug catalog (WORKING_CODE 7 chars) 🔓 |
-| `drugs` | 1,169 | Trade drugs (TRADE_CODE 24 chars) with ministry compliance 🔓 |
+| `companies` | **800** | Vendors and manufacturers |
+| `drug_generics` | **1,109** | Generic drug catalog (WORKING_CODE 7 chars) 🔓 |
+| `drugs` | **7,261** | Trade drugs (TRADE_CODE 24 chars) with ministry compliance 🔓 |
 
 ### Drug Information Support Tables (3 tables) ⭐
 

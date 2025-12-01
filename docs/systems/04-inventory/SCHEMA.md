@@ -31,9 +31,9 @@
 
 | Table | Records | Purpose |
 |-------|---------|---------|
-| `inventory` | 500-2,000 | Stock levels per drug/location with min/max/reorder points |
-| `drug_lots` | 2,000-10,000 | FIFO/FEFO lot tracking with expiry dates |
-| `inventory_transactions` | 50,000-500,000 | Complete audit trail of all inventory movements |
+| `inventory` | **7,105** | Stock levels per drug/location with min/max/reorder points |
+| `drug_lots` | **6,033** | FIFO/FEFO lot tracking with expiry dates |
+| `inventory_transactions` | 0 (pending) | Complete audit trail of all inventory movements |
 
 ---
 
