@@ -105,7 +105,7 @@ npm run dev
 |------|-------------|
 | `CLAUDE.md` | Instructions for Claude Code |
 | `HANDOFF.md` | Handoff document for new developers |
-| `prisma/schema.prisma` | Database schema (52 tables) |
+| `prisma/schema.prisma` | Database schema (57 tables) |
 | `backup/invs_modern_full.sql.gz` | Full database backup (3MB) |
 | `docs/systems/` | 8 system documentation folders |
 
@@ -148,4 +148,4 @@ npm run dev
 
 ---
 
-*Last Updated: 2024-12-01 by Claude Code*
+*Last Updated: 2025-12-02 by Claude Code*

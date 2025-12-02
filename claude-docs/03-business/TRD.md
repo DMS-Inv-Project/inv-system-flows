@@ -81,8 +81,8 @@ INVS Modern is built as a modern, type-safe database-centric application using P
 │        PostgreSQL Database + Redis Cache        │
 │        ฐานข้อมูล PostgreSQL + Redis            │
 │  PostgreSQL:                                    │
-│  - 52 Tables (Normalized 3NF)                   │
-│  - 22 Enums (Type safety)                       │
+│  - 57 Tables (Normalized 3NF)                   │
+│  - 30 Enums (Type safety)                       │
 │  - 12 Functions (Business logic)                │
 │  - 11 Views (Reporting)                         │
 │  - Audit Triggers                               │

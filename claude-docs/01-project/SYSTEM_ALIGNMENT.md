@@ -378,7 +378,7 @@ VTM (Virtual Therapeutic Moiety)
 
 ---
 
-## Enums Reference (22 total)
+## Enums Reference (30 total)
 
 ### Status Enums
 | Enum | Values |
@@ -476,4 +476,4 @@ Some SCHEMA.md files show old record counts. Actual counts are in this document.
 
 ---
 
-*Generated: 2024-12-01 by Claude Code*
+*Updated: 2025-12-02 by Claude Code*

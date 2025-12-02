@@ -120,7 +120,7 @@ Password: invs123
 ### Must Read First
 1. `CLAUDE.md` - Full instructions for Claude Code
 2. `PROJECT_STATUS.md` - Current project status
-3. `prisma/schema.prisma` - Database schema (52 tables)
+3. `prisma/schema.prisma` - Database schema (57 tables)
 
 ### Database
 - `prisma/schema.prisma` - Main schema
@@ -231,7 +231,7 @@ Export views ready: `export_druglist`, `export_purchase_plan`, etc.
 - ✅ Use the existing database functions
 - ✅ Follow the 8-system architecture
 - ✅ Check `docs/systems/` for API specs
-- ✅ Use enums from schema (22 enums defined)
+- ✅ Use enums from schema (30 enums defined)
 
 ### DON'T
 - ❌ Modify the schema without understanding impact
@@ -261,4 +261,4 @@ If confused, read these files:
 
 ---
 
-*Last Updated: 2024-12-01 by Claude Code*
+*Last Updated: 2025-12-02 by Claude Code*

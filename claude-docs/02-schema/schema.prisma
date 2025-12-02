@@ -1,0 +1,1594 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Location {
+  id                BigInt       @id @default(autoincrement())
+  locationCode      String       @unique @map("location_code") @db.VarChar(10)
+  locationName      String       @map("location_name") @db.VarChar(100)
+  locationType      LocationType @default(WAREHOUSE) @map("location_type")
+  parentId          BigInt?      @map("parent_id")
+  address           String?
+  responsiblePerson String?      @map("responsible_person") @db.VarChar(50)
+  isActive          Boolean      @default(true) @map("is_active")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  drugLots                DrugLot[]
+  inventory               Inventory[]
+  parent                  Location?          @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children                Location[]         @relation("LocationHierarchy")
+  distributionsFrom       DrugDistribution[] @relation("DistributionFromLocation")
+  distributionsTo         DrugDistribution[] @relation("DistributionToLocation")
+  drugReturnItems         DrugReturnItem[]
+
+  @@map("locations")
+}
+
+model Department {
+  id                BigInt             @id @default(autoincrement())
+  deptCode          String             @unique @map("dept_code") @db.VarChar(10)
+  deptName          String             @map("dept_name") @db.VarChar(100)
+  hisCode           String?            @map("his_code") @db.VarChar(20) // รหัสหน่วยงานใน HIS
+  parentId          BigInt?            @map("parent_id")
+  headPerson        String?            @map("head_person") @db.VarChar(50)
+  isActive          Boolean            @default(true) @map("is_active")
+  createdAt         DateTime           @default(now()) @map("created_at")
+
+  // Ministry Compliance Fields (v2.1.0 - DMSIC Standards)
+  consumptionGroup  DeptConsumptionGroup? @map("consumption_group") // กลุ่มหน่วยงานตามรูปแบบการใช้ยา (1-9)
+  budgetAllocations BudgetAllocation[]
+  budgetPlans       BudgetPlan[]
+  parent            Department?        @relation("DepartmentHierarchy", fields: [parentId], references: [id])
+  children          Department[]       @relation("DepartmentHierarchy")
+  purchaseOrders    PurchaseOrder[]
+  purchaseRequests  PurchaseRequest[]
+  tmtUsageStats     TmtUsageStats[]
+  drugDistributions DrugDistribution[]
+  drugReturns       DrugReturn[]
+  drugFocusLists    DrugFocusList[] // Phase 2: Department-specific drug lists
+
+  @@index([hisCode])
+  @@map("departments")
+}
+
+// Budget Type - ประเภทงบประมาณ (เช่น งบเงินบำรุง, งบลงทุน)
+model BudgetTypeGroup {
+  id         BigInt       @id @default(autoincrement())
+  typeCode   String       @unique @map("type_code") @db.VarChar(10)
+  typeName   String       @map("type_name") @db.VarChar(100)
+  isActive   Boolean      @default(true) @map("is_active")
+  createdAt  DateTime     @default(now()) @map("created_at")
+  budgets    Budget[]
+
+  @@map("budget_types")
+}
+
+// Budget Category - หมวดค่าใช้จ่าย
+model BudgetCategory {
+  id           BigInt       @id @default(autoincrement())
+  categoryCode String       @unique @map("category_code") @db.VarChar(10)
+  categoryName String       @map("category_name") @db.VarChar(100)
+  accCode      String?      @map("acc_code") @db.VarChar(20) // รหัสผังบัญชี
+  remark       String?      // หมายเหตุ
+  isActive     Boolean      @default(true) @map("is_active")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  budgets      Budget[]
+
+  @@map("budget_categories")
+}
+
+// Budget - งบประมาณ (เชื่อมโยง type และ category)
+model Budget {
+  id                BigInt            @id @default(autoincrement())
+  budgetCode        String            @unique @map("budget_code") @db.VarChar(10)
+  budgetType        String            @map("budget_type") @db.VarChar(10) // FK to budget_types.type_code
+  budgetCategory    String            @map("budget_category") @db.VarChar(10) // FK to budget_categories.category_code
+  budgetDescription String?           @map("budget_description")
+  isActive          Boolean           @default(true) @map("is_active")
+  createdAt         DateTime          @default(now()) @map("created_at")
+
+  // Relations
+  typeGroup         BudgetTypeGroup   @relation(fields: [budgetType], references: [typeCode])
+  category          BudgetCategory    @relation(fields: [budgetCategory], references: [categoryCode])
+  budgetAllocations BudgetAllocation[]
+  purchaseOrders    PurchaseOrder[]
+
+  @@map("budgets")
+}
+
+// Bank - ธนาคาร
+model Bank {
+  id        BigInt    @id @default(autoincrement()) @map("bank_id")
+  bankName  String    @map("bank_name") @db.VarChar(100)
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  companies Company[]
+
+  @@map("bank")
+}
+
+// ==========================================
+// MASTER DATA LOOKUPS (Phase 4 - v2.4.0)
+// Priority 1 & 2 Lookup Tables
+// ==========================================
+
+// Dosage Form - รูปแบบยา (Priority 1)
+// จาก dosage_form ใน MySQL (107 records)
+model DosageForm {
+  id          BigInt        @id @default(autoincrement())
+  code        String        @unique @db.VarChar(10) // DFORM_ID from MySQL
+  name        String        @db.VarChar(60) // DFORM_NAME
+  nameEn      String?       @map("name_en") @db.VarChar(60)
+  isHidden    Boolean       @default(false) @map("is_hidden")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  drugs       Drug[]
+  generics    DrugGeneric[]
+
+  @@map("dosage_forms")
+}
+
+// Drug Unit - หน่วยนับยา (Priority 1)
+// จาก sale_unit ใน MySQL (88 records)
+model DrugUnit {
+  id            BigInt        @id @default(autoincrement())
+  code          String        @unique @db.VarChar(10) // SU_ID from MySQL
+  name          String        @db.VarChar(60) // SALE_UNIT
+  nameEn        String?       @map("name_en") @db.VarChar(60)
+  standardCode  String?       @map("standard_code") @db.VarChar(15) // SU_ID_EX
+  isHidden      Boolean       @default(false) @map("is_hidden")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  drugsAsUnit      Drug[]        @relation("DrugUnit")
+  genericsAsSaleUnit DrugGeneric[] @relation("GenericSaleUnit")
+
+  @@map("drug_units")
+}
+
+// Adjustment Reason - เหตุผลการปรับปรุงสต็อค (Priority 1)
+// สำหรับ inventory_transactions ประเภท ADJUST
+model AdjustmentReason {
+  id                    BigInt                 @id @default(autoincrement())
+  code                  Int                    @unique
+  reason                String                 @db.VarChar(100)
+  category              String?                @db.VarChar(30) // damage, loss, found, system_error, expired
+  isHidden              Boolean                @default(false) @map("is_hidden")
+  createdAt             DateTime               @default(now()) @map("created_at")
+  updatedAt             DateTime               @default(now()) @updatedAt @map("updated_at")
+
+  inventoryTransactions InventoryTransaction[]
+
+  @@map("adjustment_reasons")
+}
+
+// Hospital - ข้อมูลโรงพยาบาล (Priority 2)
+// จาก hosp ใน MySQL (13,176 records - รพ. ทั่วประเทศ)
+// สำหรับ Ministry Reporting
+model Hospital {
+  id           BigInt   @id @default(autoincrement())
+  hospCode     String   @unique @map("hosp_code") @db.VarChar(5) // MOPH 5-digit code
+  hospName     String   @map("hosp_name") @db.VarChar(100)
+  hospType     String?  @map("hosp_type") @db.VarChar(20) // รพช., รพท., รพศ., etc.
+  provinceCode String?  @map("province_code") @db.VarChar(2)
+  areaCode     String?  @map("area_code") @db.VarChar(4) // เขตสุขภาพ 1-13
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@index([provinceCode])
+  @@index([areaCode])
+  @@map("hospitals")
+}
+
+// Return Action - การดำเนินการกับยาคืน (Priority 2)
+// จาก rtn_action ใน MySQL (ว่าง - ต้องสร้างข้อมูลใหม่)
+model ReturnAction {
+  id             BigInt           @id @default(autoincrement())
+  code           Int              @unique
+  action         String           @db.VarChar(60)
+  actionType     String?          @map("action_type") @db.VarChar(30) // restock, dispose, quarantine, return_vendor
+  isHidden       Boolean          @default(false) @map("is_hidden")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @default(now()) @updatedAt @map("updated_at")
+
+  drugReturnItems DrugReturnItem[]
+
+  @@map("return_actions")
+}
+
+// ==========================================
+
+model Company {
+  id                  BigInt          @id @default(autoincrement())
+  companyCode         String?         @unique @map("company_code") @db.VarChar(10)
+  companyName         String          @map("company_name") @db.VarChar(100)
+  companyType         CompanyType     @default(VENDOR) @map("company_type")
+  taxId               String?         @map("tax_id") @db.VarChar(20)
+
+  // Bank Information
+  bankCode            String?         @map("bank_code") @db.VarChar(20) // เลขบัญชีธนาคาร
+  bankAccount         String?         @map("bank_account") @db.VarChar(100) // ชื่อบัญชีธนาคาร
+  bankId              BigInt?         @map("bank_id") // FK to bank
+
+  address             String?
+  phone               String?         @db.VarChar(20)
+  email               String?         @db.VarChar(100)
+  contactPerson       String?         @map("contact_person") @db.VarChar(50)
+  isActive            Boolean         @default(true) @map("is_active")
+  createdAt           DateTime        @default(now()) @map("created_at")
+  updatedAt           DateTime        @default(now()) @updatedAt @map("updated_at")
+  tmtManufacturerCode String?         @map("tmt_manufacturer_code") @db.VarChar(20)
+  fdaLicenseNumber    String?         @map("fda_license_number") @db.VarChar(20)
+  gmpCertificate      String?         @map("gmp_certificate") @db.VarChar(30)
+
+  // Relations
+  bank                      Bank?           @relation(fields: [bankId], references: [id])
+  drugs                     Drug[]
+  purchaseOrders            PurchaseOrder[]
+  contracts                 Contract[]
+  packRatiosAsVendor        DrugPackRatio[] @relation("PackRatioVendor") // Phase 1
+  packRatiosAsManufacturer  DrugPackRatio[] @relation("PackRatioManufacturer") // Phase 1
+
+  @@map("companies")
+}
+
+// ==========================================
+// CONTRACT SYSTEM (NEW)
+// ==========================================
+
+model Contract {
+  id                BigInt         @id @default(autoincrement())
+  contractNumber    String         @unique @map("contract_number") @db.VarChar(20)
+  contractType      ContractType   @map("contract_type")
+  vendorId          BigInt         @map("vendor_id")
+  startDate         DateTime       @map("start_date") @db.Date
+  endDate           DateTime       @map("end_date") @db.Date
+  totalValue        Decimal        @map("total_value") @db.Decimal(15, 2)
+  remainingValue    Decimal        @map("remaining_value") @db.Decimal(15, 2)
+  fiscalYear        String         @map("fiscal_year") @db.VarChar(4)
+  status            ContractStatus @default(ACTIVE)
+  contractDocument  String?        @map("contract_document") @db.VarChar(255) // Path to PDF/file
+  approvedBy        String?        @map("approved_by") @db.VarChar(50)
+  approvalDate      DateTime?      @map("approval_date") @db.Date
+  // Project Reference Codes
+  committeeNumber   String?        @map("committee_number") @db.VarChar(20)
+  committeeName     String?        @map("committee_name") @db.VarChar(60)
+  committeeDate     DateTime?      @map("committee_date") @db.Date
+  egpNumber         String?        @map("egp_number") @db.VarChar(30) // e-GP reference number
+  projectNumber     String?        @map("project_number") @db.VarChar(30) // Project code
+  gfNumber          String?        @map("gf_number") @db.VarChar(10) // GF code
+  notes             String?        @db.Text
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at")
+
+  vendor            Company        @relation(fields: [vendorId], references: [id])
+  items             ContractItem[]
+  purchaseOrders    PurchaseOrder[]
+
+  @@map("contracts")
+}
+
+model ContractItem {
+  id                  BigInt   @id @default(autoincrement())
+  contractId          BigInt   @map("contract_id")
+  drugId              BigInt   @map("drug_id")
+  unitPrice           Decimal  @map("unit_price") @db.Decimal(10, 2)
+  quantityContracted  Decimal  @map("quantity_contracted") @db.Decimal(10, 2)
+  quantityRemaining   Decimal  @map("quantity_remaining") @db.Decimal(10, 2)
+  minOrderQuantity    Decimal? @map("min_order_quantity") @db.Decimal(10, 2)
+  maxOrderQuantity    Decimal? @map("max_order_quantity") @db.Decimal(10, 2)
+  notes               String?  @db.Text
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at")
+
+  contract            Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  drug                Drug     @relation(fields: [drugId], references: [id])
+
+  @@unique([contractId, drugId])
+  @@map("contract_items")
+}
+
+model DrugGeneric {
+  id                   BigInt                          @id @default(autoincrement())
+  workingCode          String                          @unique @map("working_code") @db.VarChar(7)
+  drugName             String                          @map("drug_name") @db.VarChar(60)
+
+  // Phase 4: New FK fields (v2.4.0)
+  dosageFormId         BigInt?                         @map("dosage_form_id") // FK to dosage_forms
+  saleUnitId           BigInt?                         @map("sale_unit_id") // FK to drug_units
+
+  // Legacy fields (will be removed after migration)
+  dosageForm           String?                         @map("dosage_form") @db.VarChar(20)
+  saleUnit             String?                         @map("sale_unit") @db.VarChar(5)
+
+  composition          String?                         @db.VarChar(50)
+  strength             Decimal?                        @db.Decimal(10, 2)
+  strengthUnit         String?                         @map("strength_unit") @db.VarChar(20)
+  isActive             Boolean                         @default(true) @map("is_active")
+  createdAt            DateTime                        @default(now()) @map("created_at")
+  tmtVtmCode           String?                         @map("tmt_vtm_code") @db.VarChar(10)
+  tmtVtmId             BigInt?                         @map("tmt_vtm_id")
+  tmtGpCode            String?                         @map("tmt_gp_code") @db.VarChar(10)
+  tmtGpId              BigInt?                         @map("tmt_gp_id")
+  tmtGpfCode           String?                         @map("tmt_gpf_code") @db.VarChar(10)
+  tmtGpfId             BigInt?                         @map("tmt_gpf_id")
+  tmtGpxCode           String?                         @map("tmt_gpx_code") @db.VarChar(10)
+  tmtGpxId             BigInt?                         @map("tmt_gpx_id")
+  tmtCode              String?                         @map("tmt_code") @db.VarChar(10)
+  standardUnit         String?                         @map("standard_unit") @db.VarChar(10)
+  therapeuticGroup     String?                         @map("therapeutic_group") @db.VarChar(50)
+
+  // Relations
+  dosageFormRel        DosageForm?                     @relation(fields: [dosageFormId], references: [id])
+  saleUnitRel          DrugUnit?                       @relation("GenericSaleUnit", fields: [saleUnitId], references: [id])
+  drugs                Drug[]
+  hppProducts          HospitalPharmaceuticalProduct[]
+  purchaseRequestItems PurchaseRequestItem[]
+  budgetPlanItems      BudgetPlanItem[]
+  tmtMappings          TmtMapping[]
+  components           DrugComponent[] // Phase 2: Active ingredients
+
+  @@map("drug_generics")
+}
+
+model Drug {
+  id                 BigInt                          @id @default(autoincrement())
+  drugCode           String                          @unique @map("drug_code") @db.VarChar(24)
+  tradeName          String                          @map("trade_name") @db.VarChar(100)
+  genericId          BigInt?                         @map("generic_id")
+  strength           String?                         @db.VarChar(50)
+
+  // Phase 4: New FK fields (v2.4.0)
+  dosageFormId       BigInt?                         @map("dosage_form_id") // FK to dosage_forms
+  unitId             BigInt?                         @map("unit_id") // FK to drug_units
+
+  // Legacy fields (will be removed after migration)
+  dosageForm         String?                         @map("dosage_form") @db.VarChar(30)
+  unit               String?                         @map("unit") @db.VarChar(10)
+
+  manufacturerId     BigInt?                         @map("manufacturer_id")
+  atcCode            String?                         @map("atc_code") @db.VarChar(10)
+  standardCode       String?                         @map("standard_code") @db.VarChar(24)
+  barcode            String?                         @db.VarChar(20)
+  packSize           Int                             @default(1) @map("pack_size")
+  unitPrice          Decimal?                        @map("unit_price") @db.Decimal(10, 2) // ราคาขายต่อหน่วย
+  isActive           Boolean                         @default(true) @map("is_active")
+  createdAt          DateTime                        @default(now()) @map("created_at")
+  updatedAt          DateTime                        @default(now()) @updatedAt @map("updated_at")
+
+  // Ministry Compliance Fields (v2.1.0 - DMSIC Standards)
+  nlemStatus         NlemStatus?                     @map("nlem_status") // สถานะยาในบัญชียาหลักแห่งชาติ (E/N)
+  drugStatus         DrugStatus                      @default(ACTIVE) @map("drug_status") // สถานะการใช้งานยา (1-4)
+  statusChangedDate  DateTime?                       @map("status_changed_date") @db.Date // วันที่เปลี่ยนสถานะ
+  productCategory    ProductCategory?                @map("product_category") // ประเภทผลิตภัณฑ์ (1-5)
+  tmtTpCode          String?                         @map("tmt_tp_code") @db.VarChar(10)
+  tmtTpId            BigInt?                         @map("tmt_tp_id")
+  tmtTpuCode         String?                         @map("tmt_tpu_code") @db.VarChar(10)
+  tmtTpuId           BigInt?                         @map("tmt_tpu_id")
+  tmtTppCode         String?                         @map("tmt_tpp_code") @db.VarChar(10)
+  tmtTppId           BigInt?                         @map("tmt_tpp_id")
+  nc24Code           String?                         @map("nc24_code") @db.VarChar(24)
+  registrationNumber String?                         @map("registration_number") @db.VarChar(20)
+  gpoCode            String?                         @map("gpo_code") @db.VarChar(15)
+  hppType            HppType?                        @map("hpp_type")
+  specPrep           String?                         @map("spec_prep") @db.VarChar(10)
+  isHpp              Boolean                         @default(false) @map("is_hpp")
+  baseProductId      BigInt?                         @map("base_product_id")
+  formulaReference   String?                         @map("formula_reference")
+  drugLots           DrugLot[]
+  baseProduct        Drug?                           @relation("HppBaseProduct", fields: [baseProductId], references: [id])
+  derivedProducts    Drug[]                          @relation("HppBaseProduct")
+  generic            DrugGeneric?                    @relation(fields: [genericId], references: [id])
+  manufacturer       Company?                        @relation(fields: [manufacturerId], references: [id])
+
+  // Phase 4: New lookup relations (v2.4.0)
+  dosageFormRel      DosageForm?                     @relation(fields: [dosageFormId], references: [id])
+  unitRel            DrugUnit?                       @relation("DrugUnit", fields: [unitId], references: [id])
+
+  hppBaseReferences     HospitalPharmaceuticalProduct[] @relation("HppBaseReference")
+  hppProducts           HospitalPharmaceuticalProduct[]
+  inventory             Inventory[]
+  purchaseOrderItems    PurchaseOrderItem[]
+  receiptItems          ReceiptItem[]
+  tmtMappings           TmtMapping[]
+  drugDistributionItems DrugDistributionItem[]
+  contractItems         ContractItem[]
+  drugReturnItems       DrugReturnItem[]
+  packRatios            DrugPackRatio[] // Phase 1: Pack conversion and pricing
+  focusLists            DrugFocusList[] // Phase 2: Controlled substances, special lists
+
+  @@map("drugs")
+}
+
+model Inventory {
+  id             BigInt                 @id @default(autoincrement())
+  drugId         BigInt                 @map("drug_id")
+  locationId     BigInt                 @map("location_id")
+  quantityOnHand Decimal                @default(0) @map("quantity_on_hand") @db.Decimal(10, 2)
+  minLevel       Decimal                @default(0) @map("min_level") @db.Decimal(10, 2)
+  maxLevel       Decimal                @default(0) @map("max_level") @db.Decimal(10, 2)
+  reorderPoint   Decimal                @default(0) @map("reorder_point") @db.Decimal(10, 2)
+  averageCost    Decimal                @default(0) @map("average_cost") @db.Decimal(10, 2)
+  lastCost       Decimal                @default(0) @map("last_cost") @db.Decimal(10, 2)
+  lastUpdated    DateTime               @default(now()) @map("last_updated")
+  drug           Drug                   @relation(fields: [drugId], references: [id])
+  location       Location               @relation(fields: [locationId], references: [id])
+  transactions   InventoryTransaction[]
+
+  @@unique([drugId, locationId])
+  @@map("inventory")
+}
+
+model DrugLot {
+  id                BigInt   @id @default(autoincrement())
+  drugId            BigInt   @map("drug_id")
+  locationId        BigInt   @map("location_id")
+  lotNumber         String   @map("lot_number") @db.VarChar(20)
+  expiryDate        DateTime @map("expiry_date") @db.Date
+  quantityAvailable Decimal  @map("quantity_available") @db.Decimal(10, 2)
+  unitCost          Decimal  @map("unit_cost") @db.Decimal(10, 2)
+  receivedDate      DateTime @map("received_date") @db.Date
+  receiptId         BigInt?  @map("receipt_id")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  drug              Drug     @relation(fields: [drugId], references: [id])
+  location          Location @relation(fields: [locationId], references: [id])
+  receipt           Receipt? @relation(fields: [receiptId], references: [id])
+
+  @@map("drug_lots")
+}
+
+model InventoryTransaction {
+  id                  BigInt             @id @default(autoincrement())
+  inventoryId         BigInt             @map("inventory_id")
+  transactionType     TransactionType    @map("transaction_type")
+  quantity            Decimal            @db.Decimal(10, 2)
+  unitCost            Decimal?           @map("unit_cost") @db.Decimal(10, 2)
+  referenceId         BigInt?            @map("reference_id")
+  referenceType       String?            @map("reference_type") @db.VarChar(20)
+
+  // Phase 4: Add adjustment reason (v2.4.0)
+  adjustmentReasonId  BigInt?            @map("adjustment_reason_id") // For ADJUST transactions
+
+  notes               String?
+  createdBy           BigInt             @map("created_by")
+  createdAt           DateTime           @default(now()) @map("created_at")
+
+  inventory           Inventory          @relation(fields: [inventoryId], references: [id])
+  adjustmentReason    AdjustmentReason?  @relation(fields: [adjustmentReasonId], references: [id])
+
+  @@map("inventory_transactions")
+}
+
+model BudgetAllocation {
+  id              BigInt              @id @default(autoincrement())
+  fiscalYear      Int                 @map("fiscal_year")
+  budgetId        BigInt              @map("budget_id")
+  departmentId    BigInt              @map("department_id")
+  totalBudget     Decimal             @map("total_budget") @db.Decimal(15, 2)
+  q1Budget        Decimal             @map("q1_budget") @db.Decimal(15, 2)
+  q2Budget        Decimal             @map("q2_budget") @db.Decimal(15, 2)
+  q3Budget        Decimal             @map("q3_budget") @db.Decimal(15, 2)
+  q4Budget        Decimal             @map("q4_budget") @db.Decimal(15, 2)
+  totalSpent      Decimal             @default(0) @map("total_spent") @db.Decimal(15, 2)
+  q1Spent         Decimal             @default(0) @map("q1_spent") @db.Decimal(15, 2)
+  q2Spent         Decimal             @default(0) @map("q2_spent") @db.Decimal(15, 2)
+  q3Spent         Decimal             @default(0) @map("q3_spent") @db.Decimal(15, 2)
+  q4Spent         Decimal             @default(0) @map("q4_spent") @db.Decimal(15, 2)
+  remainingBudget Decimal             @map("remaining_budget") @db.Decimal(15, 2)
+  status          BudgetStatus        @default(ACTIVE)
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @default(now()) @updatedAt @map("updated_at")
+  budget          Budget              @relation(fields: [budgetId], references: [id])
+  department      Department          @relation(fields: [departmentId], references: [id])
+  reservations    BudgetReservation[]
+  budgetPlans     BudgetPlan[]
+
+  @@unique([fiscalYear, budgetId, departmentId])
+  @@map("budget_allocations")
+}
+
+model BudgetPlan {
+  id                   BigInt             @id @default(autoincrement())
+  fiscalYear           Int                @map("fiscal_year")
+  departmentId         BigInt             @map("department_id")
+  budgetAllocationId   BigInt             @map("budget_allocation_id")
+  totalPlannedBudget   Decimal            @map("total_planned_budget") @db.Decimal(15, 2)
+  totalPlannedQuantity Decimal            @default(0) @map("total_planned_quantity") @db.Decimal(12, 2)
+  q1PlannedBudget      Decimal            @map("q1_planned_budget") @db.Decimal(15, 2)
+  q2PlannedBudget      Decimal            @map("q2_planned_budget") @db.Decimal(15, 2)
+  q3PlannedBudget      Decimal            @map("q3_planned_budget") @db.Decimal(15, 2)
+  q4PlannedBudget      Decimal            @map("q4_planned_budget") @db.Decimal(15, 2)
+  totalPurchased       Decimal            @default(0) @map("total_purchased") @db.Decimal(15, 2)
+  q1Purchased          Decimal            @default(0) @map("q1_purchased") @db.Decimal(15, 2)
+  q2Purchased          Decimal            @default(0) @map("q2_purchased") @db.Decimal(15, 2)
+  q3Purchased          Decimal            @default(0) @map("q3_purchased") @db.Decimal(15, 2)
+  q4Purchased          Decimal            @default(0) @map("q4_purchased") @db.Decimal(15, 2)
+  remainingBudget      Decimal            @map("remaining_budget") @db.Decimal(15, 2)
+  status               BudgetPlanStatus   @default(DRAFT)
+  approvedBy           String?            @map("approved_by") @db.VarChar(50)
+  approvalDate         DateTime?          @map("approval_date") @db.Date
+  notes                String?            @db.Text
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @default(now()) @updatedAt @map("updated_at")
+  department           Department         @relation(fields: [departmentId], references: [id])
+  budgetAllocation     BudgetAllocation   @relation(fields: [budgetAllocationId], references: [id])
+  items                BudgetPlanItem[]
+
+  @@unique([fiscalYear, departmentId, budgetAllocationId])
+  @@map("budget_plans")
+}
+
+model BudgetPlanItem {
+  id                    BigInt          @id @default(autoincrement())
+  budgetPlanId          BigInt          @map("budget_plan_id")
+  itemNumber            Int             @map("item_number")
+  genericId             BigInt          @map("generic_id")
+  plannedQuantity       Decimal         @map("planned_quantity") @db.Decimal(10, 2)
+  estimatedUnitCost     Decimal         @map("estimated_unit_cost") @db.Decimal(10, 2)
+  plannedTotalCost      Decimal         @map("planned_total_cost") @db.Decimal(15, 2)
+  q1Quantity            Decimal         @default(0) @map("q1_quantity") @db.Decimal(10, 2)
+  q2Quantity            Decimal         @default(0) @map("q2_quantity") @db.Decimal(10, 2)
+  q3Quantity            Decimal         @default(0) @map("q3_quantity") @db.Decimal(10, 2)
+  q4Quantity            Decimal         @default(0) @map("q4_quantity") @db.Decimal(10, 2)
+  q1Budget              Decimal         @default(0) @map("q1_budget") @db.Decimal(15, 2)
+  q2Budget              Decimal         @default(0) @map("q2_budget") @db.Decimal(15, 2)
+  q3Budget              Decimal         @default(0) @map("q3_budget") @db.Decimal(15, 2)
+  q4Budget              Decimal         @default(0) @map("q4_budget") @db.Decimal(15, 2)
+  purchasedQuantity     Decimal         @default(0) @map("purchased_quantity") @db.Decimal(10, 2)
+  purchasedValue        Decimal         @default(0) @map("purchased_value") @db.Decimal(15, 2)
+  q1PurchasedQty        Decimal         @default(0) @map("q1_purchased_qty") @db.Decimal(10, 2)
+  q2PurchasedQty        Decimal         @default(0) @map("q2_purchased_qty") @db.Decimal(10, 2)
+  q3PurchasedQty        Decimal         @default(0) @map("q3_purchased_qty") @db.Decimal(10, 2)
+  q4PurchasedQty        Decimal         @default(0) @map("q4_purchased_qty") @db.Decimal(10, 2)
+  remainingQuantity     Decimal         @map("remaining_quantity") @db.Decimal(10, 2)
+  remainingValue        Decimal         @map("remaining_value") @db.Decimal(15, 2)
+  avgConsumption3Years  Decimal?        @map("avg_consumption_3_years") @db.Decimal(10, 2)
+  year1Consumption      Decimal?        @map("year1_consumption") @db.Decimal(10, 2)
+  year2Consumption      Decimal?        @map("year2_consumption") @db.Decimal(10, 2)
+  year3Consumption      Decimal?        @map("year3_consumption") @db.Decimal(10, 2)
+  forecastMethod        String?         @map("forecast_method") @db.VarChar(50)
+  minStockLevel         Decimal?        @map("min_stock_level") @db.Decimal(10, 2)
+  currentStock          Decimal?        @map("current_stock") @db.Decimal(10, 2)
+  justification         String?         @db.Text
+  status                ItemStatus      @default(PENDING)
+  notes                 String?         @db.Text
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @default(now()) @updatedAt @map("updated_at")
+  budgetPlan            BudgetPlan      @relation(fields: [budgetPlanId], references: [id], onDelete: Cascade)
+  generic               DrugGeneric     @relation(fields: [genericId], references: [id])
+
+  @@unique([budgetPlanId, itemNumber])
+  @@map("budget_plan_items")
+}
+
+model BudgetReservation {
+  id              BigInt            @id @default(autoincrement())
+  allocationId    BigInt            @map("allocation_id")
+  prId            BigInt?           @map("pr_id")
+  poId            BigInt?           @map("po_id")
+  reservedAmount  Decimal           @map("reserved_amount") @db.Decimal(15, 2)
+  reservationDate DateTime          @map("reservation_date") @db.Date
+  status          ReservationStatus @default(ACTIVE)
+  expiresDate     DateTime?         @map("expires_date") @db.Date
+  createdAt       DateTime          @default(now()) @map("created_at")
+  allocation      BudgetAllocation  @relation(fields: [allocationId], references: [id])
+  purchaseOrder   PurchaseOrder?    @relation(fields: [poId], references: [id])
+  purchaseRequest PurchaseRequest?  @relation(fields: [prId], references: [id])
+
+  @@map("budget_reservations")
+}
+
+model PurchaseRequest {
+  id                 BigInt                @id @default(autoincrement())
+  prNumber           String                @unique @map("pr_number") @db.VarChar(20)
+  prDate             DateTime              @map("pr_date") @db.Date
+  departmentId       BigInt                @map("department_id")
+  budgetAllocationId BigInt?               @map("budget_allocation_id")
+  requestedAmount    Decimal               @map("requested_amount") @db.Decimal(15, 2)
+  purpose            String?
+  urgency            Urgency               @default(NORMAL)
+  status             RequestStatus         @default(DRAFT)
+  requestedBy        String                @map("requested_by") @db.VarChar(50)
+  approvedBy         String?               @map("approved_by") @db.VarChar(50)
+  approvalDate       DateTime?             @map("approval_date") @db.Date
+  convertedToPo      Boolean               @default(false) @map("converted_to_po")
+  poId               BigInt?               @map("po_id")
+  remarks            String?
+  createdAt          DateTime              @default(now()) @map("created_at")
+  reservations       BudgetReservation[]
+  items              PurchaseRequestItem[]
+  department         Department            @relation(fields: [departmentId], references: [id])
+  purchaseOrder      PurchaseOrder?        @relation(fields: [poId], references: [id])
+
+  @@map("purchase_requests")
+}
+
+model PurchaseRequestItem {
+  id                 BigInt          @id @default(autoincrement())
+  prId               BigInt          @map("pr_id")
+  itemNumber         Int             @map("item_number")
+  genericId          BigInt?         @map("generic_id")
+  description        String?
+  quantityRequested  Decimal         @map("quantity_requested") @db.Decimal(10, 2)
+  estimatedUnitCost  Decimal?        @map("estimated_unit_cost") @db.Decimal(10, 2)
+  estimatedTotalCost Decimal?        @map("estimated_total_cost") @db.Decimal(15, 2)
+  justification      String?
+  status             ItemStatus      @default(PENDING)
+  generic            DrugGeneric?    @relation(fields: [genericId], references: [id])
+  purchaseRequest    PurchaseRequest @relation(fields: [prId], references: [id], onDelete: Cascade)
+
+  @@map("purchase_request_items")
+}
+
+model PurchaseOrder {
+  id                BigInt              @id @default(autoincrement())
+  poNumber          String              @unique @map("po_number") @db.VarChar(20)
+  vendorId          BigInt              @map("vendor_id")
+  poDate            DateTime            @map("po_date") @db.Date
+  deliveryDate      DateTime?           @map("delivery_date") @db.Date
+  departmentId      BigInt?             @map("department_id")
+  budgetId          BigInt?             @map("budget_id")
+  contractId        BigInt?             @map("contract_id") // Link to contract
+  // Phase 1: Procurement method and type (v2.3.0)
+  purchaseMethodId  BigInt?             @map("purchase_method_id") // วิธีการจัดซื้อ
+  purchaseTypeId    BigInt?             @map("purchase_type_id") // ประเภทการซื้อ
+  status            PoStatus            @default(DRAFT)
+  totalAmount       Decimal             @default(0) @map("total_amount") @db.Decimal(12, 2)
+  totalItems        Int                 @default(0) @map("total_items")
+  sentToVendorDate  DateTime?           @map("sent_to_vendor_date") @db.Date
+  printedDate       DateTime?           @map("printed_date") @db.Date
+  confirmedBy       BigInt?             @map("confirmed_by")
+  confirmedDate     DateTime?           @map("confirmed_date") @db.Date
+  // Project Reference Codes
+  egpNumber         String?             @map("egp_number") @db.VarChar(30) // e-GP reference
+  projectNumber     String?             @map("project_number") @db.VarChar(30) // Project code
+  gfNumber          String?             @map("gf_number") @db.VarChar(10) // GF code
+  notes             String?
+  createdBy         BigInt              @map("created_by")
+  approvedBy        BigInt?             @map("approved_by")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at")
+  reservations      BudgetReservation[]
+  items             PurchaseOrderItem[]
+  budget            Budget?             @relation(fields: [budgetId], references: [id])
+  department        Department?         @relation(fields: [departmentId], references: [id])
+  vendor            Company             @relation(fields: [vendorId], references: [id])
+  contract          Contract?           @relation(fields: [contractId], references: [id])
+  purchaseMethod    PurchaseMethod?     @relation(fields: [purchaseMethodId], references: [id]) // Phase 1
+  purchaseType      PurchaseType?       @relation(fields: [purchaseTypeId], references: [id]) // Phase 1
+  requests          PurchaseRequest[]
+  receipts          Receipt[]
+  approvalDocuments ApprovalDocument[]
+  paymentDocuments  PaymentDocument[]
+
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderItem {
+  id               BigInt        @id @default(autoincrement())
+  poId             BigInt        @map("po_id")
+  drugId           BigInt        @map("drug_id")
+  quantityOrdered  Decimal       @map("quantity_ordered") @db.Decimal(10, 2)
+  unitCost         Decimal       @map("unit_cost") @db.Decimal(10, 2)
+  quantityReceived Decimal       @default(0) @map("quantity_received") @db.Decimal(10, 2)
+  notes            String?
+  drug             Drug          @relation(fields: [drugId], references: [id])
+  purchaseOrder    PurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+
+  @@unique([poId, drugId])
+  @@map("purchase_order_items")
+}
+
+model Receipt {
+  id               BigInt             @id @default(autoincrement())
+  receiptNumber    String             @unique @map("receipt_number") @db.VarChar(20)
+  poId             BigInt             @map("po_id")
+  receiptDate      DateTime           @map("receipt_date") @db.Date
+  deliveryNote     String?            @map("delivery_note") @db.VarChar(50)
+  invoiceNumber    String?            @map("invoice_number") @db.VarChar(50) // NEW
+  invoiceDate      DateTime?          @map("invoice_date") @db.Date // NEW
+  billingDate      DateTime?          @map("billing_date") @db.Date // Date submitted to finance for payment
+  status           ReceiptStatus      @default(DRAFT)
+  totalItems       Int                @default(0) @map("total_items")
+  totalAmount      Decimal            @default(0) @map("total_amount") @db.Decimal(12, 2)
+  receivedBy       BigInt             @map("received_by")
+  receivedDate     DateTime?          @map("received_date") @db.Date // NEW
+  receiveTime      String?            @map("receive_time") @db.VarChar(5) // HH:MM format
+  verifiedBy       BigInt?            @map("verified_by")
+  verifiedDate     DateTime?          @map("verified_date") @db.Date // NEW
+  postedDate       DateTime?          @map("posted_date") @db.Date // NEW
+  notes            String?
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @default(now()) @updatedAt @map("updated_at")
+  drugLots         DrugLot[]
+  items            ReceiptItem[]
+  purchaseOrder    PurchaseOrder      @relation(fields: [poId], references: [id])
+  inspectors       ReceiptInspector[] // NEW: Multi-inspector support
+  paymentDocuments PaymentDocument[] // NEW
+
+  @@map("receipts")
+}
+
+model ReceiptItem {
+  id                BigInt             @id @default(autoincrement())
+  receiptId         BigInt             @map("receipt_id")
+  drugId            BigInt             @map("drug_id")
+  quantityReceived  Decimal            @map("quantity_received") @db.Decimal(10, 2)
+  remainingQuantity Decimal?           @map("remaining_quantity") @db.Decimal(10, 2) // For emergency dispensing
+  unitCost          Decimal            @map("unit_cost") @db.Decimal(10, 2)
+  lotNumber         String?            @map("lot_number") @db.VarChar(20)
+  expiryDate        DateTime?          @map("expiry_date") @db.Date
+  itemType          PurchaseItemType?  @map("item_type") // Type of purchase (normal, urgent, replacement, emergency)
+  notes             String?
+  drug              Drug               @relation(fields: [drugId], references: [id])
+  receipt           Receipt            @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@map("receipt_items")
+}
+
+// ==========================================
+// INSPECTION COMMITTEE (NEW)
+// ==========================================
+
+model ReceiptInspector {
+  id                BigInt        @id @default(autoincrement())
+  receiptId         BigInt        @map("receipt_id")
+  inspectorName     String        @map("inspector_name") @db.VarChar(100)
+  inspectorPosition String?       @map("inspector_position") @db.VarChar(100)
+  inspectorRole     InspectorRole @map("inspector_role")
+  signedDate        DateTime?     @map("signed_date") @db.Date
+  signaturePath     String?       @map("signature_path") @db.VarChar(255) // Path to signature image
+  notes             String?       @db.Text
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  receipt           Receipt       @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@map("receipt_inspectors")
+}
+
+// ==========================================
+// APPROVAL DOCUMENTS (NEW)
+// ==========================================
+
+model ApprovalDocument {
+  id                BigInt         @id @default(autoincrement())
+  approvalDocNumber String         @unique @map("approval_doc_number") @db.VarChar(20)
+  poId              BigInt         @map("po_id")
+  approvalType      ApprovalType   @default(NORMAL) @map("approval_type")
+  requestedBy       String         @map("requested_by") @db.VarChar(50)
+  requestedDate     DateTime       @map("requested_date") @db.Date
+  approvedBy        String?        @map("approved_by") @db.VarChar(50)
+  approvalDate      DateTime?      @map("approval_date") @db.Date
+  rejectedBy        String?        @map("rejected_by") @db.VarChar(50)
+  rejectedDate      DateTime?      @map("rejected_date") @db.Date
+  rejectionReason   String?        @map("rejection_reason") @db.Text
+  status            ApprovalStatus @default(PENDING)
+  documentPath      String?        @map("document_path") @db.VarChar(255) // Path to approval document
+  notes             String?        @db.Text
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at")
+
+  purchaseOrder     PurchaseOrder  @relation(fields: [poId], references: [id])
+
+  @@map("approval_documents")
+}
+
+// ==========================================
+// PAYMENT TRACKING (NEW)
+// ==========================================
+
+model PaymentDocument {
+  id                      BigInt              @id @default(autoincrement())
+  paymentDocNumber        String              @unique @map("payment_doc_number") @db.VarChar(20)
+  receiptId               BigInt              @map("receipt_id")
+  poId                    BigInt              @map("po_id")
+  submittedToFinanceBy    String?             @map("submitted_to_finance_by") @db.VarChar(50)
+  submittedToFinanceDate  DateTime?           @map("submitted_to_finance_date") @db.Date
+  approvedByFinance       String?             @map("approved_by_finance") @db.VarChar(50)
+  approvedByFinanceDate   DateTime?           @map("approved_by_finance_date") @db.Date
+  paidDate                DateTime?           @map("paid_date") @db.Date
+  paidAmount              Decimal?            @map("paid_amount") @db.Decimal(15, 2)
+  paymentMethod           String?             @map("payment_method") @db.VarChar(50) // e.g., "TRANSFER", "CHEQUE"
+  referenceNumber         String?             @map("reference_number") @db.VarChar(50) // Cheque/Transfer reference
+  paymentStatus           PaymentStatus       @default(PENDING) @map("payment_status")
+  notes                   String?             @db.Text
+  createdAt               DateTime            @default(now()) @map("created_at")
+  updatedAt               DateTime            @default(now()) @updatedAt @map("updated_at")
+
+  receipt                 Receipt             @relation(fields: [receiptId], references: [id])
+  purchaseOrder           PurchaseOrder       @relation(fields: [poId], references: [id])
+  attachments             PaymentAttachment[]
+
+  @@map("payment_documents")
+}
+
+model PaymentAttachment {
+  id                BigInt           @id @default(autoincrement())
+  paymentDocId      BigInt           @map("payment_doc_id")
+  attachmentType    AttachmentType   @map("attachment_type")
+  fileName          String           @map("file_name") @db.VarChar(255)
+  filePath          String           @map("file_path") @db.VarChar(500)
+  fileSize          Int?             @map("file_size") // in bytes
+  uploadedBy        String           @map("uploaded_by") @db.VarChar(50)
+  uploadedAt        DateTime         @default(now()) @map("uploaded_at")
+  notes             String?          @db.Text
+
+  paymentDocument   PaymentDocument  @relation(fields: [paymentDocId], references: [id], onDelete: Cascade)
+
+  @@map("payment_attachments")
+}
+
+model TmtConcept {
+  id                    BigInt            @id @default(autoincrement())
+  tmtId                 BigInt            @unique @map("tmt_id")
+  conceptCode           String?           @map("concept_code") @db.VarChar(20)
+  level                 TmtLevel          @map("level")
+  fsn                   String            @map("fsn") @db.VarChar(2000)
+  preferredTerm         String?           @map("preferred_term") @db.VarChar(300)
+  strength              String?           @db.VarChar(100)
+  dosageForm            String?           @map("dosage_form") @db.VarChar(50)
+  manufacturer          String?           @db.VarChar(300)
+  packSize              String?           @map("pack_size") @db.VarChar(50)
+  unitOfUse             String?           @map("unit_of_use") @db.VarChar(20)
+  routeOfAdministration String?           @map("route_of_administration") @db.VarChar(50)
+  isActive              Boolean           @default(true) @map("is_active")
+  effectiveDate         DateTime?         @map("effective_date")
+  releaseDate           String?           @map("release_date") @db.VarChar(20)
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @default(now()) @updatedAt @map("updated_at")
+  mappings              TmtMapping[]
+  childRelations        TmtRelationship[] @relation("ChildConcept")
+  parentRelations       TmtRelationship[] @relation("ParentConcept")
+  attributes            TmtAttribute[]
+  hisDrugMaster         HisDrugMaster[]
+  hppProducts           HospitalPharmaceuticalProduct[]
+  usageStats            TmtUsageStats[]
+  drugComponents        DrugComponent[] // Phase 2: Link to drug ingredients
+
+  @@map("tmt_concepts")
+}
+
+model TmtRelationship {
+  id                BigInt          @id @default(autoincrement())
+  parentId          BigInt          @map("parent_id")
+  childId           BigInt          @map("child_id")
+  relationshipType  TmtRelationType @map("relationship_type")
+  strengthValue     String?         @map("strength_value") @db.VarChar(100)
+  dosageFormValue   String?         @map("dosage_form_value") @db.VarChar(50)
+  manufacturerValue String?         @map("manufacturer_value") @db.VarChar(300)
+  packSizeValue     String?         @map("pack_size_value") @db.VarChar(50)
+  isActive          Boolean         @default(true) @map("is_active")
+  effectiveDate     DateTime?       @map("effective_date")
+  releaseDate       String?         @map("release_date") @db.VarChar(20)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  child             TmtConcept      @relation("ChildConcept", fields: [childId], references: [id])
+  parent            TmtConcept      @relation("ParentConcept", fields: [parentId], references: [id])
+
+  @@unique([parentId, childId, relationshipType])
+  @@map("tmt_relationships")
+}
+
+model HospitalPharmaceuticalProduct {
+  id               BigInt       @id @default(autoincrement())
+  hppCode          String       @unique @map("hpp_code") @db.VarChar(20)
+  hppType          HppType      @map("hpp_type")
+  productName      String       @map("product_name") @db.VarChar(200)
+  genericId        BigInt?      @map("generic_id")
+  drugId           BigInt?      @map("drug_id")
+  baseProductId    BigInt?      @map("base_product_id")
+  strength         String?      @db.VarChar(100)
+  dosageForm       String?      @map("dosage_form") @db.VarChar(50)
+  packSize         String?      @map("pack_size") @db.VarChar(50)
+  unitOfUse        String?      @map("unit_of_use") @db.VarChar(20)
+  formulaReference String?      @map("formula_reference")
+  formulaSource    String?      @map("formula_source") @db.VarChar(100)
+  tmtCode          String?      @map("tmt_code") @db.VarChar(10)
+  tmtId            BigInt?      @map("tmt_id")
+  specPrep         String?      @map("spec_prep") @db.VarChar(10)
+  isOutsourced     Boolean      @default(false) @map("is_outsourced")
+  hospitalCode     String?      @map("hospital_code") @db.VarChar(10)
+  isActive         Boolean      @default(true) @map("is_active")
+  approvedBy       String?      @map("approved_by") @db.VarChar(50)
+  approvalDate     DateTime?    @map("approval_date")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @default(now()) @updatedAt @map("updated_at")
+  baseProduct      Drug?        @relation("HppBaseReference", fields: [baseProductId], references: [id])
+  drug             Drug?        @relation(fields: [drugId], references: [id])
+  generic          DrugGeneric? @relation(fields: [genericId], references: [id])
+  tmtConcept       TmtConcept?  @relation(fields: [tmtId], references: [id])
+  formulations     HppFormulation[]
+
+  @@map("hospital_pharmaceutical_products")
+}
+
+model TmtMapping {
+  id               BigInt       @id @default(autoincrement())
+  workingCode      String?      @map("working_code") @db.VarChar(7)
+  drugCode         String?      @map("drug_code") @db.VarChar(24)
+  genericId        BigInt?      @map("generic_id")
+  drugId           BigInt?      @map("drug_id")
+  tmtLevel         TmtLevel     @map("tmt_level")
+  tmtConceptId     BigInt       @map("tmt_concept_id")
+  tmtCode          String?      @map("tmt_code") @db.VarChar(10)
+  tmtId            BigInt       @map("tmt_id")
+  mappingSource    String?      @map("mapping_source") @db.VarChar(50)
+  confidence       Decimal?     @db.Decimal(3, 2)
+  mappedBy         String?      @map("mapped_by") @db.VarChar(50)
+  verifiedBy       String?      @map("verified_by") @db.VarChar(50)
+  isActive         Boolean      @default(true) @map("is_active")
+  isVerified       Boolean      @default(false) @map("is_verified")
+  mappingDate      DateTime     @map("mapping_date")
+  verificationDate DateTime?    @map("verification_date")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @default(now()) @updatedAt @map("updated_at")
+  drug             Drug?        @relation(fields: [drugId], references: [id])
+  generic          DrugGeneric? @relation(fields: [genericId], references: [id])
+  tmtConcept       TmtConcept   @relation(fields: [tmtConceptId], references: [id])
+
+  @@map("tmt_mappings")
+}
+
+model TmtAttribute {
+  id            BigInt     @id @default(autoincrement())
+  conceptId     BigInt     @map("concept_id")
+  attributeType String     @map("attribute_type") @db.VarChar(50)
+  attributeValue String    @map("attribute_value") @db.Text
+  valueType     String     @map("value_type") @db.VarChar(20)
+  unit          String?    @db.VarChar(20)
+  isActive      Boolean    @default(true) @map("is_active")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  concept       TmtConcept @relation(fields: [conceptId], references: [id])
+
+  @@map("tmt_attributes")
+}
+
+model TmtManufacturer {
+  id               BigInt    @id @default(autoincrement())
+  manufacturerCode String?   @unique @map("manufacturer_code") @db.VarChar(20)
+  manufacturerName String    @map("manufacturer_name") @db.VarChar(300)
+  manufacturerNameEn String? @map("manufacturer_name_en") @db.VarChar(300)
+  countryCode      String?   @map("country_code") @db.VarChar(3)
+  fdaLicense       String?   @map("fda_license") @db.VarChar(50)
+  gmpStatus        String?   @map("gmp_status") @db.VarChar(20)
+  isActive         Boolean   @default(true) @map("is_active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at")
+  hisDrugMaster    HisDrugMaster[]
+
+  @@map("tmt_manufacturers")
+}
+
+model TmtDosageForm {
+  id                    BigInt    @id @default(autoincrement())
+  formCode              String    @unique @map("form_code") @db.VarChar(20)
+  formName              String    @map("form_name") @db.VarChar(100)
+  formNameEn            String?   @map("form_name_en") @db.VarChar(100)
+  category              String?   @db.VarChar(50)
+  routeOfAdministration String?   @map("route_of_administration") @db.VarChar(50)
+  isActive              Boolean   @default(true) @map("is_active")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  hisDrugMaster         HisDrugMaster[]
+
+  @@map("tmt_dosage_forms")
+}
+
+model TmtUnit {
+  id               BigInt    @id @default(autoincrement())
+  unitCode         String    @unique @map("unit_code") @db.VarChar(20)
+  unitName         String    @map("unit_name") @db.VarChar(50)
+  unitNameEn       String?   @map("unit_name_en") @db.VarChar(50)
+  unitType         String?   @map("unit_type") @db.VarChar(20)
+  baseUnit         String?   @map("base_unit") @db.VarChar(20)
+  conversionFactor Decimal?  @map("conversion_factor") @db.Decimal(15, 6)
+  isActive         Boolean   @default(true) @map("is_active")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  @@map("tmt_units")
+}
+
+model HisDrugMaster {
+  id                  BigInt              @id @default(autoincrement())
+  hisDrugCode         String              @unique @map("his_drug_code") @db.VarChar(50)
+  drugName            String              @map("drug_name") @db.VarChar(200)
+  genericName         String?             @map("generic_name") @db.VarChar(200)
+  strength            String?             @db.VarChar(100)
+  dosageForm          String?             @map("dosage_form") @db.VarChar(50)
+  manufacturer        String?             @db.VarChar(200)
+  registrationNumber  String?             @map("registration_number") @db.VarChar(30)
+  tmtConceptId        BigInt?             @map("tmt_concept_id")
+  tmtLevel            TmtLevel?           @map("tmt_level")
+  mappingConfidence   Decimal?            @map("mapping_confidence") @db.Decimal(3, 2)
+  mappingStatus       HisMappingStatus    @default(PENDING) @map("mapping_status")
+  nc24Code            String?             @map("nc24_code") @db.VarChar(24)
+  nc24Status          String?             @map("nc24_status") @db.VarChar(20)
+  tmtManufacturerId   BigInt?             @map("tmt_manufacturer_id")
+  tmtDosageFormId     BigInt?             @map("tmt_dosage_form_id")
+  isActive            Boolean             @default(true) @map("is_active")
+  lastSync            DateTime?           @map("last_sync")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @default(now()) @updatedAt @map("updated_at")
+  tmtConcept          TmtConcept?         @relation(fields: [tmtConceptId], references: [id])
+  tmtManufacturer     TmtManufacturer?    @relation(fields: [tmtManufacturerId], references: [id])
+  tmtDosageForm       TmtDosageForm?      @relation(fields: [tmtDosageFormId], references: [id])
+  usageStats          TmtUsageStats[]
+
+  @@map("his_drug_master")
+}
+
+model HppFormulation {
+  id               BigInt                        @id @default(autoincrement())
+  hppId            BigInt                        @map("hpp_id")
+  componentType    String                        @map("component_type") @db.VarChar(20)
+  componentName    String                        @map("component_name") @db.VarChar(200)
+  componentStrength String?                      @map("component_strength") @db.VarChar(100)
+  componentUnit    String?                       @map("component_unit") @db.VarChar(20)
+  componentRatio   Decimal?                      @map("component_ratio") @db.Decimal(10, 4)
+  notes            String?                       @db.Text
+  createdAt        DateTime                      @default(now()) @map("created_at")
+  hpp              HospitalPharmaceuticalProduct @relation(fields: [hppId], references: [id], onDelete: Cascade)
+
+  @@map("hpp_formulations")
+}
+
+model TmtUsageStats {
+  id                BigInt         @id @default(autoincrement())
+  periodType        String         @map("period_type") @db.VarChar(20)
+  periodDate        DateTime       @map("period_date") @db.Date
+  tmtConceptId      BigInt?        @map("tmt_concept_id")
+  hisDrugMasterId   BigInt?        @map("his_drug_master_id")
+  usageCount        Int            @default(0) @map("usage_count")
+  prescriptionCount Int            @default(0) @map("prescription_count")
+  dispensingCount   Int            @default(0) @map("dispensing_count")
+  consumptionAmount Decimal?       @map("consumption_amount") @db.Decimal(15, 3)
+  unit              String?        @db.VarChar(20)
+  departmentId      BigInt?        @map("department_id")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  tmtConcept        TmtConcept?    @relation(fields: [tmtConceptId], references: [id])
+  hisDrugMaster     HisDrugMaster? @relation(fields: [hisDrugMasterId], references: [id])
+  department        Department?    @relation(fields: [departmentId], references: [id])
+
+  @@map("tmt_usage_stats")
+}
+
+model MinistryReport {
+  id                  BigInt   @id @default(autoincrement())
+  reportType          String   @map("report_type") @db.VarChar(50)
+  reportPeriod        String   @map("report_period") @db.VarChar(20)
+  reportDate          DateTime @map("report_date") @db.Date
+  hospitalCode        String?  @map("hospital_code") @db.VarChar(10)
+  dataJson            Json?    @map("data_json")
+  tmtComplianceRate   Decimal? @map("tmt_compliance_rate") @db.Decimal(5, 2)
+  totalItems          Int?     @map("total_items")
+  mappedItems         Int?     @map("mapped_items")
+  verificationStatus  String?  @map("verification_status") @db.VarChar(20)
+  submittedAt         DateTime? @map("submitted_at")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  @@map("ministry_reports")
+}
+
+model DrugDistribution {
+  id                 BigInt                 @id @default(autoincrement())
+  distributionNumber String                 @unique @map("distribution_number") @db.VarChar(20)
+  distributionDate   DateTime               @map("distribution_date") @db.Date
+  fromLocationId     BigInt                 @map("from_location_id")
+  toLocationId       BigInt?                @map("to_location_id")
+  requestingDeptId   BigInt?                @map("requesting_dept_id")
+  distributionTypeId BigInt?                @map("distribution_type_id") // Phase 3: ประเภทการจ่าย (ยืม/คืน)
+  purpose            String?                @db.Text
+  requestedBy        String                 @map("requested_by") @db.VarChar(50)
+  approvedBy         String?                @map("approved_by") @db.VarChar(50)
+  dispensedBy        String?                @map("dispensed_by") @db.VarChar(50)
+  approvalDate       DateTime?              @map("approval_date") @db.Date
+  dispensedDate      DateTime?              @map("dispensed_date") @db.Date
+  status             DistributionStatus     @default(PENDING)
+  totalItems         Int                    @default(0) @map("total_items")
+  totalAmount        Decimal                @default(0) @map("total_amount") @db.Decimal(12, 2)
+  notes              String?
+  createdAt          DateTime               @default(now()) @map("created_at")
+  updatedAt          DateTime               @default(now()) @updatedAt @map("updated_at")
+  fromLocation       Location               @relation("DistributionFromLocation", fields: [fromLocationId], references: [id])
+  toLocation         Location?              @relation("DistributionToLocation", fields: [toLocationId], references: [id])
+  requestingDept     Department?            @relation(fields: [requestingDeptId], references: [id])
+  distributionType   DistributionType?      @relation(fields: [distributionTypeId], references: [id]) // Phase 3
+  items              DrugDistributionItem[]
+
+  @@map("drug_distributions")
+}
+
+model DrugDistributionItem {
+  id                BigInt            @id @default(autoincrement())
+  distributionId    BigInt            @map("distribution_id")
+  itemNumber        Int               @map("item_number")
+  drugId            BigInt            @map("drug_id")
+  lotNumber         String            @map("lot_number") @db.VarChar(20)
+  quantityDispensed Decimal           @map("quantity_dispensed") @db.Decimal(10, 2)
+  unitCost          Decimal           @map("unit_cost") @db.Decimal(10, 2)
+  totalCost         Decimal           @map("total_cost") @db.Decimal(12, 2)
+  expiryDate        DateTime          @map("expiry_date") @db.Date
+  batchNumber       String?           @map("batch_number") @db.VarChar(20)
+  purposeDetail     String?           @map("purpose_detail") @db.VarChar(200)
+  notes             String?
+  createdAt         DateTime          @default(now()) @map("created_at")
+  distribution      DrugDistribution  @relation(fields: [distributionId], references: [id], onDelete: Cascade)
+  drug              Drug              @relation(fields: [drugId], references: [id])
+
+  @@map("drug_distribution_items")
+}
+
+// ==========================================
+// DRUG RETURN SYSTEM (NEW)
+// ==========================================
+
+model DrugReturn {
+  id              BigInt           @id @default(autoincrement())
+  returnNumber    String           @unique @map("return_number") @db.VarChar(20)
+  departmentId    BigInt           @map("department_id")
+  returnDate      DateTime         @map("return_date") @db.Date
+  // Phase 1: Changed to FK (v2.3.0)
+  returnReasonId  BigInt?          @map("return_reason_id") // FK to return_reasons
+  returnReasonText String?         @map("return_reason_text") @db.VarChar(100) // Legacy/free text fallback
+  actionTaken     String?          @map("action_taken") @db.VarChar(100)
+  referenceNumber String?          @map("reference_number") @db.VarChar(50)
+  status          ReturnStatus     @default(DRAFT)
+  totalItems      Int              @default(0) @map("total_items")
+  totalAmount     Decimal          @default(0) @map("total_amount") @db.Decimal(12, 2)
+  receivedBy      String           @map("received_by") @db.VarChar(50)
+  verifiedBy      String?          @map("verified_by") @db.VarChar(50)
+  verifiedDate    DateTime?        @map("verified_date") @db.Date
+  postedDate      DateTime?        @map("posted_date") @db.Date
+  notes           String?          @db.Text
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at")
+  department      Department       @relation(fields: [departmentId], references: [id])
+  returnReason    ReturnReason?    @relation(fields: [returnReasonId], references: [id]) // Phase 1
+  items           DrugReturnItem[]
+
+  @@map("drug_returns")
+}
+
+model DrugReturnItem {
+  id              BigInt         @id @default(autoincrement())
+  returnId        BigInt         @map("return_id")
+  drugId          BigInt         @map("drug_id")
+  totalQuantity   Decimal        @map("total_quantity") @db.Decimal(10, 2)
+  goodQuantity    Decimal        @map("good_quantity") @db.Decimal(10, 2)
+  damagedQuantity Decimal        @map("damaged_quantity") @db.Decimal(10, 2)
+  lotNumber       String         @map("lot_number") @db.VarChar(20)
+  expiryDate      DateTime       @map("expiry_date") @db.Date
+  returnType      ReturnType     @map("return_type")
+  locationId      BigInt?        @map("location_id")
+
+  // Phase 4: Add return action (v2.4.0)
+  returnActionId  BigInt?        @map("return_action_id") // What to do with returned drugs
+
+  unitCost        Decimal?       @map("unit_cost") @db.Decimal(10, 2)
+  notes           String?        @db.Text
+  createdAt       DateTime       @default(now()) @map("created_at")
+
+  drugReturn      DrugReturn     @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  drug            Drug           @relation(fields: [drugId], references: [id])
+  location        Location?      @relation(fields: [locationId], references: [id])
+  returnAction    ReturnAction?  @relation(fields: [returnActionId], references: [id])
+
+  @@map("drug_return_items")
+}
+
+enum LocationType {
+  WAREHOUSE      @map("warehouse")
+  PHARMACY       @map("pharmacy")
+  WARD           @map("ward")
+  EMERGENCY      @map("emergency")
+  LABORATORY     @map("laboratory")
+  OPERATING_ROOM @map("operating_room")
+}
+
+enum CompanyType {
+  VENDOR       @map("vendor")
+  MANUFACTURER @map("manufacturer")
+  BOTH         @map("both")
+}
+
+enum TransactionType {
+  RECEIVE  @map("receive")
+  ISSUE    @map("issue")
+  TRANSFER @map("transfer")
+  ADJUST   @map("adjust")
+  RETURN   @map("return")
+}
+
+enum BudgetStatus {
+  ACTIVE   @map("active")
+  INACTIVE @map("inactive")
+  LOCKED   @map("locked")
+}
+
+enum ReservationStatus {
+  ACTIVE    @map("active")
+  RELEASED  @map("released")
+  COMMITTED @map("committed")
+}
+
+enum Urgency {
+  URGENT @map("urgent")
+  NORMAL @map("normal")
+  LOW    @map("low")
+}
+
+enum RequestStatus {
+  DRAFT     @map("draft")
+  SUBMITTED @map("submitted")
+  APPROVED  @map("approved")
+  REJECTED  @map("rejected")
+  CONVERTED @map("converted")
+}
+
+enum ItemStatus {
+  PENDING  @map("pending")
+  APPROVED @map("approved")
+  REJECTED @map("rejected")
+}
+
+enum PoStatus {
+  DRAFT    @map("draft")
+  PENDING  @map("pending")
+  APPROVED @map("approved")
+  SENT     @map("sent")
+  RECEIVED @map("received")
+  CLOSED   @map("closed")
+}
+
+enum ReceiptStatus {
+  DRAFT                @map("draft")
+  RECEIVED             @map("received")
+  PENDING_VERIFICATION @map("pending_verification")
+  VERIFIED             @map("verified")
+  POSTED               @map("posted")
+}
+
+enum ReturnStatus {
+  DRAFT     @map("draft")
+  SUBMITTED @map("submitted")
+  VERIFIED  @map("verified")
+  POSTED    @map("posted")
+  CANCELLED @map("cancelled")
+}
+
+enum ReturnType {
+  PURCHASED @map("purchased")
+  FREE      @map("free")
+}
+
+enum TmtLevel {
+  SUBS @map("SUBS")
+  VTM  @map("VTM")
+  GP   @map("GP")
+  TP   @map("TP")
+  GPU  @map("GPU")
+  TPU  @map("TPU")
+  GPP  @map("GPP")
+  TPP  @map("TPP")
+  GP_F @map("GP-F")
+  GP_X @map("GP-X")
+}
+
+enum HppType {
+  REPACKAGED       @map("R")
+  MODIFIED         @map("M")
+  HOSPITAL_FORMULA @map("F")
+  EXTEMPORANEOUS   @map("X")
+  OUTSOURCED       @map("OHPP")
+}
+
+enum TmtRelationType {
+  IS_A                     @map("IS_A")
+  HAS_ACTIVE_INGREDIENT    @map("HAS_ACTIVE_INGREDIENT")
+  HAS_DOSE_FORM            @map("HAS_DOSE_FORM")
+  HAS_MANUFACTURER         @map("HAS_MANUFACTURER")
+  HAS_PACK_SIZE            @map("HAS_PACK_SIZE")
+  HAS_STRENGTH             @map("HAS_STRENGTH")
+  HAS_UNIT_OF_USE          @map("HAS_UNIT_OF_USE")
+  HAS_ROUTE_OF_ADMINISTRATION @map("HAS_ROUTE_OF_ADMINISTRATION")
+}
+
+enum HisMappingStatus {
+  PENDING   @map("pending")
+  MAPPED    @map("mapped")
+  VERIFIED  @map("verified")
+  REJECTED  @map("rejected")
+}
+
+enum DistributionStatus {
+  PENDING   @map("pending")
+  APPROVED  @map("approved")
+  DISPENSED @map("dispensed")
+  CANCELLED @map("cancelled")
+  COMPLETED @map("completed")
+}
+
+enum BudgetPlanStatus {
+  DRAFT    @map("draft")
+  SUBMITTED @map("submitted")
+  APPROVED @map("approved")
+  REJECTED @map("rejected")
+  ACTIVE   @map("active")
+  CLOSED   @map("closed")
+}
+
+// ==========================================
+// PROCUREMENT SYSTEM ENUMS (NEW)
+// ==========================================
+
+enum ContractType {
+  E_BIDDING       @map("e_bidding")
+  PRICE_AGREEMENT @map("price_agreement")
+  QUOTATION       @map("quotation")
+  SPECIAL         @map("special")
+}
+
+enum ContractStatus {
+  DRAFT     @map("draft")
+  ACTIVE    @map("active")
+  EXPIRED   @map("expired")
+  CANCELLED @map("cancelled")
+}
+
+enum InspectorRole {
+  CHAIRMAN  @map("chairman")
+  MEMBER    @map("member")
+  SECRETARY @map("secretary")
+}
+
+enum ApprovalType {
+  NORMAL  @map("normal")
+  URGENT  @map("urgent")
+  SPECIAL @map("special")
+}
+
+enum ApprovalStatus {
+  PENDING   @map("pending")
+  APPROVED  @map("approved")
+  REJECTED  @map("rejected")
+  CANCELLED @map("cancelled")
+}
+
+enum PaymentStatus {
+  PENDING   @map("pending")
+  SUBMITTED @map("submitted")
+  APPROVED  @map("approved")
+  PAID      @map("paid")
+  CANCELLED @map("cancelled")
+}
+
+enum PurchaseItemType {
+  NORMAL      @map("normal")
+  URGENT      @map("urgent")
+  REPLACEMENT @map("replacement")
+  EMERGENCY   @map("emergency")
+}
+
+enum AttachmentType {
+  PURCHASE_ORDER    @map("purchase_order")
+  RECEIPT           @map("receipt")
+  INVOICE           @map("invoice")
+  INSPECTION_REPORT @map("inspection_report")
+  DELIVERY_NOTE     @map("delivery_note")
+  OTHER             @map("other")
+}
+
+// ========================================
+// PROCUREMENT MASTER DATA (Phase 1 - v2.3.0)
+// จากการวิเคราะห์ Missing Tables
+// ========================================
+
+// Purchase Method - วิธีการจัดซื้อตามระเบียบพัสดุ (buymethod)
+model PurchaseMethod {
+  id             BigInt          @id @default(autoincrement())
+  code           Int             @unique // 1-100
+  name           String          @db.VarChar(50)
+  minAmount      Decimal?        @map("min_amount") @db.Decimal(12, 2)
+  maxAmount      Decimal?        @map("max_amount") @db.Decimal(12, 2)
+  dealDays       Int?            @map("deal_days") // Processing time in days
+  authoritySigner String?        @map("authority_signer") @db.VarChar(30)
+  stdCode        String?         @map("std_code") @db.VarChar(6)
+  reportForms    String?         @map("report_forms") @db.VarChar(60) // Semicolon-separated
+  isHidden       Boolean         @default(false) @map("is_hidden")
+  isDefault      Boolean         @default(false) @map("is_default")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  purchaseOrders PurchaseOrder[]
+
+  @@map("purchase_methods")
+}
+
+// Purchase Type - ประเภทการซื้อ (buycommon)
+// ซื้อเอง, ซื้อร่วม, VMI, บริจาค, ยาผลิตโรงพยาบาล, etc.
+model PurchaseType {
+  id             BigInt          @id @default(autoincrement())
+  code           Int             @unique // 0-100
+  name           String          @db.VarChar(50)
+  authoritySigner String?        @map("authority_signer") @db.VarChar(30)
+  stdCode        String?         @map("std_code") @db.VarChar(6)
+  dealDays       Int?            @map("deal_days")
+  isHidden       Boolean         @default(false) @map("is_hidden")
+  isDefault      Boolean         @default(false) @map("is_default")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  purchaseOrders PurchaseOrder[]
+
+  @@map("purchase_types")
+}
+
+// Drug Pack Ratio - อัตราส่วนหีบห่อและราคาตาม vendor (pack_ratio)
+// 1 box = 100 tablets, vendor-specific pricing
+model DrugPackRatio {
+  id                BigInt    @id @default(autoincrement())
+  drugId            BigInt    @map("drug_id")
+  vendorId          BigInt?   @map("vendor_id")
+  manufacturerId    BigInt?   @map("manufacturer_id")
+  packRatio         Decimal   @default(1) @map("pack_ratio") @db.Decimal(10, 2) // 1 box = 100 tablets
+  buyUnitCost       Decimal?  @map("buy_unit_cost") @db.Decimal(10, 2)
+  saleUnitPrice     Decimal?  @map("sale_unit_price") @db.Decimal(10, 2)
+  packUnitId        Int?      @map("pack_unit_id") // Unit type for pack
+  subpackUnitId     Int?      @map("subpack_unit_id") // Unit type for subpack
+  barcode           String?   @db.VarChar(14)
+  lastPurchaseDate  DateTime? @map("last_purchase_date") @db.Date
+  isHidden          Boolean   @default(false) @map("is_hidden")
+  packCode          String?   @map("pack_code") @db.VarChar(18)
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  drug              Drug      @relation(fields: [drugId], references: [id], onDelete: Cascade)
+  vendor            Company?  @relation("PackRatioVendor", fields: [vendorId], references: [id])
+  manufacturer      Company?  @relation("PackRatioManufacturer", fields: [manufacturerId], references: [id])
+
+  @@index([drugId])
+  @@index([vendorId])
+  @@map("drug_pack_ratios")
+}
+
+// Return Reason - เหตุผลการคืนยา (rtn_reason)
+// 19 เหตุผลมาตรฐาน: ADR, treatment change, dispensing error, expired, etc.
+model ReturnReason {
+  id             BigInt       @id @default(autoincrement())
+  code           Int          @unique
+  reason         String       @db.VarChar(100)
+  category       String?      @db.VarChar(30) // clinical, operational, quality
+  isHidden       Boolean      @default(false) @map("is_hidden")
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at")
+
+  drugReturns    DrugReturn[]
+
+  @@map("return_reasons")
+}
+
+// ========================================
+// DRUG INFORMATION (Phase 2 - v2.3.0)
+// ข้อมูลเพิ่มเติมเกี่ยวกับยา
+// ========================================
+
+// Drug Component - ส่วนประกอบยา / Active Pharmaceutical Ingredients (drug_compos)
+// เก็บ API ของแต่ละยา สำหรับตรวจสอบ allergy, interaction
+model DrugComponent {
+  id              BigInt       @id @default(autoincrement())
+  genericId       BigInt       @map("generic_id") // Link to drug_generics (WORKING_CODE)
+  componentName   String       @map("component_name") @db.VarChar(100)
+  strength        String?      @db.VarChar(50) // e.g., "500 mg"
+  strengthUnit    String?      @map("strength_unit") @db.VarChar(20)
+  tmtConceptId    BigInt?      @map("tmt_concept_id") // Link to TMT
+  sequence        Int?         // Order of components (for multi-component drugs)
+  isActive        Boolean      @default(true) @map("is_active")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @default(now()) @updatedAt @map("updated_at")
+
+  generic         DrugGeneric  @relation(fields: [genericId], references: [id], onDelete: Cascade)
+  tmtConcept      TmtConcept?  @relation(fields: [tmtConceptId], references: [id])
+
+  @@index([genericId])
+  @@index([tmtConceptId])
+  @@map("drug_components")
+}
+
+// Drug Focus List - รายการยาพิเศษ (focus_list)
+// เก็บรายการยาควบคุม (ยาเสพติด, วัตถุออกฤทธิ์, ยาแช่เย็น, etc.)
+model DrugFocusList {
+  id            BigInt      @id @default(autoincrement())
+  drugId        BigInt      @map("drug_id") // Link to drugs (TRADE_CODE)
+  listType      Int?        @map("list_type") // Category type (e.g., 2 = controlled)
+  listName      String      @map("list_name") @db.VarChar(50) // e.g., "ยาเสพติด 1", "วัตถุออกฤทธิ์"
+  departmentId  BigInt?     @map("department_id") // Optional: department-specific list
+  createdBy     String?     @map("created_by") @db.VarChar(32)
+  isActive      Boolean     @default(true) @map("is_active")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at")
+
+  drug          Drug        @relation(fields: [drugId], references: [id], onDelete: Cascade)
+  department    Department? @relation(fields: [departmentId], references: [id])
+
+  @@index([drugId])
+  @@index([listType])
+  @@map("drug_focus_lists")
+}
+
+// ========================================
+// DISTRIBUTION & PROCUREMENT SUPPORT (Phase 3 - v2.3.0)
+// Optional tables for enhanced tracking
+// ========================================
+
+// Distribution Type - ประเภทการจ่ายยา (dist_type)
+// แยกระหว่างการจ่ายถาวร vs ยืม-คืน
+model DistributionType {
+  id                BigInt              @id @default(autoincrement())
+  code              Int                 @unique
+  name              String              @db.VarChar(60)
+  isHidden          Boolean             @default(false) @map("is_hidden")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at")
+
+  drugDistributions DrugDistribution[]
+
+  @@map("distribution_types")
+}
+
+// Purchase Order Reason - เหตุผลการยกเลิก/แก้ไข PO (po_reason)
+// Audit trail สำหรับการเปลี่ยนแปลง PO
+model PurchaseOrderReason {
+  id          BigInt   @id @default(autoincrement())
+  code        Int      @unique
+  reason      String   @db.VarChar(60)
+  isHidden    Boolean  @default(false) @map("is_hidden")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("purchase_order_reasons")
+}
+
+// ==========================================
+// MINISTRY COMPLIANCE ENUMS (NEW - v2.1.0)
+// ตามมาตรฐานกระทรวงสาธารณสุข พ.ศ. 2568
+// ==========================================
+
+// NLEM Status - สถานะยาในบัญชียาหลักแห่งชาติ
+enum NlemStatus {
+  E @map("E") // Essential Drug - ยาในบัญชียาหลัก
+  N @map("N") // Non-Essential - ยานอกบัญชี
+}
+
+// Drug Status - สถานะการใช้งานยา (ตาม DRUGLIST ฟิลด์ STATUS)
+enum DrugStatus {
+  ACTIVE           @map("1") // ยังใช้งาน
+  DISCONTINUED     @map("2") // ตัดจากบัญชีแต่ยังมียาเหลือ
+  SPECIAL_CASE     @map("3") // ยาเฉพาะราย
+  REMOVED          @map("4") // ตัดออกและไม่มียาเหลือ
+}
+
+// Product Category - ประเภทผลิตภัณฑ์ (ตาม DRUGLIST ฟิลด์ PRODUCT_CAT)
+enum ProductCategory {
+  MODERN_REGISTERED @map("1") // ยาแผนปัจจุบันขึ้นทะเบียน อย.
+  MODERN_HOSPITAL   @map("2") // ยาแผนปัจจุบันผลิตโรงพยาบาล
+  HERBAL_REGISTERED @map("3") // ยาสมุนไพรขึ้นทะเบียน
+  HERBAL_HOSPITAL   @map("4") // ยาสมุนไพรผลิตโรงพยาบาล
+  OTHER             @map("5") // ยาอื่นๆ
+}
+
+// Department Consumption Group - กลุ่มหน่วยงานตามรูปแบบการใช้ยา (ตาม DISTRIBUTION ฟิลด์ DEPT_TYPE)
+enum DeptConsumptionGroup {
+  OPD_IPD_MIX       @map("1") // OPD + IPD mixed
+  OPD_MAINLY        @map("2") // OPD >70%
+  IPD_MAINLY        @map("3") // IPD >70%
+  OTHER_INTERNAL    @map("4") // OR, X-ray, ห้องปฏิบัติการ
+  PRIMARY_CARE      @map("5") // รพ.สต.
+  PC_TRANSFERRED    @map("6") // รพ.สต.ที่ถ่ายโอน
+  OTHER_EXTERNAL    @map("9") // อื่นๆ ภายนอก
+}

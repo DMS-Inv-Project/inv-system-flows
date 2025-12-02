@@ -78,7 +78,7 @@ graph TD
 - **TMT Integration** (3 tables): Thai Medical Terminology mapping
 - **HPP System** (1 table): Hospital Pharmaceutical Preparation
 
-**Total:** 52 tables
+**Total:** 57 tables
 
 ---
 

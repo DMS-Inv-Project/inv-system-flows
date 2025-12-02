@@ -117,7 +117,7 @@ npm run dev           # Verify database connectivity
 
 ## Architecture
 
-### Database Schema (52 tables, 22 enums)
+### Database Schema (57 tables, 30 enums)
 
 **Master Data**: `locations`, `departments`, `budget_types`, `companies`, `drug_generics`, `drugs`
 
@@ -152,7 +152,7 @@ npm run dev           # Verify database connectivity
 
 | File | Purpose |
 |------|---------|
-| `prisma/schema.prisma` | Database schema (52 tables, 22 enums) |
+| `prisma/schema.prisma` | Database schema (57 tables, 30 enums) |
 | `prisma/functions.sql` | Business logic functions (12) |
 | `prisma/views.sql` | Reporting views (11) |
 | `prisma/seed.ts` | Master data seeding |
