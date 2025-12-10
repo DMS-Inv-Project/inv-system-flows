@@ -1,316 +1,145 @@
 /**
- * Phase 17: Map DrugGenerics to TMT Concepts (GP Level)
+ * Phase 17: Map DrugGenerics to TMT Concepts using GPUID from MySQL
  *
- * Strategy (Improved):
- * 1. Parse drug_generics: extract ingredient, strength, dosage form
- * 2. Match with tmt_concepts GP level by:
- *    - Same ingredient name
- *    - Same strength (if available)
- *    - Same dosage form (if available)
+ * Strategy:
+ * 1. Read GPUID from MySQL drug_gn table
+ * 2. Match with tmt_concepts.tmt_id (GPU level)
+ * 3. Update drug_generics with tmt_gpu_id
  *
  * Run: npx tsx scripts/migrate-phase17-map-generics-tmt.ts
  */
 
 import { PrismaClient } from '@prisma/client';
+import mysql from 'mysql2/promise';
 
 const prisma = new PrismaClient();
 
-interface ParsedDrug {
-  ingredient: string;
-  strength: string | null;
-  strengthNum: number | null;
-  unit: string | null;
-  form: string | null;
-}
-
-/**
- * Dosage form mapping (Thai/English abbreviations to standard)
- */
-const FORM_MAPPING: Record<string, string[]> = {
-  'tablet': ['tab', 'tablet', 'tablets', 'เม็ด'],
-  'capsule': ['cap', 'capsule', 'capsules', 'แคปซูล'],
-  'injection': ['inj', 'injection', 'inject', 'ฉีด'],
-  'syrup': ['syr', 'syrup', 'น้ำเชื่อม'],
-  'suspension': ['susp', 'suspension', 'แขวนตะกอน'],
-  'cream': ['cream', 'ครีม'],
-  'ointment': ['oint', 'ointment', 'ขี้ผึ้ง'],
-  'solution': ['sol', 'solution', 'soln', 'สารละลาย'],
-  'drops': ['drop', 'drops', 'gtt', 'หยด'],
-  'powder': ['powder', 'pwd', 'ผง'],
-  'gel': ['gel', 'เจล'],
-  'spray': ['spray', 'สเปรย์'],
-  'inhaler': ['inhaler', 'inh', 'พ่น'],
-  'suppository': ['supp', 'suppository', 'เหน็บ'],
-  'patch': ['patch', 'แผ่นแปะ'],
-  'eye': ['eye', 'ophthalmic', 'ตา'],
-  'ear': ['ear', 'otic', 'หู'],
-};
-
-/**
- * Parse drug name to extract components
- */
-function parseDrugName(name: string): ParsedDrug {
-  const original = name;
-  let normalized = name
-    .toLowerCase()
-    .replace(/\(.*?\)/g, ' ') // Remove parentheses content
-    .replace(/\*|!|@|#|\$/g, '') // Remove special chars
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  // Extract strength (number + unit pattern)
-  const strengthMatch = normalized.match(/(\d+(?:\.\d+)?)\s*(mg|g|ml|mcg|iu|%|u|mu|unit|units)/i);
-  let strength: string | null = null;
-  let strengthNum: number | null = null;
-  let unit: string | null = null;
-
-  if (strengthMatch) {
-    strengthNum = parseFloat(strengthMatch[1]);
-    unit = strengthMatch[2].toLowerCase();
-    // Normalize units
-    if (unit === 'g' && strengthNum < 10) {
-      // Convert g to mg for comparison
-      strengthNum = strengthNum * 1000;
-      unit = 'mg';
-    }
-    if (unit === 'mu') unit = 'u'; // Million units
-    strength = `${strengthNum} ${unit}`;
-  }
-
-  // Extract dosage form
-  let form: string | null = null;
-  for (const [standardForm, variants] of Object.entries(FORM_MAPPING)) {
-    for (const variant of variants) {
-      if (normalized.includes(variant)) {
-        form = standardForm;
-        break;
-      }
-    }
-    if (form) break;
-  }
-
-  // Extract ingredient (first meaningful word/phrase)
-  // Remove strength and form to get ingredient
-  let ingredientStr = normalized
-    .replace(/\d+(?:\.\d+)?\s*(mg|g|ml|mcg|iu|%|u|mu|unit|units)/gi, '')
-    .replace(/tab|tablet|cap|capsule|inj|injection|syr|syrup|susp|suspension|cream|oint|ointment|sol|solution|drop|drops|powder|gel|spray|inhaler|supp|suppository|patch/gi, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  // Get main ingredient (usually first part before numbers or special chars)
-  const ingredient = ingredientStr.split(/\s+/)[0] || ingredientStr;
-
-  return { ingredient, strength, strengthNum, unit, form };
-}
-
-/**
- * Parse TMT FSN similarly
- */
-function parseTmtFsn(fsn: string): ParsedDrug {
-  const normalized = fsn.toLowerCase();
-
-  // Extract strength
-  const strengthMatch = normalized.match(/(\d+(?:\.\d+)?)\s*(mg|g|ml|mcg|iu|%|u)/i);
-  let strengthNum: number | null = null;
-  let unit: string | null = null;
-  let strength: string | null = null;
-
-  if (strengthMatch) {
-    strengthNum = parseFloat(strengthMatch[1]);
-    unit = strengthMatch[2].toLowerCase();
-    if (unit === 'g' && strengthNum < 10) {
-      strengthNum = strengthNum * 1000;
-      unit = 'mg';
-    }
-    strength = `${strengthNum} ${unit}`;
-  }
-
-  // Extract form from FSN
-  let form: string | null = null;
-  for (const [standardForm, variants] of Object.entries(FORM_MAPPING)) {
-    for (const variant of variants) {
-      if (normalized.includes(variant)) {
-        form = standardForm;
-        break;
-      }
-    }
-    if (form) break;
-  }
-
-  // Also check TMT specific forms
-  if (normalized.includes('film-coated tablet') || normalized.includes('tablet')) form = 'tablet';
-  if (normalized.includes('capsule')) form = 'capsule';
-  if (normalized.includes('solution for injection') || normalized.includes('injection')) form = 'injection';
-  if (normalized.includes('oral solution') || normalized.includes('syrup')) form = 'syrup';
-
-  // Get ingredient (first word)
-  const ingredient = normalized.split(/\s+/)[0];
-
-  return { ingredient, strength, strengthNum, unit, form };
-}
-
-/**
- * Calculate match score between drug and TMT
- */
-function calculateMatchScore(drug: ParsedDrug, tmt: ParsedDrug): number {
-  let score = 0;
-
-  // Ingredient match (required)
-  if (drug.ingredient !== tmt.ingredient) {
-    // Try partial match
-    if (!drug.ingredient.includes(tmt.ingredient) && !tmt.ingredient.includes(drug.ingredient)) {
-      return 0; // No match at all
-    }
-    score += 50; // Partial ingredient match
-  } else {
-    score += 100; // Exact ingredient match
-  }
-
-  // Strength match (important)
-  if (drug.strengthNum && tmt.strengthNum) {
-    if (drug.strengthNum === tmt.strengthNum && drug.unit === tmt.unit) {
-      score += 50; // Exact strength match
-    } else if (Math.abs(drug.strengthNum - tmt.strengthNum) / drug.strengthNum < 0.1) {
-      score += 25; // Close strength (within 10%)
-    }
-  }
-
-  // Form match (important)
-  if (drug.form && tmt.form) {
-    if (drug.form === tmt.form) {
-      score += 30; // Exact form match
-    }
-  }
-
-  return score;
-}
-
 async function main() {
-  console.log('🚀 Phase 17: Mapping Drug Generics to TMT Concepts (Improved)...\n');
+  console.log('🚀 Phase 17: Mapping Drug Generics to TMT using GPUID...\n');
   console.log('═══════════════════════════════════════════════════════════');
-  console.log('   Drug Generics → TMT GP Level Mapping (Strict Matching)');
+  console.log('   Drug Generics → TMT GPU (via MySQL GPUID)');
   console.log('═══════════════════════════════════════════════════════════\n');
 
+  // Connect to MySQL
+  const mysqlConn = await mysql.createConnection({
+    host: 'localhost',
+    port: 3307,
+    user: 'invs_user',
+    password: 'invs123',
+    database: 'invs_banpong'
+  });
+
   try {
-    // Get all GP level TMT concepts
-    console.log('📋 Loading TMT Concepts (GP level)...');
-    const tmtGpConcepts = await prisma.tmtConcept.findMany({
-      where: { level: 'GP' },
-      select: { id: true, tmtId: true, fsn: true, preferredTerm: true }
-    });
-    console.log(`   Found ${tmtGpConcepts.length} GP concepts\n`);
+    // Get GPUID mapping from MySQL
+    console.log('📋 Loading GPUID from MySQL drug_gn...');
+    const [rows] = await mysqlConn.execute<mysql.RowDataPacket[]>(`
+      SELECT WORKING_CODE, DRUG_NAME, GPUID
+      FROM drug_gn
+      WHERE GPUID IS NOT NULL AND GPUID > 0
+    `);
+    console.log(`   Found ${rows.length} records with GPUID\n`);
 
-    // Build index by first ingredient word
-    const tmtByIngredient = new Map<string, Array<{ id: bigint; tmtId: bigint; fsn: string; parsed: ParsedDrug }>>();
-
-    for (const tmt of tmtGpConcepts) {
-      const parsed = parseTmtFsn(tmt.fsn || '');
-      if (parsed.ingredient && parsed.ingredient.length > 2) {
-        if (!tmtByIngredient.has(parsed.ingredient)) {
-          tmtByIngredient.set(parsed.ingredient, []);
-        }
-        tmtByIngredient.get(parsed.ingredient)!.push({
-          id: tmt.id,
-          tmtId: tmt.tmtId,
-          fsn: tmt.fsn || '',
-          parsed
-        });
-      }
+    // Build GPUID lookup map
+    const gpuidMap = new Map<string, number>();
+    for (const row of rows) {
+      gpuidMap.set(row.WORKING_CODE.trim(), row.GPUID);
     }
-    console.log(`   Built index with ${tmtByIngredient.size} unique ingredients\n`);
+
+    // Get TMT concepts (GPU level) indexed by tmt_id
+    console.log('📋 Loading TMT Concepts (GPU level)...');
+    const tmtGpuConcepts = await prisma.tmtConcept.findMany({
+      where: { level: 'GPU' },
+      select: { id: true, tmtId: true, fsn: true }
+    });
+    console.log(`   Found ${tmtGpuConcepts.length} GPU concepts\n`);
+
+    // Build TMT lookup by tmt_id
+    const tmtByTmtId = new Map<bigint, { id: bigint; fsn: string }>();
+    for (const tmt of tmtGpuConcepts) {
+      tmtByTmtId.set(tmt.tmtId, { id: tmt.id, fsn: tmt.fsn || '' });
+    }
 
     // Get all drug generics
     console.log('📋 Loading Drug Generics...');
     const drugGenerics = await prisma.drugGeneric.findMany({
-      select: { id: true, workingCode: true, drugName: true, tmtGpId: true }
+      select: { id: true, workingCode: true, drugName: true }
     });
     console.log(`   Found ${drugGenerics.length} generics\n`);
 
-    // Match with strict scoring
-    console.log('🔗 Matching with strict criteria...');
-    let exactMatch = 0;
-    let goodMatch = 0;
-    let partialMatch = 0;
-    let noMatch = 0;
-    const matchDetails: Array<{ code: string; drug: string; tmt: string; score: number }> = [];
-    const unmatchedSamples: string[] = [];
+    // Match using GPUID
+    console.log('🔗 Matching via GPUID...');
+    let matched = 0;
+    let noGpuid = 0;
+    let gpuidNotFound = 0;
+    const matchedSamples: Array<{ code: string; drug: string; tmt: string }> = [];
+    const notFoundSamples: Array<{ code: string; drug: string; gpuid: number }> = [];
 
     for (const drug of drugGenerics) {
-      if (drug.tmtGpId) continue; // Skip already mapped
+      const gpuid = gpuidMap.get(drug.workingCode);
 
-      const parsed = parseDrugName(drug.drugName);
-
-      // Find candidates by ingredient
-      const candidates = tmtByIngredient.get(parsed.ingredient) || [];
-
-      let bestMatch: { id: bigint; fsn: string; score: number } | null = null;
-
-      for (const candidate of candidates) {
-        const score = calculateMatchScore(parsed, candidate.parsed);
-        if (score > 0 && (!bestMatch || score > bestMatch.score)) {
-          bestMatch = { id: candidate.id, fsn: candidate.fsn, score };
-        }
+      if (!gpuid) {
+        noGpuid++;
+        continue;
       }
 
-      // Only accept matches with score >= 130 (ingredient + strength or form)
-      if (bestMatch && bestMatch.score >= 130) {
+      // Find TMT by GPUID (tmt_id)
+      const tmt = tmtByTmtId.get(BigInt(gpuid));
+
+      if (tmt) {
         await prisma.drugGeneric.update({
           where: { id: drug.id },
-          data: { tmtGpId: bestMatch.id }
+          data: { tmtGpId: tmt.id }
         });
+        matched++;
 
-        if (bestMatch.score >= 180) {
-          exactMatch++;
-        } else if (bestMatch.score >= 150) {
-          goodMatch++;
-        } else {
-          partialMatch++;
-        }
-
-        if (matchDetails.length < 20) {
-          matchDetails.push({
+        if (matchedSamples.length < 15) {
+          matchedSamples.push({
             code: drug.workingCode,
             drug: drug.drugName,
-            tmt: bestMatch.fsn,
-            score: bestMatch.score
+            tmt: tmt.fsn
           });
         }
       } else {
-        noMatch++;
-        if (unmatchedSamples.length < 10) {
-          unmatchedSamples.push(`${drug.workingCode}: ${drug.drugName}`);
+        gpuidNotFound++;
+        if (notFoundSamples.length < 10) {
+          notFoundSamples.push({
+            code: drug.workingCode,
+            drug: drug.drugName,
+            gpuid
+          });
         }
       }
     }
 
-    const totalMatched = exactMatch + goodMatch + partialMatch;
-    console.log(`\n   ✅ Exact match (score >= 180):   ${exactMatch}`);
-    console.log(`   ✅ Good match (score >= 150):    ${goodMatch}`);
-    console.log(`   ⚠️  Partial match (score >= 130): ${partialMatch}`);
-    console.log(`   ❌ No match:                     ${noMatch}`);
-    console.log(`\n   📊 Total matched: ${totalMatched} (${(totalMatched / drugGenerics.length * 100).toFixed(2)}%)`);
+    // Results
+    console.log(`\n   ✅ Matched via GPUID:      ${matched}`);
+    console.log(`   ⚠️  No GPUID in MySQL:      ${noGpuid}`);
+    console.log(`   ❌ GPUID not in TMT:        ${gpuidNotFound}`);
+    console.log(`\n   📊 Coverage: ${(matched / drugGenerics.length * 100).toFixed(2)}%`);
 
-    // Show match samples
-    console.log('\n   📝 Sample matches:');
-    for (const m of matchDetails.slice(0, 10)) {
-      console.log(`      [${m.score}] ${m.drug.substring(0, 35).padEnd(35)} → ${m.tmt.substring(0, 45)}`);
+    // Show matched samples
+    console.log('\n   📝 Matched samples:');
+    for (const m of matchedSamples) {
+      console.log(`      ${m.code}: ${m.drug.substring(0, 35).padEnd(35)} → ${m.tmt.substring(0, 40)}`);
     }
 
-    // Show unmatched samples
-    if (unmatchedSamples.length > 0) {
-      console.log('\n   📝 Unmatched samples:');
-      unmatchedSamples.forEach(s => console.log(`      - ${s}`));
+    // Show GPUID not found in TMT
+    if (notFoundSamples.length > 0) {
+      console.log('\n   📝 GPUID not found in TMT (samples):');
+      for (const s of notFoundSamples) {
+        console.log(`      ${s.code}: ${s.drug} (GPUID: ${s.gpuid})`);
+      }
     }
 
-    // Final statistics
     console.log('\n═══════════════════════════════════════════════════════════');
-    console.log('   📊 PHASE 17 COMPLETE (Strict Matching)');
+    console.log('   📊 PHASE 17 COMPLETE (GPUID Matching)');
     console.log('═══════════════════════════════════════════════════════════\n');
 
   } catch (error) {
     console.error('❌ Migration failed:', error);
     throw error;
   } finally {
+    await mysqlConn.end();
     await prisma.$disconnect();
   }
 }
