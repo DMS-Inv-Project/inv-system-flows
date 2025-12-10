@@ -340,6 +340,8 @@ model DrugGeneric {
   tmtVtmId             BigInt?                         @map("tmt_vtm_id")
   tmtGpCode            String?                         @map("tmt_gp_code") @db.VarChar(10)
   tmtGpId              BigInt?                         @map("tmt_gp_id")
+  tmtGpuCode           String?                         @map("tmt_gpu_code") @db.VarChar(10) // Phase 17: GPU from MySQL GPUID
+  tmtGpuId             BigInt?                         @map("tmt_gpu_id") // Phase 17: FK to tmt_concepts (GPU level)
   tmtGpfCode           String?                         @map("tmt_gpf_code") @db.VarChar(10)
   tmtGpfId             BigInt?                         @map("tmt_gpf_id")
   tmtGpxCode           String?                         @map("tmt_gpx_code") @db.VarChar(10)

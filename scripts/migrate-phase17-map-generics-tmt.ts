@@ -4,7 +4,7 @@
  * Strategy:
  * 1. Read GPUID from MySQL drug_gn table
  * 2. Match with tmt_concepts.tmt_id (GPU level)
- * 3. Update drug_generics with tmt_gpu_id
+ * 3. Update drug_generics.tmt_gpu_id and tmt_gpu_code
  *
  * Run: npx tsx scripts/migrate-phase17-map-generics-tmt.ts
  */
@@ -54,9 +54,9 @@ async function main() {
     console.log(`   Found ${tmtGpuConcepts.length} GPU concepts\n`);
 
     // Build TMT lookup by tmt_id
-    const tmtByTmtId = new Map<bigint, { id: bigint; fsn: string }>();
+    const tmtByTmtId = new Map<bigint, { id: bigint; tmtId: bigint; fsn: string }>();
     for (const tmt of tmtGpuConcepts) {
-      tmtByTmtId.set(tmt.tmtId, { id: tmt.id, fsn: tmt.fsn || '' });
+      tmtByTmtId.set(tmt.tmtId, { id: tmt.id, tmtId: tmt.tmtId, fsn: tmt.fsn || '' });
     }
 
     // Get all drug generics
@@ -71,7 +71,7 @@ async function main() {
     let matched = 0;
     let noGpuid = 0;
     let gpuidNotFound = 0;
-    const matchedSamples: Array<{ code: string; drug: string; tmt: string }> = [];
+    const matchedSamples: Array<{ code: string; drug: string; gpuid: string; tmt: string }> = [];
     const notFoundSamples: Array<{ code: string; drug: string; gpuid: number }> = [];
 
     for (const drug of drugGenerics) {
@@ -88,7 +88,10 @@ async function main() {
       if (tmt) {
         await prisma.drugGeneric.update({
           where: { id: drug.id },
-          data: { tmtGpId: tmt.id }
+          data: {
+            tmtGpuId: tmt.id,
+            tmtGpuCode: tmt.tmtId.toString()
+          }
         });
         matched++;
 
@@ -96,6 +99,7 @@ async function main() {
           matchedSamples.push({
             code: drug.workingCode,
             drug: drug.drugName,
+            gpuid: tmt.tmtId.toString(),
             tmt: tmt.fsn
           });
         }
@@ -120,7 +124,7 @@ async function main() {
     // Show matched samples
     console.log('\n   📝 Matched samples:');
     for (const m of matchedSamples) {
-      console.log(`      ${m.code}: ${m.drug.substring(0, 35).padEnd(35)} → ${m.tmt.substring(0, 40)}`);
+      console.log(`      ${m.code}: ${m.drug.substring(0, 30).padEnd(30)} → [${m.gpuid}] ${m.tmt.substring(0, 35)}`);
     }
 
     // Show GPUID not found in TMT
