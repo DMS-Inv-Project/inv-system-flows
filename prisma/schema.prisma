@@ -327,6 +327,9 @@ model DrugGeneric {
   edList               Int?                            @map("ed_list") // 1-6 บัญชีย่อย ED (NULL/-1/0 = ไม่ระบุ)
   edGroupId            BigInt?                         @map("ed_group_id") // FK to ed_groups (therapeutic class)
 
+  // Phase 18: VEN Analysis - จัดลำดับความสำคัญของยา
+  venCategory          VenCategory?                    @map("ven_category") // V=Vital, E=Essential, N=Non-essential
+
   // Legacy fields (will be removed after migration)
   dosageForm           String?                         @map("dosage_form") @db.VarChar(20)
   saleUnit             String?                         @map("sale_unit") @db.VarChar(5)
@@ -1590,6 +1593,13 @@ model PurchaseOrderReason {
 enum NlemStatus {
   E @map("E") // Essential Drug - ยาในบัญชียาหลัก
   N @map("N") // Non-Essential - ยานอกบัญชี
+}
+
+// VEN Analysis - การจัดลำดับความสำคัญของยา (Phase 18)
+enum VenCategory {
+  V @map("V") // Vital - ยาช่วยชีวิต/ขาดไม่ได้ (เช่น Adrenaline, Antidote)
+  E @map("E") // Essential - ยาจำเป็น (ยาที่ใช้บ่อย/สำคัญ)
+  N @map("N") // Non-essential - ยาไม่จำเป็น (ทดแทนได้)
 }
 
 // Drug Status - สถานะการใช้งานยา (ตาม DRUGLIST ฟิลด์ STATUS)
