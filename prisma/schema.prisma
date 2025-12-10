@@ -116,6 +116,25 @@ model Bank {
 // Priority 1 & 2 Lookup Tables
 // ==========================================
 
+// ED Group - กลุ่มการรักษา/ประเภทผลิตภัณฑ์ (Phase 9 - v2.7.0)
+// จาก ed_group ใน MySQL (209 records)
+// ใช้จำแนก therapeutic class ของยาและเวชภัณฑ์
+model EdGroup {
+  id             BigInt        @id @default(autoincrement())
+  code           String        @unique @db.VarChar(8) // CODE: "01000000", "93000000", etc.
+  name           String        @db.VarChar(60) // NAME: therapeutic class name
+  subCommitCode  Int?          @map("sub_commit_code") // SUB_COMMIT_CODE
+  forecast       Float?        // FORECAST percentage
+  isHidden       Boolean       @default(false) @map("is_hidden")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  // Relations
+  generics       DrugGeneric[]
+
+  @@map("ed_groups")
+}
+
 // Dosage Form - รูปแบบยา (Priority 1)
 // จาก dosage_form ใน MySQL (107 records)
 model DosageForm {
@@ -303,6 +322,11 @@ model DrugGeneric {
   dosageFormId         BigInt?                         @map("dosage_form_id") // FK to dosage_forms
   saleUnitId           BigInt?                         @map("sale_unit_id") // FK to drug_units
 
+  // Phase 9: ED Classification fields (v2.7.0) - จากคู่มือหน้า 12
+  edCategory           EdCategory?                     @map("ed_category") // ED, NED, NDMS, CM, LS, PS
+  edList               Int?                            @map("ed_list") // 1-6 บัญชีย่อย ED (NULL/-1/0 = ไม่ระบุ)
+  edGroupId            BigInt?                         @map("ed_group_id") // FK to ed_groups (therapeutic class)
+
   // Legacy fields (will be removed after migration)
   dosageForm           String?                         @map("dosage_form") @db.VarChar(20)
   saleUnit             String?                         @map("sale_unit") @db.VarChar(5)
@@ -327,6 +351,7 @@ model DrugGeneric {
   // Relations
   dosageFormRel        DosageForm?                     @relation(fields: [dosageFormId], references: [id])
   saleUnitRel          DrugUnit?                       @relation("GenericSaleUnit", fields: [saleUnitId], references: [id])
+  edGroup              EdGroup?                        @relation(fields: [edGroupId], references: [id])
   drugs                Drug[]
   hppProducts          HospitalPharmaceuticalProduct[]
   purchaseRequestItems PurchaseRequestItem[]
@@ -1591,4 +1616,15 @@ enum DeptConsumptionGroup {
   PRIMARY_CARE      @map("5") // รพ.สต.
   PC_TRANSFERRED    @map("6") // รพ.สต.ที่ถ่ายโอน
   OTHER_EXTERNAL    @map("9") // อื่นๆ ภายนอก
+}
+
+// ED Category - ประเภทบัญชี ED (จากคู่มือหน้า 12)
+// ใช้กำหนดประเภทผลิตภัณฑ์ในระบบ INVS (ยา/เวชภัณฑ์/วัสดุ)
+enum EdCategory {
+  ED    @map("ED")    // บัญชียา ED (Essential Drug list)
+  NED   @map("NED")   // บัญชียา NED (Non-Essential Drug)
+  NDMS  @map("NDMS")  // เวชภัณฑ์มิใช่ยา (Non-drug Medical Supplies)
+  CM    @map("CM")    // สารเคมี (Chemicals)
+  LS    @map("LS")    // วัสดุทางห้องปฏิบัติการ (Lab Supplies)
+  PS    @map("PS")    // วัสดุทางเภสัชกรรม (Pharmacy Supplies)
 }

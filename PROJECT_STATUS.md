@@ -1,8 +1,8 @@
 # INVS Modern - Project Status
 
-**Last Updated**: 2024-12-01
-**Version**: 3.0.0
-**Status**: ✅ Database + Full Data Migration Complete
+**Last Updated**: 2024-12-10
+**Version**: 3.1.0
+**Status**: ✅ Database + Full Data Migration Complete (Phase 16 Added)
 
 ---
 
@@ -13,12 +13,13 @@
 │           INVS Modern - Project Status                  │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
-│  ✅ Database Schema: 57 tables, 30 enums               │
+│  ✅ Database Schema: 58 tables, 31 enums               │
 │  ✅ Database Functions: 12 business logic functions    │
 │  ✅ Database Views: 11 reporting views                 │
 │  ✅ Ministry Compliance: 100% (79/79 fields)           │
+│  ✅ ED Classification: 6 categories (คู่มือหน้า 12)    │
 │                                                         │
-│  📦 Data Migration (Phase 1-15):                       │
+│  📦 Data Migration (Phase 1-16):                       │
 │  ───────────────────────────────────────────           │
 │  Phase 1-8:  81,353 records (existing)                 │
 │  Phase 9:    1,266 drug pack ratios                    │
@@ -28,8 +29,9 @@
 │  Phase 13:   6,092 drugs (total: 7,261)                │
 │  Phase 14:   1,713 budget items                        │
 │  Phase 15:   13,138 inventory + lots                   │
+│  Phase 16:   209 ED groups + 1,104 ED mappings ⭐ NEW  │
 │  ───────────────────────────────────────────           │
-│  📊 TOTAL: ~103,000 records migrated                   │
+│  📊 TOTAL: ~104,500 records migrated                   │
 │                                                         │
 │  🎯 Ready for Backend API Development                   │
 │  🎯 Ready for Frontend Development                      │
@@ -45,7 +47,7 @@
 |----------|-------|--------:|
 | **Master Data** | | |
 | | drugs | **7,261** |
-| | drug_generics | **1,109** |
+| | drug_generics | **1,109** (with ED classification) |
 | | companies | **800** |
 | | departments | **108** |
 | | locations | **96** |
@@ -53,6 +55,7 @@
 | | drug_pack_ratios | 1,266 |
 | | dosage_forms | 107 |
 | | drug_units | 88 |
+| | **ed_groups** | **209** ⭐ NEW |
 | **Budget** | | |
 | | budget_plans | **3** |
 | | budget_plan_items | **1,710** |
@@ -66,6 +69,31 @@
 | | purchase_types | 20 |
 | | return_reasons | 19 |
 | | return_actions | 8 |
+
+---
+
+## ED Classification (Phase 16) ⭐ NEW
+
+**Source**: คู่มือ INVS หน้า 12 (บัญชี ED)
+
+| Category | Thai Name | Count |
+|----------|-----------|------:|
+| ED | บัญชียา ED (Essential Drug) | 852 |
+| NED | บัญชียา NED (Non-Essential) | 149 |
+| NDMS | เวชภัณฑ์มิใช่ยา | 5 |
+| CM | สารเคมี | 89 |
+| LS | วัสดุทางห้องปฏิบัติการ | 0 |
+| PS | วัสดุทางเภสัชกรรม | 0 |
+
+**ED List Distribution (บัญชี 1-6)**:
+| List | Count |
+|------|------:|
+| บัญชี 1 | 497 |
+| บัญชี 2 | 50 |
+| บัญชี 3 | 161 |
+| บัญชี 4 | 97 |
+| บัญชี 5 | 17 |
+| บัญชี 6 | 17 |
 
 ---
 
@@ -105,9 +133,10 @@ npm run dev
 |------|-------------|
 | `CLAUDE.md` | Instructions for Claude Code |
 | `HANDOFF.md` | Handoff document for new developers |
-| `prisma/schema.prisma` | Database schema (52 tables) |
+| `prisma/schema.prisma` | Database schema (58 tables, 31 enums) |
 | `backup/invs_modern_full.sql.gz` | Full database backup (3MB) |
 | `docs/systems/` | 8 system documentation folders |
+| `scripts/migrate-phase16-ed-classification.ts` | ED Classification migration ⭐ NEW |
 
 ---
 
@@ -145,7 +174,8 @@ npm run dev
 | 13 | All Drugs | 6,092 |
 | 14 | Budget Management | 1,713 |
 | 15 | Inventory + Lots | 13,138 |
+| **16** | **ED Classification** | **1,313** ⭐ NEW |
 
 ---
 
-*Last Updated: 2024-12-01 by Claude Code*
+*Last Updated: 2024-12-10 by Claude Code*
