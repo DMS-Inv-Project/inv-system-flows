@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict zdsruXaTPWHnNzBVWCn3GCLypZl3sFdUeBo26L2atAGDsAhrOToexVlgCMviknU
+\restrict twYv23GCzbWyqs3mrsT8V69nshfnEgMgar8lKyvngQGA0qtB5X0EsJopBiPTALq
 
 -- Dumped from database version 15.14
 -- Dumped by pg_dump version 15.14
@@ -1414,7 +1414,9 @@ CREATE TABLE public.drug_generics (
     sale_unit_id bigint,
     ed_category public."EdCategory",
     ed_group_id bigint,
-    ed_list integer
+    ed_list integer,
+    tmt_gpu_code character varying(10),
+    tmt_gpu_id bigint
 );
 
 
@@ -4998,5 +5000,5 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict zdsruXaTPWHnNzBVWCn3GCLypZl3sFdUeBo26L2atAGDsAhrOToexVlgCMviknU
+\unrestrict twYv23GCzbWyqs3mrsT8V69nshfnEgMgar8lKyvngQGA0qtB5X0EsJopBiPTALq
 

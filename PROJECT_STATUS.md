@@ -1,8 +1,8 @@
 # INVS Modern - Project Status
 
 **Last Updated**: 2024-12-10
-**Version**: 3.1.0
-**Status**: ✅ Database + Full Data Migration Complete (Phase 16 Added)
+**Version**: 3.2.0
+**Status**: ✅ Database + Full Data Migration Complete (Phase 17 Added)
 
 ---
 
@@ -19,7 +19,7 @@
 │  ✅ Ministry Compliance: 100% (79/79 fields)           │
 │  ✅ ED Classification: 6 categories (คู่มือหน้า 12)    │
 │                                                         │
-│  📦 Data Migration (Phase 1-16):                       │
+│  📦 Data Migration (Phase 1-17):                       │
 │  ───────────────────────────────────────────           │
 │  Phase 1-8:  81,353 records (existing)                 │
 │  Phase 9:    1,266 drug pack ratios                    │
@@ -29,7 +29,8 @@
 │  Phase 13:   6,092 drugs (total: 7,261)                │
 │  Phase 14:   1,713 budget items                        │
 │  Phase 15:   13,138 inventory + lots                   │
-│  Phase 16:   209 ED groups + 1,104 ED mappings ⭐ NEW  │
+│  Phase 16:   209 ED groups + 1,104 ED mappings         │
+│  Phase 17:   626 TMT GPU mappings (56.45%) ⭐ NEW      │
 │  ───────────────────────────────────────────           │
 │  📊 TOTAL: ~104,500 records migrated                   │
 │                                                         │
@@ -47,7 +48,7 @@
 |----------|-------|--------:|
 | **Master Data** | | |
 | | drugs | **7,261** |
-| | drug_generics | **1,109** (with ED classification) |
+| | drug_generics | **1,109** (ED + TMT mapping) |
 | | companies | **800** |
 | | departments | **108** |
 | | locations | **96** |
@@ -72,7 +73,7 @@
 
 ---
 
-## ED Classification (Phase 16) ⭐ NEW
+## ED Classification (Phase 16)
 
 **Source**: คู่มือ INVS หน้า 12 (บัญชี ED)
 
@@ -94,6 +95,19 @@
 | บัญชี 4 | 97 |
 | บัญชี 5 | 17 |
 | บัญชี 6 | 17 |
+
+---
+
+## TMT GPU Mapping (Phase 17) ⭐ NEW
+
+**Mapping**: `drug_generics.tmt_gpu_id` → `tmt_concepts.id` (GPU level)
+
+| Status | Count | % |
+|--------|------:|--:|
+| มี TMT GPU | 626 | 56.45% |
+| ไม่มี TMT GPU | 483 | 43.55% |
+
+**Method**: ใช้ `GPUID` จาก MySQL เป็นรหัสมาตรฐาน TMT โดยตรง
 
 ---
 
