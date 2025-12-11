@@ -1,8 +1,8 @@
 # INVS Modern - Project Status
 
-**Last Updated**: 2024-12-10
-**Version**: 3.2.0
-**Status**: ✅ Database + Full Data Migration Complete (Phase 17 Added)
+**Last Updated**: 2024-12-11
+**Version**: 3.3.0
+**Status**: ✅ Database + Full Data Migration Complete (Phase 19 Added)
 
 ---
 
@@ -13,13 +13,14 @@
 │           INVS Modern - Project Status                  │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
-│  ✅ Database Schema: 58 tables, 31 enums               │
+│  ✅ Database Schema: 58 tables, 32 enums               │
 │  ✅ Database Functions: 12 business logic functions    │
 │  ✅ Database Views: 11 reporting views                 │
 │  ✅ Ministry Compliance: 100% (79/79 fields)           │
 │  ✅ ED Classification: 6 categories (คู่มือหน้า 12)    │
+│  ✅ VEN Analysis: V/E/N drug prioritization            │
 │                                                         │
-│  📦 Data Migration (Phase 1-17):                       │
+│  📦 Data Migration (Phase 1-19):                       │
 │  ───────────────────────────────────────────           │
 │  Phase 1-8:  81,353 records (existing)                 │
 │  Phase 9:    1,266 drug pack ratios                    │
@@ -30,9 +31,11 @@
 │  Phase 14:   1,713 budget items                        │
 │  Phase 15:   13,138 inventory + lots                   │
 │  Phase 16:   209 ED groups + 1,104 ED mappings         │
-│  Phase 17:   626 TMT GPU mappings (56.45%) ⭐ NEW      │
+│  Phase 17:   626 TMT GPU mappings (56.45%)             │
+│  Phase 18:   981 VEN Analysis (88.46%)                 │
+│  Phase 19:   908 procurement + 3,131 NC24 ⭐ NEW       │
 │  ───────────────────────────────────────────           │
-│  📊 TOTAL: ~104,500 records migrated                   │
+│  📊 TOTAL: ~110,000 records migrated                   │
 │                                                         │
 │  🎯 Ready for Backend API Development                   │
 │  🎯 Ready for Frontend Development                      │
@@ -47,8 +50,8 @@
 | Category | Table | Records |
 |----------|-------|--------:|
 | **Master Data** | | |
-| | drugs | **7,261** |
-| | drug_generics | **1,109** (ED + TMT mapping) |
+| | drugs | **7,261** (3,131 with NC24) |
+| | drug_generics | **1,109** (full data) |
 | | companies | **800** |
 | | departments | **108** |
 | | locations | **96** |
@@ -56,7 +59,7 @@
 | | drug_pack_ratios | 1,266 |
 | | dosage_forms | 107 |
 | | drug_units | 88 |
-| | **ed_groups** | **209** ⭐ NEW |
+| | ed_groups | 209 |
 | **Budget** | | |
 | | budget_plans | **3** |
 | | budget_plan_items | **1,710** |
@@ -70,6 +73,20 @@
 | | purchase_types | 20 |
 | | return_reasons | 19 |
 | | return_actions | 8 |
+
+---
+
+## Drug Generics Data Coverage
+
+| Field | Records | Coverage |
+|-------|--------:|---------:|
+| ed_category | 1,095 | 98.74% |
+| ed_list | 839 | 75.65% |
+| ed_group_id | 1,095 | 98.74% |
+| tmt_gpu_id | 626 | 56.45% |
+| ven_category | 981 | 88.46% |
+| last_buy_cost | 908 | 81.87% |
+| hosp_list | 1,104 | 99.55% |
 
 ---
 
@@ -98,7 +115,7 @@
 
 ---
 
-## TMT GPU Mapping (Phase 17) ⭐ NEW
+## TMT GPU Mapping (Phase 17)
 
 **Mapping**: `drug_generics.tmt_gpu_id` → `tmt_concepts.id` (GPU level)
 
@@ -111,13 +128,44 @@
 
 ---
 
+## VEN Analysis (Phase 18)
+
+**Purpose**: จัดลำดับความสำคัญของยาสำหรับการจัดซื้อ
+
+| Category | Thai Name | Count | % |
+|----------|-----------|------:|--:|
+| V | Vital - ยาช่วยชีวิต/ขาดไม่ได้ | 10 | 0.90% |
+| E | Essential - ยาจำเป็น | 969 | 87.38% |
+| N | Non-essential - ยาไม่จำเป็น | 2 | 0.18% |
+| NULL | ไม่ระบุ | 128 | 11.54% |
+
+**ตัวอย่างยา Vital**: Naloxone, Atropine, Serum งู, Protamine, Activated Charcoal
+
+---
+
+## Procurement Data (Phase 19) ⭐ NEW
+
+### drug_generics
+| Field | Records | Description |
+|-------|--------:|-------------|
+| last_buy_cost | 908 | ราคาซื้อล่าสุด |
+| last_vendor_code | 908 | รหัสผู้จำหน่ายล่าสุด |
+| hosp_list | 1,104 | บัญชียา รพ. (1-21) |
+
+### drugs
+| Field | Records | Description |
+|-------|--------:|-------------|
+| nc24_code | 3,131 | รหัสยา 24 หลัก |
+
+---
+
 ## 8 Core Systems Status
 
 | # | System | Status | Data |
 |---|--------|--------|------|
 | 1 | Master Data | ✅ Complete | 100% migrated |
 | 2 | Budget Management | ✅ Complete | 100% migrated |
-| 3 | Procurement | ✅ Schema Ready | Minimal transaction data |
+| 3 | Procurement | ✅ Complete | Cost + vendor data |
 | 4 | Inventory | ✅ Complete | 7,105 records + 6,033 lots |
 | 5 | Distribution | ✅ Schema Ready | Ready for transactions |
 | 6 | Drug Return | ✅ Schema Ready | Ready for transactions |
@@ -132,8 +180,8 @@
 # 1. Start containers
 docker-compose up -d
 
-# 2. Restore database
-gunzip -c backup/invs_modern_full.sql.gz | docker exec -i invs-modern-db psql -U invs_user -d invs_modern
+# 2. Restore database (use prisma folder)
+gunzip -c prisma/full_dump.sql.gz | docker exec -i invs-modern-db psql -U invs_user -d invs_modern
 
 # 3. Verify
 npm run dev
@@ -145,27 +193,10 @@ npm run dev
 
 | File | Description |
 |------|-------------|
+| `prisma/schema.prisma` | Database schema (58 tables, 32 enums) |
+| `prisma/full_dump.sql.gz` | Full database dump (3MB) |
 | `CLAUDE.md` | Instructions for Claude Code |
 | `HANDOFF.md` | Handoff document for new developers |
-| `prisma/schema.prisma` | Database schema (58 tables, 31 enums) |
-| `backup/invs_modern_full.sql.gz` | Full database backup (3MB) |
-| `docs/systems/` | 8 system documentation folders |
-| `scripts/migrate-phase16-ed-classification.ts` | ED Classification migration ⭐ NEW |
-
----
-
-## Next Steps
-
-### For Backend Development (New Repo)
-1. Create new repository for API
-2. Copy `prisma/schema.prisma`
-3. Implement authentication (JWT)
-4. Build REST APIs following `docs/systems/*/API_DEVELOPMENT_GUIDE.md`
-
-### For Frontend Development (New Repo)
-1. Create new repository for React app
-2. Use API specs from `docs/systems/`
-3. Follow UI mockups in `docs/flows/`
 
 ---
 
@@ -188,8 +219,11 @@ npm run dev
 | 13 | All Drugs | 6,092 |
 | 14 | Budget Management | 1,713 |
 | 15 | Inventory + Lots | 13,138 |
-| **16** | **ED Classification** | **1,313** ⭐ NEW |
+| 16 | ED Classification | 1,313 |
+| 17 | TMT GPU Mapping | 626 |
+| 18 | VEN Analysis | 981 |
+| **19** | **Procurement Data + NC24** | **4,039** ⭐ NEW |
 
 ---
 
-*Last Updated: 2024-12-10 by Claude Code*
+*Last Updated: 2024-12-11 by Claude Code*
