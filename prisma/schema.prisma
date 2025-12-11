@@ -330,6 +330,11 @@ model DrugGeneric {
   // Phase 18: VEN Analysis - จัดลำดับความสำคัญของยา
   venCategory          VenCategory?                    @map("ven_category") // V=Vital, E=Essential, N=Non-essential
 
+  // Phase 19: Procurement data - ข้อมูลการจัดซื้อ
+  lastBuyCost          Decimal?                        @map("last_buy_cost") @db.Decimal(12, 2) // ราคาซื้อล่าสุด
+  lastVendorCode       String?                         @map("last_vendor_code") @db.VarChar(6) // รหัสผู้จำหน่ายล่าสุด
+  hospList             Int?                            @map("hosp_list") // บัญชียา รพ. (1-21)
+
   // Legacy fields (will be removed after migration)
   dosageForm           String?                         @map("dosage_form") @db.VarChar(20)
   saleUnit             String?                         @map("sale_unit") @db.VarChar(5)
