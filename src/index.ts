@@ -1,22 +1,32 @@
 import { prisma } from './lib/prisma'
 
 async function main() {
-  console.log('🏥 INVS Modern - Hospital Inventory Management System')
-  console.log('📊 Connecting to database...')
+  console.log('🏥 INVS Modern - Database Status Check')
   
   try {
     await prisma.$connect()
-    console.log('✅ Database connected successfully!')
+    console.log('✅ Connected to database\n')
     
-    // Test query
-    const locationCount = await prisma.location.count()
-    console.log(`📍 Locations in database: ${locationCount}`)
+    const tables = [
+      'location', 'department', 'budgetTypeGroup', 'budgetCategory', 'budget',
+      'company', 'drugGeneric', 'drug', 'inventory', 'drugLot',
+      'purchaseRequest', 'purchaseOrder', 'receipt', 'contract',
+      'tmtConcept', 'drugDistribution', 'drugReturn'
+    ]
     
-    const drugCount = await prisma.drug.count()
-    console.log(`💊 Drugs in database: ${drugCount}`)
+    console.log('📊 Record Counts:')
+    console.log('----------------')
     
-    const companyCount = await prisma.company.count()
-    console.log(`🏢 Companies in database: ${companyCount}`)
+    for (const table of tables) {
+      try {
+        const count = await (prisma[table as any] as any).count()
+        console.log(`${table.padEnd(20)}: ${count.toLocaleString()}`)
+      } catch (err) {
+        console.log(`${table.padEnd(20)}: Error or Table not found`)
+      }
+    }
+    
+    console.log('\n----------------')
     
   } catch (error) {
     console.error('❌ Database connection failed:', error)
